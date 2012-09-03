@@ -1,4 +1,4 @@
-DOCUMENT_NAME = maye12curb
+DOCUMENT_NAME = maye13self
 BIB_DIR = bib
 MAIN_FILE = main
 SRC_DIR = src
