@@ -12,6 +12,7 @@
 \usepackage{tikz}
 \usepackage{sty/tkz-base}
 \usepackage[T1]{fontenc}
+\usepackage{cite}
 
 \usetikzlibrary{shapes,decorations,shadows}
 \usetikzlibrary{decorations.pathmorphing}
@@ -43,7 +44,7 @@ factor/.style={rectangle, fill=gray!25,minimum size=15pt, inner sep=1pt,draw=bla
 \begin{document}
 
 \title{\LARGE \bf
-Self-supervised Calibration for Mobile Robots
+Self-supervised Calibration for Mobile Robot Sensors
 }
 
 \author{
@@ -62,8 +63,17 @@ email: \{jerome.maye, paul.furgale, roland.siegwart\}@mavt.ethz.ch}
 \input{src/abstract.tex}
 \end{abstract}
 
-\section{Introduction}
+\section{Introduction\label{intro}}
 \input{src/introduction.tex}
+
+\section{Related Work\label{sec:rel}}
+\input{src/related.tex}
+
+\section{Model\label{sec:model}}
+\input{src/model.tex}
+
+\section{Experiments\label{sec:exp}}
+\input{src/experiments.tex}
 
 \section{Conclusion\label{sec:conc}}
 \input{src/conclusion.tex}

@@ -1,0 +1,25 @@
+\subsection{Problem Formulation\label{subsec:prob}}
+
+In the following, we outline our problem in a probabilistic manner. For the
+sake of clarity, we consider here a robot with a single sensor observing
+a known number of landmarks at each timestep. Furthermore, we assume the
+correspondences between sensor's measurements and landmarks are given. The
+relaxation of these assumptions goes beyond the scope of this paper.
+
+Let
+$\mathcal{X}=\{\mathbf{x}_{0:K}\}$ be a set of \emph{latent} random variables
+(LRV) representing robot states up to timestep $K$,
+$\mathcal{U}=\{\mathbf{u}_{1:K}\}$ a set of \emph{observable} random variables
+(ORV) representing measured control inputs, $\mathcal{L}=\{\mathbf{l}_{1:N}\}$ a
+set of LRV representing $N$ landmarks' positions,
+$\mathcal{Z}=\{\mathbf{z}_{1_{1:N}:K_{1:N}}\}$ a set of ORV representing $KxN$
+landmarks' measurements, and $\boldsymbol{\Theta}$ a LRV representing the
+calibration parameters of the robot's sensor. The goal of the calibration is
+to find the posterior distribution of $\boldsymbol{\Theta}$ given all the
+measurements up to timestep $k$
+
+\begin{equation}
+  \begin{aligned}
+  \mathbf{X}_t &= [x_t, y_t, \theta_t]^\intercal,
+  \end{aligned}
+\end{equation}
