@@ -1,10 +1,12 @@
 \subsection{Problem Formulation\label{subsec:prob}}
 
-In the following, we outline our problem in a probabilistic manner. For the
-sake of clarity, we consider here a robot with a single sensor observing
-a known number of landmarks at each timestep. Furthermore, we assume the
-correspondences between sensor's measurements and landmarks are given. The
-relaxation of these assumptions goes beyond the scope of this paper.
+In the following, we outline our problem in a probabilistic manner, closely
+following the discrete-time Simultaneous Localization and Mapping (SLAM)
+formulation~\cite{durrantwhyte06simultaneous}. For the sake of clarity, we
+consider here a robot with a single sensor observing a known number of landmarks
+at each timestep. Furthermore, we assume the correspondences between sensor's
+measurements and landmarks are known. The relaxation of these assumptions goes
+beyond the scope of this paper.
 
 Let
 $\mathcal{X}=\{\mathbf{x}_{0:K}\}$ be a set of \emph{latent} random variables
@@ -14,12 +16,67 @@ $\mathcal{U}=\{\mathbf{u}_{1:K}\}$ a set of \emph{observable} random variables
 set of LRV representing $N$ landmarks' positions,
 $\mathcal{Z}=\{\mathbf{z}_{1_{1:N}:K_{1:N}}\}$ a set of ORV representing $KxN$
 landmarks' measurements, and $\boldsymbol{\Theta}$ a LRV representing the
-calibration parameters of the robot's sensor. The goal of the calibration is
-to find the posterior distribution of $\boldsymbol{\Theta}$ given all the
-measurements up to timestep $k$
+calibration parameters of the robot's sensor. The goal of the calibration
+procedure is to compute the posterior marginal distribution of
+$\boldsymbol{\Theta}$ given all the measurements up to timestep $K$
 
-\begin{equation}
+\begin{equation}\label{eqn:post_calib}
   \begin{aligned}
-  \mathbf{X}_t &= [x_t, y_t, \theta_t]^\intercal,
+  p(\boldsymbol{\Theta}\mid\mathcal{U},\mathcal{Z}) &=
+    \int_{\mathcal{X}, \mathcal{L}}p(\boldsymbol{\Theta}, \mathcal{X},
+    \mathcal{L} \mid\mathcal{U},\mathcal{Z}).
   \end{aligned}
 \end{equation}
+
+The full joint posterior on the left-hand side of \eqref{eqn:post_calib} may
+further be factorized into
+
+\begin{equation}\label{eqn:post_joint_factorized}
+  \begin{aligned}
+  p(\boldsymbol{\Theta}, \mathcal{X},
+    \mathcal{L} \mid\mathcal{U},\mathcal{Z}) &\propto\\
+    p(\boldsymbol{\Theta})p(\mathbf{x}_0)p(\mathcal{L})
+    \prod_{k=1}^K p(\mathbf{x}_k\mid\mathbf{x}_{k - 1},\mathbf{u}_k)
+    \prod_{k=1}^K\prod_{i=1}^N p(\mathbf{z}_{k_i}\mid\mathbf{x}_k,
+    \mathbf{l}_i,\boldsymbol{\Theta}).
+  \end{aligned}
+\end{equation}
+
+We may approximate \eqref{eqn:post_joint_factorized} with a normal distribution
+whose moments $\boldsymbol{\mu}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and
+$\boldsymbol{\Sigma}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ have to be
+estimated. To this end, we first derive a Maximum a Posteriori (MAP) estimator
+for the mean
+
+\begin{equation}\label{eqn:map_estimator}
+  \begin{aligned}
+  \hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    \argmax_{\boldsymbol{\Theta},\mathcal{X},\mathcal{L}}
+    p(\boldsymbol{\Theta}, \mathcal{X},\mathcal{L} \mid\mathcal{U},\mathcal{Z})
+    \\
+    &= \argmin_{\boldsymbol{\Theta},\mathcal{X},\mathcal{L}}-\log
+    p(\boldsymbol{\Theta}, \mathcal{X},\mathcal{L} \mid\mathcal{U},\mathcal{Z}).
+  \end{aligned}
+\end{equation}
+
+In order to solve \eqref{eqn:map_estimator}, we refine our problem by defining
+a \emph{motion} and \emph{observation} model
+
+\begin{equation}\label{eqn:process_model}
+  \begin{aligned}
+  \mathbf{x}_k &= h(\mathbf{x}_{k-1}, \mathbf{u}_k, \mathbf{w}_k)\\
+  \mathbf{z}_{k_i} &= g(\mathbf{x}_{k}, \mathbf{l}_i, \mathbf{n}_k),
+  \end{aligned}
+\end{equation}
+
+where
+
+\begin{equation}\label{eqn:noise_model}
+  \begin{aligned}
+  \mathbf{w}_k \sim \mathcal{N}(\mathbf{0},\mathbf{Q}_k)\\
+  \mathbf{n}_k \sim \mathcal{N}(\mathbf{0},\mathbf{R}_k)
+  \end{aligned}
+\end{equation}
+
+are normally distributed process and observation noise variables.
+
