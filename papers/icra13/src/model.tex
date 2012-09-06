@@ -59,8 +59,8 @@ for the mean
   \end{aligned}
 \end{equation}
 
-In order to solve \eqref{eqn:map_estimator}, we refine our problem by defining
-a \emph{motion} and \emph{observation} model
+We further refine our problem by defining a \emph{motion} and \emph{observation}
+model
 
 \begin{equation}\label{eqn:process_model}
   \begin{aligned}
@@ -78,5 +78,19 @@ where
   \end{aligned}
 \end{equation}
 
-are normally distributed process and observation noise variables.
+are normally distributed process and observation noise variables,
+$\mathbf{Q}_k$ and $\mathbf{R}_k$ being known covariance matrices. The functions
+$h(\cdot)$ and $g(\cdot)$ might be non-linear in their parameters.
+
+\subsection{Least Squares Solution}
+In case of linear motion and observation models, there exists a closed-form
+solution to \eqref{eqn:map_estimator} based on the \emph{least squares} method
+due to the normally distributed noise variables. In the other case, one can
+resort to non-linear least squares methods that iteratively solve a linearized
+version of the problem. In the following, we employ the \emph{Gauss-Newton}
+algorithm for this purpose.
+
+\subsection{Truncated QR Solution}
+
+\subsection{Selecting Informative Measurements}
 
