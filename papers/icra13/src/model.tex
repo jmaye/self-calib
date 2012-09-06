@@ -64,8 +64,8 @@ model
 
 \begin{equation}\label{eqn:process_model}
   \begin{aligned}
-  \mathbf{x}_k &= h(\mathbf{x}_{k-1}, \mathbf{u}_k, \mathbf{w}_k)\\
-  \mathbf{z}_{k_i} &= g(\mathbf{x}_{k}, \mathbf{l}_i, \mathbf{n}_k),
+  \mathbf{x}_k &= \mathbf{h}(\mathbf{x}_{k-1}, \mathbf{u}_k, \mathbf{w}_k)\\
+  \mathbf{z}_{k_i} &= \mathbf{g}(\mathbf{x}_{k}, \mathbf{l}_i, \mathbf{n}_k),
   \end{aligned}
 \end{equation}
 
@@ -80,7 +80,8 @@ where
 
 are normally distributed process and observation noise variables,
 $\mathbf{Q}_k$ and $\mathbf{R}_k$ being known covariance matrices. The functions
-$h(\cdot)$ and $g(\cdot)$ might be non-linear in their parameters.
+$\mathbf{h}(\cdot)$ and $\mathbf{g}(\cdot)$ might be non-linear in their
+parameters.
 
 \subsection{Least Squares Solution}
 In case of linear motion and observation models, there exists a closed-form
@@ -89,6 +90,8 @@ due to the normally distributed noise variables. In the other case, one can
 resort to non-linear least squares methods that iteratively solve a linearized
 version of the problem. In the following, we employ the \emph{Gauss-Newton}
 algorithm for this purpose.
+
+
 
 \subsection{Truncated QR Solution}
 
