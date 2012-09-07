@@ -93,18 +93,18 @@ algorithm for this purpose. \textit{Quick derivation of the algorithm to end up 
 
 \begin{equation}\label{eqn:dx_update}
   \begin{aligned}
-  (\mathbf{H}^{T}\mathbf{T}^{-1}\mathbf{H})\delta\mathbf{x} &=
-    -\mathbf{H}^{T}\mathbf{T}^{-1}\mathbf{e}(\mathbf{x}).
+  (\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H})\delta\mathbf{x} &=
+    -\mathbf{H}^T\mathbf{T}^{-1}\mathbf{e}(\mathbf{x}).
   \end{aligned}
 \end{equation}
 
-If we let $\mathbf{T}^{-1}=\mathbf{L}^{T}\mathbf{L}$ be the Cholesky
+If we let $\mathbf{T}^{-1}=\mathbf{L}^T\mathbf{L}$ be the Cholesky
 decomposition of the precision matrix, \eqref{eqn:dx_update} can be rewritten as
 
 \begin{equation}\label{eqn:dx_update_normal}
   \begin{aligned}
-  (\mathbf{L}\mathbf{H})^{T}(\mathbf{L}\mathbf{H})\delta\mathbf{x} &= 
-    -(\mathbf{L}\mathbf{H})^{T}\mathbf{e}(\mathbf{x}),
+  (\mathbf{L}\mathbf{H})^T(\mathbf{L}\mathbf{H})\delta\mathbf{x} &= 
+    -(\mathbf{L}\mathbf{H})^T\mathbf{e}(\mathbf{x}),
   \end{aligned}
 \end{equation}
 
@@ -120,26 +120,48 @@ Thus, instead of directly solving \eqref{eqn:dx_update} which requires a
 significant amount of computation and introduces numerical errors, we can take
 advantage of matrix decompositions.
 
-Let $\mathbf{L}\mathbf{H}$ be of size $m*n$ with the following thin \emph{SVD}
-decomposition
+Let $\mathbf{L}\mathbf{H}$ be of size $m*n$ with the following thin
+Singular Value Decompostion (\emph{SVD}) decomposition
 
 \begin{equation}\label{eqn:svd_decomposition}
   \begin{aligned}
-  \mathbf{L}\mathbf{H} &= \mathbf{U}\mathbf{S}\mathbf{V}^{T},
+  \mathbf{L}\mathbf{H} &= \mathbf{U}_n\mathbf{S}_n\mathbf{V}_n^T,
   \end{aligned}
 \end{equation}
 
-where $\mathbf{U}$ is $m*n$, $\mathbf{S}=\diag(\sigma_1, \cdots, \sigma_n)$,
-$\mathbf{V}$ is $n*n$, and $\sigma_i$ are the singular values of
+where $\mathbf{U}_n$ is $m*n$, $\mathbf{S}_n=\diag(\sigma_1, \cdots, \sigma_n)$,
+$\mathbf{V}_n$ is $n*n$, and $\sigma_i$ are the singular values of
 $\mathbf{L}\mathbf{H}$.
 
 From \eqref{eqn:svd_decomposition} and using the orthogonal property of
-$\mathbf{U}$ and $\mathbf{V}$, we can solve \eqref{eqn:dx_update} as
+$\mathbf{U}_n$ and $\mathbf{V}_n$, we can solve \eqref{eqn:dx_update} as
 
 \begin{equation}\label{eqn:dx_svd_solve}
   \begin{aligned}
-  \delta\mathbf{x} &= -\mathbf{V}\mathbf{S}^{-1}\mathbf{U}^{T}
+  \delta\mathbf{x} &= -\mathbf{V}_n\mathbf{S}_n^{-1}\mathbf{U}_n^T
     \mathbf{e}(\mathbf{x}).
+  \end{aligned}
+\end{equation}
+
+Although useful for illustrating the concepts of our approach, the SVD
+decomposition can be computationally demanding for large matrices. In practice,
+we therefore use the thin \emph{QR} decomposition of $\mathbf{L}\mathbf{H}$
+
+\begin{equation}\label{eqn:qr_decomposition}
+  \begin{aligned}
+  \mathbf{L}\mathbf{H}\boldsymbol{\Pi} &= \mathbf{Q}_n\mathbf{R}_n,
+  \end{aligned}
+\end{equation}
+
+where $\boldsymbol{\Pi}$ is a permutation matrix, $\mathbf{Q}_n$ is $m*n$, and
+$\mathbf{R}_n$ is $n*n$.
+
+From \eqref{eqn:qr_decomposition} and using orthogonal property of
+$\mathbf{Q}_n$, \eqref{eqn:dx_update} can be expressed as
+
+\begin{equation}\label{eqn:dx_qr_solve}
+  \begin{aligned}
+  \mathbf{R}_n\delta\mathbf{x} &= -\mathbf{Q}_n^T \mathbf{e}(\mathbf{x}).
   \end{aligned}
 \end{equation}
 
