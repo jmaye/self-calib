@@ -89,9 +89,59 @@ solution to \eqref{eqn:map_estimator} based on the \emph{least squares} method
 due to the normally distributed noise variables. In the other case, one can
 resort to non-linear least squares methods that iteratively solve a linearized
 version of the problem. In the following, we employ the \emph{Gauss-Newton}
-algorithm for this purpose.
+algorithm for this purpose. \textit{Quick derivation of the algorithm to end up with}
 
+\begin{equation}\label{eqn:dx_update}
+  \begin{aligned}
+  (\mathbf{H}^{T}\mathbf{T}^{-1}\mathbf{H})\delta\mathbf{x} &=
+    -\mathbf{H}^{T}\mathbf{T}^{-1}\mathbf{e}(\mathbf{x}).
+  \end{aligned}
+\end{equation}
 
+If we let $\mathbf{T}^{-1}=\mathbf{L}^{T}\mathbf{L}$ be the Cholesky
+decomposition of the precision matrix, \eqref{eqn:dx_update} can be rewritten as
+
+\begin{equation}\label{eqn:dx_update_normal}
+  \begin{aligned}
+  (\mathbf{L}\mathbf{H})^{T}(\mathbf{L}\mathbf{H})\delta\mathbf{x} &= 
+    -(\mathbf{L}\mathbf{H})^{T}\mathbf{e}(\mathbf{x}),
+  \end{aligned}
+\end{equation}
+
+which we can recognize as the \emph{normal equations} of the linear system
+
+\begin{equation}\label{eqn:dx_update_standard}
+  \begin{aligned}
+  (\mathbf{L}\mathbf{H})\delta\mathbf{x} &= -\mathbf{e}(\mathbf{x}).
+  \end{aligned}
+\end{equation}
+
+Thus, instead of directly solving \eqref{eqn:dx_update} which requires a
+significant amount of computation and introduces numerical errors, we can take
+advantage of matrix decompositions.
+
+Let $\mathbf{L}\mathbf{H}$ be of size $m*n$ with the following thin \emph{SVD}
+decomposition
+
+\begin{equation}\label{eqn:svd_decomposition}
+  \begin{aligned}
+  \mathbf{L}\mathbf{H} &= \mathbf{U}\mathbf{S}\mathbf{V}^{T},
+  \end{aligned}
+\end{equation}
+
+where $\mathbf{U}$ is $m*n$, $\mathbf{S}=\diag(\sigma_1, \cdots, \sigma_n)$,
+$\mathbf{V}$ is $n*n$, and $\sigma_i$ are the singular values of
+$\mathbf{L}\mathbf{H}$.
+
+From \eqref{eqn:svd_decomposition} and using the orthogonal property of
+$\mathbf{U}$ and $\mathbf{V}$, we can solve \eqref{eqn:dx_update} as
+
+\begin{equation}\label{eqn:dx_svd_solve}
+  \begin{aligned}
+  \delta\mathbf{x} &= -\mathbf{V}\mathbf{S}^{-1}\mathbf{U}^{T}
+    \mathbf{e}(\mathbf{x}).
+  \end{aligned}
+\end{equation}
 
 \subsection{Truncated QR Solution}
 
