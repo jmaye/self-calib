@@ -98,6 +98,13 @@ algorithm for this purpose. \textit{Quick derivation of the algorithm to end up 
   \end{aligned}
 \end{equation}
 
+At convergence of the algorithm, the quantity
+$\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H}$ is the \emph{Fisher Information Matrix}
+(FIM) and the precision matrix
+$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^{-1}$ of
+our estimate
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
+
 If we let $\mathbf{T}^{-1}=\mathbf{L}^T\mathbf{L}$ be the Cholesky
 decomposition of the precision matrix, \eqref{eqn:dx_update} can be rewritten as
 
@@ -161,9 +168,13 @@ $\mathbf{Q}_n$, \eqref{eqn:dx_update} can be expressed as
 
 \begin{equation}\label{eqn:dx_qr_solve}
   \begin{aligned}
-  \mathbf{R}_n\delta\mathbf{x} &= -\mathbf{Q}_n^T \mathbf{e}(\mathbf{x}).
+  \mathbf{R}_n\boldsymbol{\Pi}^{T}\delta\mathbf{x} &=
+    -\mathbf{Q}_n^T \mathbf{e}(\mathbf{x}),
   \end{aligned}
 \end{equation}
+
+which, due the upper triangular form of $\mathbf{R}_n$ can be easily solved by
+\emph{back substitution}.
 
 \subsection{Truncated QR Solution}
 
