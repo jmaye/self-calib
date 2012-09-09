@@ -186,7 +186,7 @@ elements $\sigma_{ij}$ and $\mathbf{R}_n$ elements $r_{ij}$, there exists an
 efficient algorithm for recovering any elements of the covariance estimate
 without inverting the whole FIM
 
-\begin{equation}\label{eqn:FIM_QR}
+\begin{equation}\label{eqn:covariance_QR}
   \begin{aligned}
   \sigma_{ll} &= \frac{1}{r_{ll}}(\frac{1}{r_{ll}} -
     \sum_{j = l + 1, r_{lj}\neq 0}^n r_{lj}\sigma_{jl})\\
@@ -196,8 +196,22 @@ without inverting the whole FIM
   \end{aligned}
 \end{equation}
 
+for $l=n,\cdots,1$, $i=l-1,\cdots,1$ and the lower part given by symmetry.
 
-for $l=n,\cdots,1$, $i=l-1,\cdots,1$.
+At the convergence of the Gauss-Newton optimization, we are thus left with the
+estimates $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$
+and $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ of
+the normal distribution $p(\boldsymbol{\Theta}, \mathcal{X},\mathcal{L}
+\mid\mathcal{U},\mathcal{Z})$. In order to solve \eqref{eqn:post_calib}, we can
+employ special properties of normal distributions. In particular, the
+marginalization of a RV from a multivariate normal distribution again yields
+a normal distribution where this RV is simply dropped. In our case, we can thus
+extract $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ from
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ in no time.
+By placing $\boldsymbol{\Theta}$ to the right of the Jacobian matrix
+$\mathbf{H}$ and using \eqref{eqn:covariance_QR},
+$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
+computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
 
 \subsection{Truncated QR Solution}
 
