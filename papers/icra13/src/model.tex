@@ -176,6 +176,29 @@ $\mathbf{Q}_n$, \eqref{eqn:dx_update} can be expressed as
 which, due the upper triangular form of $\mathbf{R}_n$ can be easily solved by
 \emph{back substitution}.
 
+The $\mathbf{R}_n$ matrix can be used to compute the FIM and its
+inverse the covariance estimate
+$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$. If we
+drop the permutation matrix for clarity, the FIM becomes
+$\mathbf{R}_n^T\mathbf{R}_n$. If we let
+$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ having
+elements $\sigma_{ij}$ and $\mathbf{R}_n$ elements $r_{ij}$, there exists an
+efficient algorithm for recovering any elements of the covariance estimate
+without inverting the whole FIM
+
+\begin{equation}\label{eqn:FIM_QR}
+  \begin{aligned}
+  \sigma_{ll} &= \frac{1}{r_{ll}}(\frac{1}{r_{ll}} -
+    \sum_{j = l + 1, r_{lj}\neq 0}^n r_{lj}\sigma_{jl})\\
+  \sigma_{il} &= \frac{1}{r_{ii}}
+    (-\sum_{j = i + 1, r_{ij}\neq 0}^n r_{ij}\sigma_{jl} -
+    \sum_{j = l + 1, r_{ij}\neq 0}^n r_{ij}\sigma_{lj}),
+  \end{aligned}
+\end{equation}
+
+
+for $l=n,\cdots,1$, $i=l-1,\cdots,1$.
+
 \subsection{Truncated QR Solution}
 
 \subsection{Selecting Informative Measurements}
