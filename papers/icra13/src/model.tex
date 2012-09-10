@@ -98,7 +98,7 @@ algorithm for this purpose.
 From \eqref{eqn:map_estimator} and the normal approximations, we can turn the
 MAP problem into the minimization of a sum of quadratic functions. Non-linear
 optimization techniques start with an initial guess
-$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and refine
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and refines
 it iteratively with
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ until
 convergence.
@@ -119,7 +119,7 @@ matrix form, the update takes the form
   \end{aligned}
 \end{equation}
 
-where $\mathbf{T}$ is formed with $\mathbf{Q}_k$ and $\mathbf{N}_k$ and
+where $\mathbf{T}$ is formed with $\mathbf{Q}_k$ and $\mathbf{N}_k$, and
 $\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
 \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}})$ is the error of the current
 estimate $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
@@ -160,7 +160,7 @@ significant amount of computation and introduces numerical errors, we can take
 advantage of matrix decompositions.
 
 Let $\mathbf{L}\mathbf{H}$ be of size $m*n$ with the following thin
-Singular Value Decompostion (\emph{SVD}) decomposition
+Singular Value Decomposition (\emph{SVD}) decomposition
 
 \begin{equation}\label{eqn:svd_decomposition}
   \begin{aligned}
@@ -279,6 +279,9 @@ $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
 computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
 
 \subsection{Truncated SVD and QR Solutions}
+The methods developed above are quite generic and yield satisfying results in
+many applications. However, in practice, degenerate cases might occur when
+working with real-world data.
 
 \subsection{Selecting Informative Measurements}
 
