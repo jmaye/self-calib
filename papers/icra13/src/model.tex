@@ -80,9 +80,12 @@ where
 \end{equation}
 
 are normally distributed process and observation noise variables,
-$\mathbf{Q}_k$ and $\mathbf{R}_k$ being known covariance matrices. The functions
-$\mathbf{h}(\cdot)$ and $\mathbf{g}(\cdot)$ might be non-linear in their
-parameters.
+$\mathbf{Q}_k$ and $\mathbf{R}_k$ being known covariance matrices. Although, the
+functions $\mathbf{h}(\cdot)$ and $\mathbf{g}(\cdot)$ might be non-linear in
+their parameters, we can approximate
+$p(\mathbf{x}_k\mid\mathbf{x}_{k - 1},\mathbf{u}_k)$ and
+$p(\mathbf{z}_{k_i}\mid\mathbf{x}_k, \mathbf{l}_i,\boldsymbol{\Theta})$ as
+normal distributions through linearization.
 
 \subsection{Least Squares Solution}
 In case of linear motion and observation models, there exists a closed-form
@@ -90,19 +93,41 @@ solution to \eqref{eqn:map_estimator} based on the \emph{least squares} method
 due to the normally distributed noise variables. In the other case, one can
 resort to non-linear least squares methods that iteratively solve a linearized
 version of the problem. In the following, we employ the \emph{Gauss-Newton}
-algorithm for this purpose. \textit{Quick derivation of the algorithm to end up with}
+algorithm for this purpose.
+
+From \eqref{eqn:map_estimator} and the normal approximations, we can turn the
+MAP problem into the minimization of a sum of quadratic functions. Non-linear
+optimization techniques start with an initial guess
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and refine
+it iteratively with
+$\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ until
+convergence.
+$\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ is
+chosen in such a way that it minimizes a quadratic approximation of the
+objective function around
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
+Gauss-Newton method only requires the estimation of the Jacobian matrix
+$\mathbf{H}$ of the objective function. If we stack up everything in block
+matrix form, the update takes the form
 
 \begin{equation}\label{eqn:dx_update}
   \begin{aligned}
-  (\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H})\delta\mathbf{x} &=
-    -\mathbf{H}^T\mathbf{T}^{-1}\mathbf{e}(\mathbf{x}).
+  (\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H})
+    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    -\mathbf{H}^T\mathbf{T}^{-1}\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
+    \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
 
+where $\mathbf{T}$ is formed with $\mathbf{Q}_k$ and $\mathbf{N}_k$ and
+$\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
+\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}})$ is the error of the current
+estimate $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
+
 At convergence of the algorithm, the quantity
 $\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H}$ is the \emph{Fisher Information Matrix}
-(FIM) and the precision matrix
-$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^{-1}$ of
+(FIM) and the inverse covariance matrix
+$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ of
 our estimate
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
 
@@ -111,8 +136,10 @@ decomposition of the precision matrix, \eqref{eqn:dx_update} can be rewritten as
 
 \begin{equation}\label{eqn:dx_update_normal}
   \begin{aligned}
-  (\mathbf{L}\mathbf{H})^T(\mathbf{L}\mathbf{H})\delta\mathbf{x} &= 
-    -(\mathbf{L}\mathbf{H})^T\mathbf{e}(\mathbf{x}),
+  (\mathbf{L}\mathbf{H})^T(\mathbf{L}\mathbf{H})
+    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &= 
+    -(\mathbf{L}\mathbf{H})^T\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
+    \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
 
@@ -120,7 +147,11 @@ which we can recognize as the \emph{normal equations} of the linear system
 
 \begin{equation}\label{eqn:dx_update_standard}
   \begin{aligned}
-  (\mathbf{L}\mathbf{H})\delta\mathbf{x} &= -\mathbf{e}(\mathbf{x}).
+  (\mathbf{L}\mathbf{H})
+    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    -\mathbf{e}(
+    \mathbf{\hat{\boldsymbol{\mu}}_{
+    \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}).
   \end{aligned}
 \end{equation}
 
@@ -146,8 +177,11 @@ $\mathbf{U}_n$ and $\mathbf{V}_n$, we can solve \eqref{eqn:dx_update} as
 
 \begin{equation}\label{eqn:dx_svd_solve}
   \begin{aligned}
-  \delta\mathbf{x} &= -\mathbf{V}_n\mathbf{S}_n^{-1}\mathbf{U}_n^T
-    \mathbf{e}(\mathbf{x}).
+  \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    -\mathbf{V}_n\mathbf{S}_n^{-1}\mathbf{U}_n^T
+    \mathbf{e}(
+    \mathbf{\hat{\boldsymbol{\mu}}_{
+    \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}).
   \end{aligned}
 \end{equation}
 
@@ -169,8 +203,11 @@ $\mathbf{Q}_n$, \eqref{eqn:dx_update} can be expressed as
 
 \begin{equation}\label{eqn:dx_qr_solve}
   \begin{aligned}
-  \mathbf{R}_n\boldsymbol{\Pi}^{T}\delta\mathbf{x} &=
-    -\mathbf{Q}_n^T \mathbf{e}(\mathbf{x}),
+  \mathbf{R}_n\boldsymbol{\Pi}^{T}
+    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    -\mathbf{Q}_n^T \mathbf{e}(
+    \mathbf{\hat{\boldsymbol{\mu}}_{
+    \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
 
