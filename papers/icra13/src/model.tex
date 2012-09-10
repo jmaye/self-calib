@@ -65,7 +65,8 @@ model
 \begin{equation}\label{eqn:process_model}
   \begin{aligned}
   \mathbf{x}_k &= \mathbf{h}(\mathbf{x}_{k-1}, \mathbf{u}_k, \mathbf{w}_k)\\
-  \mathbf{z}_{k_i} &= \mathbf{g}(\mathbf{x}_{k}, \mathbf{l}_i, \mathbf{n}_k),
+  \mathbf{z}_{k_i} &= \mathbf{g}(\mathbf{x}_{k}, \mathbf{l}_i,
+    \boldsymbol{\Theta}, \mathbf{n}_k),
   \end{aligned}
 \end{equation}
 
@@ -203,12 +204,39 @@ estimates $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$
 and $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ of
 the normal distribution $p(\boldsymbol{\Theta}, \mathcal{X},\mathcal{L}
 \mid\mathcal{U},\mathcal{Z})$. In order to solve \eqref{eqn:post_calib}, we can
-employ special properties of normal distributions~\cite{bishop06pattern}.
-In particular, the marginalization of a RV from a multivariate normal
-distribution again yields a normal distribution where this RV is simply dropped.
-In our case, we can thus extract $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$
-from $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ in no
-time. By placing $\boldsymbol{\Theta}$ to the right of the Jacobian matrix
+employ the marginalization property of normal
+distributions~\cite{bishop06pattern}. If we express the estimates in the
+partitioned form
+
+\begin{equation}\label{eqn:partitioned_estimates}
+  \begin{aligned}
+  \hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    \begin{pmatrix}
+    \hat{\boldsymbol{\mu}}_{\mathcal{X}}\\
+    \hat{\boldsymbol{\mu}}_{\mathcal{L}}\\
+    \hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}
+    \end{pmatrix},
+  \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    \begin{pmatrix}
+    \hat{\boldsymbol{\Sigma}}_{\mathcal{X}\mathcal{X}}&
+    \hat{\boldsymbol{\Sigma}}_{\mathcal{X}\mathcal{L}}&
+    \hat{\boldsymbol{\Sigma}}_{\mathcal{X}\boldsymbol{\Theta}}\\
+    \hat{\boldsymbol{\Sigma}}_{\mathcal{L}\mathcal{X}}&
+    \hat{\boldsymbol{\Sigma}}_{\mathcal{L}\mathcal{L}}&
+    \hat{\boldsymbol{\Sigma}}_{\mathcal{L}\boldsymbol{\Theta}}\\
+    \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}}&
+    \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{L}}&
+    \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}\\
+    \end{pmatrix},
+  \end{aligned}
+\end{equation}
+
+then $p(\boldsymbol{\Theta}\mid\mathcal{U},\mathcal{Z})\sim\mathcal{N}
+(\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}},
+\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}})$. We can
+thus extract $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ from
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ in no time,
+and by placing $\boldsymbol{\Theta}$ to the right of the Jacobian matrix
 $\mathbf{H}$ and using \eqref{eqn:covariance_QR},
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
 computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
