@@ -177,7 +177,8 @@ $\mathbf{U}_n$ and $\mathbf{V}_n$, we can solve \eqref{eqn:dx_update} as
 
 \begin{equation}\label{eqn:dx_svd_solve}
   \begin{aligned}
-  \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+  \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
+    {(SVD)} &=
     -\mathbf{V}_n\mathbf{S}_n^{-1}\mathbf{U}_n^T
     \mathbf{e}(
     \mathbf{\hat{\boldsymbol{\mu}}_{
@@ -204,7 +205,8 @@ $\mathbf{Q}_n$, \eqref{eqn:dx_update} can be expressed as
 \begin{equation}\label{eqn:dx_qr_solve}
   \begin{aligned}
   \mathbf{R}_n\boldsymbol{\Pi}^{T}
-    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
+    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
+    {(QR)}&=
     -\mathbf{Q}_n^T \mathbf{e}(
     \mathbf{\hat{\boldsymbol{\mu}}_{
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
@@ -299,7 +301,8 @@ FIM might appear to be theoretically full rank although it is actually
 \end{equation}
 
 Although being full rank, $\mathbf{A}$ was constructed from a rank deficient
-matrix with added Gaussian noise. The issue of rank deficiency often appears in
+matrix with added Gaussian noise. In the following, we will coin $\mathbf{A}$
+a nearly rank deficient matrix. The issue of rank deficiency often appears in
 robotics state estimation and is related to the problem of \emph{observability}
 in the control theory.
 
@@ -313,6 +316,31 @@ a user-defined tolerance $\epsilon$, i.e.,
   r &= \argmax_i \sigma_i\geq\epsilon.
   \end{aligned}
 \end{equation}
+
+From \eqref{eqn:dx_svd_solve}, we can see that if some of the $\sigma_i$ are
+close to zero, i.e. $r<n$, the update vector
+$\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
+{(SVD)}$ will be large and eventually lead to a divergence of the solution. In
+order to cope with this issue, we can approximate $\mathbf{L}\mathbf{H}$ with a
+lower rank matrix yielding the \emph{Truncated} SVD (TSVD) solution
+
+\begin{equation}\label{eqn:dx_tsvd_solve}
+  \begin{aligned}
+  \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
+    {(TSVD)} &=
+    -\mathbf{V}_r\mathbf{S}_r^{-1}\mathbf{U}_r^T
+    \mathbf{e}(
+    \mathbf{\hat{\boldsymbol{\mu}}_{
+    \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}).
+  \end{aligned}
+\end{equation}
+
+It is worth noting that TSVD applies a \emph{sharp} filter to the system,
+whereas \emph{regularization} methods such as Tikhonov or ridge regression work
+as a \emph{smooth} filter.
+
+A similar approach can be derived using \emph{rank-revealing} QR decomposition
+yielding to the Truncated QR (TQR) method.
 
 \subsection{Selecting Informative Measurements}
 
