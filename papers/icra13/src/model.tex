@@ -352,4 +352,84 @@ $i<K$. Using the information theory, we can quantify the information gain when
 estimating $\boldsymbol{\Theta}$ with $\mathcal{D}_1$ alone or with
 $\mathcal{D}_1$ and $\mathcal{D}_2$.
 
+The \emph{mutual information} (MI) between two random variables $\mathbf{X}$ and
+$\mathbf{Y}$ is defined as
+
+\begin{equation}\label{eqn:mi_definition}
+  \begin{aligned}
+  I(\mathbf{X};\mathbf{Y}) &=
+    \int_{\mathbf{X}}\int_{\mathbf{Y}}p(x, y)\log\frac{p(x,y)}{p(x)p(y)},
+  \end{aligned}
+\end{equation}
+
+where $p(x, y)$ is the joint density of $\mathbf{X}$ and $\mathbf{Y}$, and
+$p(x)$ and $p(x)$ their marginal densities. The MI measures the amount of
+information $\mathbf{X}$ and $\mathbf{Y}$ share or, in other words, quantifies
+the reduction of uncertainty in $\mathbf{X}$ when knowing $\mathbf{Y}$.
+
+Before deriving the MI for our purpose, it is worth recalling another property
+of normal distributions~\cite{bishop06pattern}. If we define
+$\mathbf{\Theta}_1=\mathbf{\Theta}\mid\mathcal{D}_1$ and consider the joint
+normal distribution $p(\mathbf{\Theta}_1,\mathcal{D}_2)$ with parameters
+
+\begin{equation}\label{eqn:joint_normal}
+  \begin{aligned}
+  \boldsymbol{\mu}_{\boldsymbol{\Theta}_1\mathcal{D}_2} &=
+    \begin{pmatrix}
+    \boldsymbol{\mu}_{\boldsymbol{\Theta}_1}\\
+    \boldsymbol{\mu}_{\mathcal{D}_2}\\
+    \end{pmatrix},
+  \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2} &=
+    \begin{pmatrix}
+    \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\boldsymbol{\Theta}_1}&
+    \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2}\\
+    \boldsymbol{\Sigma}_{\mathcal{D}_2\boldsymbol{\Theta}_1}&
+    \boldsymbol{\Sigma}_{\mathcal{D}_2\mathcal{D}_2}
+    \end{pmatrix},
+  \end{aligned}
+\end{equation}
+
+then $p(\mathbf{\Theta}_1\mid\mathcal{D}_2)$ is a normal distribution with
+parameters
+
+\begin{equation}\label{eqn:joint_conditional}
+  \begin{aligned}
+  \boldsymbol{\mu}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2} &=
+    \boldsymbol{\mu}_{\boldsymbol{\Theta}_1} +
+    \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2}
+    \boldsymbol{\Sigma}_{\mathcal{D}_2\mathcal{D}_2}^{-1}
+    (\mathcal{D}_2 - \boldsymbol{\mu}_{\mathcal{D}_2})\\
+  \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2} &=
+    \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\boldsymbol{\Theta}_1} -
+    \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2}
+    \boldsymbol{\Sigma}_{\mathcal{D}_2\mathcal{D}_2}^{-1}
+    \boldsymbol{\Sigma}_{\mathcal{D}_2\boldsymbol{\Theta}_1}.
+  \end{aligned}
+\end{equation}
+
+$\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2}$ can be recognized
+as the \emph{Schur complement} of the joint covariance matrix
+$\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2}$.
+
+The MI between $\mathbf{\Theta}_1$ and $\mathcal{D}_2$ can be computed as
+
+\begin{equation}\label{eqn:mi_normal}
+  \begin{aligned}
+  I(\mathbf{\Theta}_1;\mathcal{D}_2) &=
+    \mathbb{E}\left[\log
+    \frac{p(\mathbf{\Theta}_1\mid\mathcal{D}_2)}{p(\mathbf{\Theta}_1)}\right]\\
+    &= \frac{1}{2}\log\frac{|\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1
+    \boldsymbol{\Theta}_1}|}
+    {|\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\boldsymbol{\Theta}_1} -
+    \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2}
+    \boldsymbol{\Sigma}_{\mathcal{D}_2\mathcal{D}_2}^{-1}
+    \boldsymbol{\Sigma}_{\mathcal{D}_2\boldsymbol{\Theta}_1}|}\\
+    &= \frac{1}{2}\log\frac{|\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1
+    \boldsymbol{\Theta}_1}|}
+    {|\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2}|},
+  \end{aligned}
+\end{equation}
+
+where $|\cdot|$ is the matrix determinant.
+
 \subsection{Implementation Details}
