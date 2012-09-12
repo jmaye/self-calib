@@ -88,6 +88,7 @@ $p(\mathbf{z}_{k_i}\mid\mathbf{x}_k, \mathbf{l}_i,\boldsymbol{\Theta})$ as
 normal distributions through linearization.
 
 \subsection{Least Squares Solution}
+
 In case of linear motion and observation models, there exists a closed-form
 solution to \eqref{eqn:map_estimator} based on the \emph{least squares} method
 due to the normally distributed noise variables. In the other case, one can
@@ -281,6 +282,7 @@ $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
 computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
 
 \subsection{Truncated SVD and QR Solutions}
+
 There exists a solution to \eqref{eqn:dx_update}
 iff the FIM is invertible, i.e., it is \emph{full rank}. The rank of a
 matrix is the maximum number of linearly independent column or row vectors. A
@@ -343,6 +345,7 @@ A similar approach can be derived using \emph{rank-revealing} QR decomposition
 yielding to the Truncated QR (TQR) method.
 
 \subsection{Selecting Informative Measurements}
+
 Since we are mainly interested in calibrating our sensor and thus in the
 posterior $p(\boldsymbol{\Theta}\mid\mathcal{U},\mathcal{Z})$, we do not need
 to consider all measurements. Let us define a partition of the measurements
@@ -407,8 +410,8 @@ parameters
   \end{aligned}
 \end{equation}
 
-$\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2}$ can be recognized
-as the \emph{Schur complement} of the joint covariance matrix
+Furthermore, $\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2}$ can
+be recognized as the \emph{Schur complement} of the joint covariance matrix
 $\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2}$.
 
 The MI between $\mathbf{\Theta}_1$ and $\mathcal{D}_2$ can be computed as
@@ -432,4 +435,64 @@ The MI between $\mathbf{\Theta}_1$ and $\mathcal{D}_2$ can be computed as
 
 where $|\cdot|$ is the matrix determinant.
 
+Thus, using \eqref{eqn:mi_normal}, we can measure the amount of information
+$\mathcal{D}_2$ conveys to our current estimate
+$\boldsymbol{\Theta}\mid\mathcal{D}_1$.
+
 \subsection{Implementation Details}
+
+Thus far, we have delivered a formal introduction to the probabilistic
+groundings of our self-supervised calibration approach. This section will be
+dedicated to a practical online implementation of our algorithm.
+
+The proposed calibration method is sketched in Alg.~\ref{alg:calibration}.
+Starting with an initial guess $p(\mathbf{\Theta})$ at time $t$, we collect a
+measurement \emph{batch} $\mathcal{D}^{new}=\{\mathbf{u}_{t:t+k},
+\mathbf{z}_{t_{1:N}:{t+k}_{1:N}}\}$ during $k$ timesteps and compute
+$p(\mathbf{\Theta}\mid\mathcal{D}^{new})$ using Gauss-Newton method with TQR
+updates. In a second step, if $I(\mathbf{\Theta};\mathcal{D}^{new})$ is larger
+than a user-defined threshold $\theta$,
+$\mathcal{D}^{new}$ is added to the set of the informative measurements
+$\mathcal{D}^{info}$ and the estimate of $\mathbf{\Theta}$ is updated.
+
+\begin{algorithm}[ht]
+\caption{detectObjects()}
+\label{alg:calibration}
+\dontprintsemicolon
+\SetKw{KwAnd}{and}
+\SetKwComment{Comment}{// }{}
+\SetKwFunction{updateStateModel}{updateStateModel}
+\SetKwFunction{nearestNeighbor}{nearestNeighbor}
+\KwIn{Set of 3D range observations}
+\KwIn{State model parameters}
+\KwIn{Clustering model parameters}
+\KwOut{Object mapping}
+\KwOut{Updated state model parameters}
+\vskip 0.2cm
+%\Comment*[h]{State estimation} \;
+%$\Z_{dyn} \gets \varnothing$ \;
+%\ForEach {$z_i \in \Z_{1:N}$}{
+%  $\Theta_\x' \gets$ \updateStateModel{$\Theta_\x$, $z_i$} \;
+%  Evaluate $\cpr{x_i = 1}{z_i, \Theta_\x'} $ using
+%    Eqn.~\ref{eq:state_model} and \cite{Stauffer00Learning} \;
+%  \If {$\cpr{x_i = 1}{z_i, \Theta_\x'} \geq p_{dyn}$}{
+%    $\Z_{dyn} \gets \Z_{dyn} \cup \{z_i\}$ \;
+%  }
+%}
+%\Comment*[h]{Clustering} \;
+%\ForEach {$z_i \in \Z_{dyn}$}{
+%  $c(z_i) \gets l_i$ \Comment*[f]{Initialize labels} \;
+%}
+%\While {$\Z_{dyn} \neq \varnothing$}{
+%  \ForEach {$z_i \in \Z_{dyn}$}{
+%    $\Z_{dyn} \gets \Z_{dyn} \setminus \{z_i\}$ \;
+%    $z_j \gets$ \nearestNeighbor{$\Z_{dyn}$, $z_i$} \;
+%    \If {$c(z_i) \neq c(z_j)$ \KwAnd
+%        $\|t_c(z_i), t_c(z_j))\| \leq \sigma_{c(z_j)}$}{
+%      \Comment*[h]{Merge clusters} \;
+%      $c(z_i) \gets c(z_j)$ \;
+%      $\Z_{dyn} \gets \Z_{dyn} \cup \{z_i\}$ \;
+%    }
+%  }
+%}
+\end{algorithm}
