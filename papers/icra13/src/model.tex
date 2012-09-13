@@ -460,7 +460,6 @@ $\mathcal{D}^{info}$ and the estimate of $\mathbf{\Theta}$ is updated.
 \caption{calibrateSensor()}
 \label{alg:calibration}
 \dontprintsemicolon
-%\SetKw{KwAnd}{and}
 \SetKwComment{Comment}{// }{}
 \KwIn{Initial guesses $\hat{\boldsymbol{\Theta}}^{(0)}$,
   $\hat{\mathbf{x}}_0^{(0)}$, $\hat{\mathcal{L}}^{(0)}$}
@@ -502,4 +501,7 @@ $t\leftarrow1$ \;
 }
 \end{algorithm}
 
-From asdf
+Our method has been fully implemented in MATLAB. Taking into account the
+sparsity of the Jacobian matrix $\mathbf{H}$, the algorithmic complexity can
+be largely reduced in terms of memory footprint and computation. To this end, we
+have used the SuiteSparseQR package for performing TQR optimization.
