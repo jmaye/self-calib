@@ -446,53 +446,60 @@ groundings of our self-supervised calibration approach. This section will be
 dedicated to a practical online implementation of our algorithm.
 
 The proposed calibration method is sketched in Alg.~\ref{alg:calibration}.
-Starting with an initial guess $p(\mathbf{\Theta})$ at time $t$, we collect a
-measurement \emph{batch} $\mathcal{D}^{new}=\{\mathbf{u}_{t:t+k},
-\mathbf{z}_{t_{1:N}:{t+k}_{1:N}}\}$ during $k$ timesteps and compute
-$p(\mathbf{\Theta}\mid\mathcal{D}^{new})$ using Gauss-Newton method with TQR
-updates. In a second step, if $I(\mathbf{\Theta};\mathcal{D}^{new})$ is larger
-than a user-defined threshold $\theta$,
-$\mathcal{D}^{new}$ is added to the set of the informative measurements
+Defining $\mathcal{D}^{info}$ as the set of \emph{informative} measurements at
+time $t$, we collect a measurement batch
+$\mathcal{D}^{new}=\{\mathbf{u}_{t:t+k}, \mathbf{z}_{t_{1:N}:{t+k}_{1:N}}\}$
+during $k$ timesteps and compute
+$p(\mathbf{\Theta}\mid\mathcal{D}^{info},\mathcal{D}^{new})$ using Gauss-Newton
+method with TQR updates. In a second step, if
+$I(\mathbf{\Theta}\mid\mathcal{D}^{info};\mathcal{D}^{new})$ is larger
+than a user-defined threshold $\theta$, $\mathcal{D}^{new}$ is added to
 $\mathcal{D}^{info}$ and the estimate of $\mathbf{\Theta}$ is updated.
 
 \begin{algorithm}[ht]
-\caption{detectObjects()}
+\caption{calibrateSensor()}
 \label{alg:calibration}
 \dontprintsemicolon
-\SetKw{KwAnd}{and}
+%\SetKw{KwAnd}{and}
 \SetKwComment{Comment}{// }{}
-\SetKwFunction{updateStateModel}{updateStateModel}
-\SetKwFunction{nearestNeighbor}{nearestNeighbor}
-\KwIn{Set of 3D range observations}
-\KwIn{State model parameters}
-\KwIn{Clustering model parameters}
-\KwOut{Object mapping}
-\KwOut{Updated state model parameters}
+\KwIn{Initial guesses $\hat{\boldsymbol{\Theta}}^{(0)}$,
+  $\hat{\mathbf{x}}_0^{(0)}$, $\hat{\mathcal{L}}^{(0)}$}
+\KwIn{Motion $\mathbf{h}(\cdot)$ and observation $\mathbf{g}(\cdot)$ models}
+\KwIn{Batch size $k$, TQR threshold $\epsilon$, MI threshold $\theta$}
+\KwOut{$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ and
+  $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$}
 \vskip 0.2cm
-%\Comment*[h]{State estimation} \;
-%$\Z_{dyn} \gets \varnothing$ \;
-%\ForEach {$z_i \in \Z_{1:N}$}{
-%  $\Theta_\x' \gets$ \updateStateModel{$\Theta_\x$, $z_i$} \;
-%  Evaluate $\cpr{x_i = 1}{z_i, \Theta_\x'} $ using
-%    Eqn.~\ref{eq:state_model} and \cite{Stauffer00Learning} \;
-%  \If {$\cpr{x_i = 1}{z_i, \Theta_\x'} \geq p_{dyn}$}{
-%    $\Z_{dyn} \gets \Z_{dyn} \cup \{z_i\}$ \;
-%  }
-%}
-%\Comment*[h]{Clustering} \;
-%\ForEach {$z_i \in \Z_{dyn}$}{
-%  $c(z_i) \gets l_i$ \Comment*[f]{Initialize labels} \;
-%}
-%\While {$\Z_{dyn} \neq \varnothing$}{
-%  \ForEach {$z_i \in \Z_{dyn}$}{
-%    $\Z_{dyn} \gets \Z_{dyn} \setminus \{z_i\}$ \;
-%    $z_j \gets$ \nearestNeighbor{$\Z_{dyn}$, $z_i$} \;
-%    \If {$c(z_i) \neq c(z_j)$ \KwAnd
-%        $\|t_c(z_i), t_c(z_j))\| \leq \sigma_{c(z_j)}$}{
-%      \Comment*[h]{Merge clusters} \;
-%      $c(z_i) \gets c(z_j)$ \;
-%      $\Z_{dyn} \gets \Z_{dyn} \cup \{z_i\}$ \;
-%    }
-%  }
-%}
+$\mathcal{D}^{info}\leftarrow\emptyset$ \;
+$t\leftarrow1$ \;
+\While {calibrate} {
+  \Comment*[h]{Collecting measurements} \;
+  $t^{init} \leftarrow t$ \;
+  $\mathcal{D}^{new}\leftarrow\emptyset$ \;
+  \While {$t < t^{init} + k$} {
+    $\hat{\mathbf{x}}_t^{(0)} \leftarrow
+      \mathbf{h}(\hat{\mathbf{x}}_{t-1}^{(0)},\mathbf{u}_t,\mathbf{0})$ \;
+    $\mathcal{D}^{new}\leftarrow\mathcal{D}^{new}\cup\{\mathbf{u}_t,
+      \mathbf{z}_{t_{1:N}}\}$ \;
+    $t \leftarrow t + 1$ \;
+  }
+  \Comment*[h]{TQR minimization} \;
+  $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} \leftarrow
+    \argmax_{\boldsymbol{\Theta},\mathcal{X},\mathcal{L}}
+    p(\boldsymbol{\Theta}, \mathcal{X},\mathcal{L} \mid\mathcal{D}^{info},
+    \mathcal{D}^{new})$ \;
+  \Comment*[h]{Marginalization} \;
+  $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}\leftarrow
+    \hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ \;
+  $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}\leftarrow
+    \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ \;
+  \Comment*[h]{MI decision} \;
+  \If {$I(\mathbf{\Theta}\mid\mathcal{D}^{info};\mathcal{D}^{new})>\theta$} {
+    $\mathcal{D}^{info}\leftarrow\mathcal{D}^{info}\cup\mathcal{D}^{new}$ \;
+    $\boldsymbol{\Theta}\sim\mathcal{N}(
+      \hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}},
+      \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}})$ \;
+  }
+}
 \end{algorithm}
+
+From asdf
