@@ -12,13 +12,13 @@ Let
 $\mathcal{X}=\{\mathbf{x}_{0:K}\}$ be a set of \emph{latent} random variables
 (LRV) representing robot states up to timestep $K$,
 $\mathcal{U}=\{\mathbf{u}_{1:K}\}$ a set of \emph{observable} random variables
-(ORV) representing measured control inputs, $\mathcal{L}=\{\mathbf{l}_{1:N}\}$ a
-set of LRV representing $N$ landmarks' positions,
-$\mathcal{Z}=\{\mathbf{z}_{1_{1:N}:K_{1:N}}\}$ a set of ORV representing $KxN$
-landmarks' measurements, and $\boldsymbol{\Theta}$ a LRV representing the
-calibration parameters of the robot's sensor. The goal of the calibration
-procedure is to compute the posterior marginal distribution of
-$\boldsymbol{\Theta}$ given all the measurements up to timestep $K$
+(ORV) representing measured control inputs,
+$\mathcal{L}=\{\boldsymbol{\ell}_{1:N}\}$ a set of LRV representing $N$
+landmark positions, $\mathcal{Z}=\{\mathbf{z}_{1_{1:N}:K_{1:N}}\}$ a set of ORV
+representing $K \times N$ landmark measurements, and $\boldsymbol{\Theta}$, an
+LRV representing the calibration parameters of the robot's sensor. The goal of
+the calibration procedure is to compute the posterior marginal distribution of
+$\boldsymbol{\Theta}$ given all the measurements up to timestep $K$,
 
 \begin{equation}\label{eqn:post_calib}
   \begin{aligned}
@@ -28,8 +28,8 @@ $\boldsymbol{\Theta}$ given all the measurements up to timestep $K$
   \end{aligned}
 \end{equation}
 
-The full joint posterior on the left-hand side of \eqref{eqn:post_calib} may
-further be factorized into
+According to~\cite{durrantwhyte06simultaneous}, the full joint posterior on the
+right-hand side of \eqref{eqn:post_calib} may further be factorized into
 
 \begin{equation}\label{eqn:post_joint_factorized}
   \begin{aligned}
@@ -43,10 +43,10 @@ further be factorized into
 \end{equation}
 
 We may approximate \eqref{eqn:post_joint_factorized} with a normal distribution
-whose moments $\boldsymbol{\mu}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and
-$\boldsymbol{\Sigma}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ have to be
-estimated. To this end, we first derive a Maximum a Posteriori (MAP) estimator
-for the mean
+whose mean, $\boldsymbol{\mu}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, and
+covariance, $\boldsymbol{\Sigma}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$,
+have to be estimated. To this end, we first derive a Maximum a Posteriori (MAP)
+estimator for the mean,
 
 \begin{equation}\label{eqn:map_estimator}
   \begin{aligned}
@@ -70,7 +70,7 @@ model
   \end{aligned}
 \end{equation}
 
-where
+\noindent where
 
 \begin{equation}\label{eqn:noise_model}
   \begin{aligned}
@@ -79,7 +79,7 @@ where
   \end{aligned}
 \end{equation}
 
-are normally distributed process and observation noise variables,
+\noindent are normally distributed process and observation noise variables,
 $\mathbf{Q}_k$ and $\mathbf{R}_k$ being known covariance matrices. Although, the
 functions $\mathbf{h}(\cdot)$ and $\mathbf{g}(\cdot)$ might be non-linear in
 their parameters, we can approximate
@@ -139,18 +139,20 @@ decomposition of the precision matrix, \eqref{eqn:dx_update} can be rewritten as
   \begin{aligned}
   (\mathbf{L}\mathbf{H})^T(\mathbf{L}\mathbf{H})
     \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &= 
-    -(\mathbf{L}\mathbf{H})^T\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
+    -(\mathbf{L}\mathbf{H})^T\mathbf{L}
+    \mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
 
-which we can recognize as the \emph{normal equations} of the linear system
+\noindent which we can recognize as the \emph{normal equations} of the linear
+system
 
 \begin{equation}\label{eqn:dx_update_standard}
   \begin{aligned}
   (\mathbf{L}\mathbf{H})
     \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
-    -\mathbf{e}(
+    -\mathbf{L}\mathbf{e}(
     \mathbf{\hat{\boldsymbol{\mu}}_{
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}).
   \end{aligned}
@@ -160,7 +162,7 @@ Thus, instead of directly solving \eqref{eqn:dx_update} which requires a
 significant amount of computation and introduces numerical errors, we can take
 advantage of matrix decompositions.
 
-Let $\mathbf{L}\mathbf{H}$ be of size $m*n$ with the following thin
+Let $\mathbf{L}\mathbf{H}$ be of size $m\times n$ with the following thin
 Singular Value Decomposition (\emph{SVD}) decomposition
 
 \begin{equation}\label{eqn:svd_decomposition}
@@ -169,18 +171,18 @@ Singular Value Decomposition (\emph{SVD}) decomposition
   \end{aligned}
 \end{equation}
 
-where $\mathbf{U}_n$ is $m*n$, $\mathbf{S}_n=\diag(\sigma_1, \cdots, \sigma_n)$,
-$\mathbf{V}_n$ is $n*n$, and $\sigma_i$ are the singular values of
-$\mathbf{L}\mathbf{H}$.
+\noindent where $\mathbf{U}_n$ is $m\times n$, $\mathbf{S}_n=\diag(\sigma_1,
+\cdots,\sigma_n)$, $\mathbf{V}_n$ is $n\times n$, and $\sigma_i$ are the
+singular values of $\mathbf{L}\mathbf{H}$.
 
-From \eqref{eqn:svd_decomposition} and using the orthogonal property of
+From \eqref{eqn:svd_decomposition} and using the orthogonality of
 $\mathbf{U}_n$ and $\mathbf{V}_n$, we can solve \eqref{eqn:dx_update} as
 
 \begin{equation}\label{eqn:dx_svd_solve}
   \begin{aligned}
   \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
     {(SVD)} &=
-    -\mathbf{V}_n\mathbf{S}_n^{-1}\mathbf{U}_n^T
+    -\mathbf{V}_n\mathbf{S}_n^{-1}\mathbf{U}_n^T\mathbf{L}
     \mathbf{e}(
     \mathbf{\hat{\boldsymbol{\mu}}_{
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}).
@@ -197,33 +199,34 @@ we therefore use the thin \emph{QR} decomposition of $\mathbf{L}\mathbf{H}$
   \end{aligned}
 \end{equation}
 
-where $\boldsymbol{\Pi}$ is a permutation matrix, $\mathbf{Q}_n$ is $m*n$, and
-$\mathbf{R}_n$ is $n*n$.
+\noindent where $\boldsymbol{\Pi}$ is a permutation matrix, $\mathbf{Q}_n$ an
+$m\times n$ matrix with orthogonal columns, and $\mathbf{R}_n$ an $n\times n$
+upper triangular matrix.
 
-From \eqref{eqn:qr_decomposition} and using orthogonal property of
-$\mathbf{Q}_n$, \eqref{eqn:dx_update} can be expressed as
+From \eqref{eqn:qr_decomposition} and using the orthogonality of $\mathbf{Q}_n$,
+\eqref{eqn:dx_update} can be expressed as
 
 \begin{equation}\label{eqn:dx_qr_solve}
   \begin{aligned}
   \mathbf{R}_n\boldsymbol{\Pi}^{T}
     \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
     {(QR)}&=
-    -\mathbf{Q}_n^T \mathbf{e}(
+    -\mathbf{Q}_n^T \mathbf{L}\mathbf{e}(
     \mathbf{\hat{\boldsymbol{\mu}}_{
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
 
-which, due the upper triangular form of $\mathbf{R}_n$ can be easily solved by
-\emph{back substitution}.
+\noindent which, due the upper triangular form of $\mathbf{R}_n$ can be easily
+solved by \emph{back substitution}.
 
 The $\mathbf{R}_n$ matrix can be used to compute the FIM and its
 inverse the covariance estimate
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$. If we
 drop the permutation matrix for clarity, the FIM becomes
-$\mathbf{R}_n^T\mathbf{R}_n$. If we let
-$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ having
-elements $\sigma_{ij}$ and $\mathbf{R}_n$ elements $r_{ij}$, there exists an
+$\mathbf{R}_n^T\mathbf{R}_n$. Let $\sigma_{ij}$ denote the elements of
+$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and
+$r_{ij}$ the elements of $\mathbf{R}_n$, there exists an
 efficient algorithm for recovering any elements of the covariance estimate
 without inverting the whole FIM
 
@@ -237,7 +240,8 @@ without inverting the whole FIM
   \end{aligned}
 \end{equation}
 
-for $l=n,\cdots,1$, $i=l-1,\cdots,1$ and the lower part is given by symmetry.
+\noindent for $l=n,\cdots,1$, $i=l-1,\cdots,1$ and the lower part is given by
+symmetry.
 
 At the convergence of the Gauss-Newton optimization, we are thus left with the
 estimates $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$
@@ -271,13 +275,13 @@ partitioned form
   \end{aligned}
 \end{equation}
 
-then $p(\boldsymbol{\Theta}\mid\mathcal{U},\mathcal{Z})\sim\mathcal{N}
+\noindent then $p(\boldsymbol{\Theta}\mid\mathcal{U},\mathcal{Z})\sim\mathcal{N}
 (\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}},
 \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}})$. We can
 thus extract $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ from
-$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ in no time,
-and by placing $\boldsymbol{\Theta}$ to the right of the Jacobian matrix
-$\mathbf{H}$ and using \eqref{eqn:covariance_QR},
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ very
+efficiently, and by placing $\boldsymbol{\Theta}$ to the right of the Jacobian
+matrix $\mathbf{H}$ and using \eqref{eqn:covariance_QR},
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
 computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
 
