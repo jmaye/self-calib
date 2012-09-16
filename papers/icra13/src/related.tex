@@ -10,13 +10,29 @@ some measuring instrument. However, the disadvantages of such purely
 engineered methods are manifolds. Apart from their impracticality, it can be
 nearly impossible to reach a satisfying accuracy and thus hinder the proper use
 of the sensor in a robotic system. Furthermore, external factors such as
-temperature variation or mechanical shocks may bias a factory calibration.
+temperature variations or mechanical shocks may seriously bias a factory
+calibration. Therefore, much efforts have been dedicated over the years to
+develop algorithms easing custom calibration on the field.
+
+The use of a known calibration pattern such as a checkerboard coupled with
+nonlinear regression has become the most popular method in computer vision
+during the last decade. It has been deployed both for intrinsic camera
+calibration~\cite{sturm99plane} and extrinsic calibration
+between heterogeneous sensors~\cite{zhang04extrinsic}. While being relatively
+efficient, this procedure still requires expert knowledge to reach a good level
+of accuracy. It can also be quite inconvenient on a mobile platform requiring
+frequent recalibration.
+
+In the context of mobile robotics, several authors have included the calibration
+problem in a state-space estimation framework,
+either as filtering~\cite{martinelli06automatic}, or
+smoothing~\cite{kuemmerle11simultaneous}.
 
 List of papers to cite: \cite{davis11algorithm},
 \cite{brookshire12extrinsic}, \cite{aster11parameter}, \cite{brookshire11automatic},
 \cite{chan94lowrank}, \cite{finsterle11truncated}, \cite{golub96matrix},
 \cite{hansen87truncated}, \cite{hong92rank}, \cite{jauffret07observability},
 \cite{kitagawa01regularization}, \cite{levinson10unsupervised},
-\cite{mackay05information}, \cite{maddern12lost}, \cite{martinelli06automatic},
-\cite{sheehan12self}, \cite{sheehan10automatic}, \cite{zhang04extrinsic},
-\cite{gao10online}, \cite{hol10modeling}
+\cite{mackay05information}, \cite{maddern12lost},
+\cite{sheehan12self}, \cite{sheehan10automatic},
+\cite{gao10online}, \cite{hol10modeling}, \cite{kaess09covariance}
