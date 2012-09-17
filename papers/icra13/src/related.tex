@@ -30,15 +30,28 @@ smoothing~\cite{kuemmerle11simultaneous} techniques. Filtering techniques based
 on the Kalman filter are appealing due to their inherently online nature.
 However, in case of nonlinear systems, smoothing techniques based on iterative
 optimization are usually superior in terms of accuracy. While building on this
-latter method, our approach attempts to reduce its computational load and cope
+latter method, our approach attempts to reduce its computational load and copes
 with degenerate cases.
 
+More recently, Brookshire and Teller~\cite{brookshire12extrinsic} have carried
+out a formal observability analysis in order to identify degenerate paths of
+the calibration run. In contrast to the method presented in this paper, their
+approach still expects that the robot travels along non-degenerate paths.
 
+A last class of methods relies on an energy function to be minimized. For
+instance, Levinson and Thrun~\cite{levinson10unsupervised} have defined an
+energy function based on surfaces and Sheehan \emph{et al.}~\cite{sheehan12self}
+on an information theoretic quantity measuring point cloud quality.
 
-Last class of approach: \cite{brookshire12extrinsic}, \cite{gao10online},
-\cite{sheehan12self}, \cite{levinson10unsupervised},
+To the best of the authors' knowledge, little research has been devoted to
+efficiently deal with degenerate cases frequently occurring during calibration.
+The majority of the authors indeed assumes that their optimization routine runs
+on well-behaved data. As demonstrated in the next section, this can be a
+critical point in real-world scenarios. In contrast, our approach does not
+require any of these assumptions and is suitable for online, autonomous, and
+long-term operations on various platforms and sensors.
 
-Theoretical citations: \cite{davis11algorithm}, \cite{aster11parameter},
+Theoretical citations for next section: \cite{davis11algorithm}, \cite{aster11parameter},
 \cite{chan94lowrank}, \cite{finsterle11truncated}, \cite{golub96matrix},
 \cite{hansen87truncated}, \cite{hong92rank}, \cite{jauffret07observability},
 \cite{kitagawa01regularization},
