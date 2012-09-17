@@ -28,11 +28,13 @@ More formally, we use the following motion and observation models
 
 \begin{equation}\label{eqn:exp_model}
   \begin{aligned}
+  \underbrace {
   \begin{pmatrix}
   x_k\\
   y_k\\
   \theta_k
-  \end{pmatrix} &=
+  \end{pmatrix}}_{\mathbf{x}_k}&=
+  \underbrace{
   \begin{pmatrix}
   x_{k-1}\\
   y_{k-1}\\
@@ -47,28 +49,33 @@ More formally, we use the following motion and observation models
   v_k\\
   w_k
   \end{pmatrix}
-  + \mathbf{w}_k\right)\\
-  a &= x_l - x_k - \delta_x\cos\theta_k + \delta_y\sin\theta_k\\
-  b &= y_l - y_k - \delta_x\sin\theta_k - \delta_y\cos\theta_k\\
+  + \mathbf{w}_k\right)
+  }_{\mathbf{h}(\mathbf{x}_{k-1}, \mathbf{u}_k, \mathbf{w}_k)}\\
+  a &= x_i - x_k - \delta_x\cos\theta_k + \delta_y\sin\theta_k\\
+  b &= y_i - y_k - \delta_x\sin\theta_k - \delta_y\cos\theta_k\\
+  \underbrace {
   \begin{pmatrix}
-  r_k^l\\
-  \phi_k^l
-  \end{pmatrix} &=
+  r_k^i\\
+  \phi_k^i
+  \end{pmatrix} }_{\mathbf{z}_{k_i}}&=
+  \underbrace {
   \begin{pmatrix}
   \sqrt{a^2 + b^2}\\
   \atan2(b, a) - \theta_k - \psi
   \end{pmatrix}
-  + \mathbf{n}_k,
+  + \mathbf{n}_k}_{\mathbf{g}(\mathbf{x}_{k}, \boldsymbol{\ell}_i,
+    \boldsymbol{\Theta}, \mathbf{n}_k)},
   \end{aligned}
 \end{equation}
 
 \noindent where $\mathbf{x}_k=[x_k\;y_k\;\theta_k]^T$ denotes the robot pose at
-timestep $k$ $T$ the sampling period, $\mathbf{u}_k=[v_k\;w_k]^T$ the measured
-control input, $\mathbf{z}_k^l=[r_k^l\;\phi_k^l]^T$ the range and bearing
-observation of landmark $l$ with pose $[x_l\;y_l]^T$, $\mathbf{w}_k
-\sim\mathcal{N}(\mathbf{0}, \mathbf{Q}_k)$ with $\mathbf{Q}_k=\diag(\sigma^2_v,
-\sigma^2_w)$, $\mathbf{n}_k\sim\mathcal{N}(\mathbf{0}, \mathbf{R}_k)$ with
-$\mathbf{R}_k=\diag(\sigma^2_r, \sigma^2_\phi)$, and
+timestep $k$, $T$ the sampling period, $\mathbf{u}_k=[v_k\;w_k]^T$ the measured
+translational and rotational speeds, $\mathbf{z}_{k_i}=[r_k^i\;\phi_k^i]^T$ the
+range and bearing observation of landmark $i$ with pose
+$\boldsymbol{\ell}_i=[x_i\;y_i]^T$, $\mathbf{w}_k\sim\mathcal{N}(\mathbf{0},
+\mathbf{Q}_k)$ with $\mathbf{Q}_k=\diag(\sigma^2_v,\sigma^2_w)$,
+$\mathbf{n}_k\sim\mathcal{N}(\mathbf{0}, \mathbf{R}_k)$ with
+$\mathbf{R}_k=\diag(\sigma^2_r,\sigma^2_\phi)$, and
 $\mathbf{\Theta}=[\delta_x\;\delta_y\;\phi]^T$ the range sensor's calibration
 parameters.
 
@@ -81,6 +88,56 @@ with $N=17$ landmarks uniformly distributed on a $10m\times 10m$ grid. We have
 set the noise parameters empirically to $\sigma^2_v=4.4\times 10^{-3}$,
 $\sigma^2_w=8.2\times 10^{-2}$, $\sigma^2_r=9.0036\times 10^{-4}$, and
 $\sigma^2_\phi=6.7143\times 10^{-4}$. The calibration parameters are set to
-$\delta_x=0.219$ [m], $\delta_y=0.1$ [m], and $\phi=\pi/4$ [rad].
+$\delta_x=0.219$ [m], $\delta_y=0.1$ [m], and $\psi=\pi/4$ [rad].
+
+In a first experiment, we have driven the robot along a straight path a $100$
+times, maintaining identical initial conditions over the different runs, and
+monitored the convergence of the calibration parameters.
+Fig.~\ref{fig:straight_comp} shows the performance of different algorithms,
+namely an Extended Kalman Filter (EKF) similar to~\cite{martinelli06automatic},
+a standard batch nonlinear least squares method without
+regularization~\cite{kuemmerle11simultaneous}, and our TQR-MI approach.
+
+\todo{more text to come discussing the results}
+
+\begin{figure}[t]
+\centering
+\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
+\caption{A comparison of different algorithms on a straight path.}
+\label{fig:straight_comp}
+\end{figure}
+
+In a second step, we have run similar experiments as above, but with a loop
+after the straight path. Fig.~\ref{fig:loop_comp} displays a comparison of the
+different methods.
+
+\todo{more text to come discussing the results}
+
+\begin{figure}[t]
+\centering
+\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
+\caption{A comparison of different algorithms on a well-behaved path.}
+\label{fig:loop_comp}
+\end{figure}
+
+The last simulated experiment aims at analyzing the singular values, or the
+diagonal elements of the $\mathbf{R}$ matrix, of the FIM.
+Fig.~\ref{fig:sing_values} shows...
+\todo{more text to come discussing the results}
+
+\begin{figure}[t]
+\centering
+\missingfigure[figwidth=\columnwidth]{Singular values of the FIM.}
+\caption{Singular values.}
+\label{fig:sing_values}
+\end{figure}
 
 \subsection{Real-world Data}
+
+In order to validate our method on real-world data, we have used the ``Lost in
+the Woods Dataset'' provided with the courtesy of Tim Barfoot. This dataset
+contains approximately $20$ minutes of a robot driving amongst a forest of
+tubes which serve as landmarks. The ground truth comes from a motion capture
+system that tracks robot motion and tube locations. Apart from the calibration
+parameters, which are set to $\mathbf{\Theta}=[\delta_x=0.219\;\delta_y=0\;
+\phi=0]^T$, the others remain unchanged.
