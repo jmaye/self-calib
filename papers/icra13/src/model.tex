@@ -99,10 +99,10 @@ resort to non-linear least squares methods that iteratively solve a linearized
 version of the problem. In the following, we employ the \emph{Gauss-Newton}
 algorithm~\cite{aster11parameter} for this purpose.
 
-From \eqref{eqn:map_estimator} and the normal approximations, we can turn the
+From \eqref{eqn:map_estimator} and the approximation that the densities involved are normal, we can turn the
 MAP problem into the minimization of a sum of quadratic functions. Non-linear
-optimization techniques start with an initial guess
-$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and refines
+optimization techniques start with an initial guess,
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, and refine
 it iteratively with
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ until
 convergence.
@@ -110,10 +110,9 @@ $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ is
 chosen in such a way that it minimizes a quadratic approximation of the
 objective function around
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
-Gauss-Newton method only requires the estimation of the Jacobian matrix
-$\mathbf{H}$ of the objective function. If we stack up everything in block
+Gauss-Newton method only requires the stacked Jacobian matrix of the error terms,
+$\mathbf{H}$. In block
 matrix form, the update takes the form
-
 \begin{equation}\label{eqn:dx_update}
   \begin{aligned}
   (\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H})
@@ -122,7 +121,6 @@ matrix form, the update takes the form
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
-
 where $\mathbf{T}$ is formed with $\mathbf{Q}_k$ and $\mathbf{N}_k$, and
 $\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
 \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}})$ is the error of the current
@@ -137,7 +135,6 @@ $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
 
 If we let $\mathbf{T}^{-1}=\mathbf{L}^T\mathbf{L}$ be the Cholesky
 decomposition of the precision matrix, \eqref{eqn:dx_update} can be rewritten as
-
 \begin{equation}\label{eqn:dx_update_normal}
   \begin{aligned}
   (\mathbf{L}\mathbf{H})^T(\mathbf{L}\mathbf{H})
@@ -312,15 +309,15 @@ FIM might appear to be theoretically full rank although it is actually
   \end{aligned}
 \end{equation}
 
-Although being full rank, $\mathbf{A}$ was constructed from a rank deficient
+Although $\mathbf{A}$ is technically full rank, it was constructed from a rank deficient
 matrix (the second row is a linear combination of the first and the last row)
-with added Gaussian noise. In the following, we will coin $\mathbf{A}$
+with added Gaussian noise. In the following, we call $\mathbf{A}$
 a \emph{numerically rank deficient} matrix. The issue of rank deficiency often
 appears in robotics state estimation and is related to the problem of
 \emph{observability} in control theory~\cite{jauffret07observability}.
 
 Using SVD decomposition, we can identify a numerically rank deficient matrix by
-analyzing its singular values. The \emph{numerical rank} $r$ of a matrix is
+analyzing its singular values \cite{hansen1998rank}. The \emph{numerical rank} $r$ of a matrix is
 defined as the index of its smallest singular value $\sigma_r$ larger than
 a user-defined tolerance $\epsilon$, i.e.,
 
@@ -329,7 +326,7 @@ a user-defined tolerance $\epsilon$, i.e.,
   r &= \argmax_i \sigma_i\geq\epsilon.
   \end{aligned}
 \end{equation}
-
+For example, the singular values of $\mathbf{A}$ are approximately 16.8, 1.1, and 0.0001.
 From \eqref{eqn:dx_svd_solve}, we can see that if some of the $\sigma_i$ are
 close to zero, i.e. $r<n$, the update vector
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
@@ -482,7 +479,7 @@ $\mathcal{D}^{info}$ and the estimate of $\mathbf{\Theta}$ is updated.
 \begin{algorithm}[ht]
 \caption{calibrateSensor()}
 \label{alg:calibration}
-\dontprintsemicolon
+%\dontprintsemicolon
 \SetKwComment{Comment}{// }{}
 \KwIn{Initial guesses $\hat{\boldsymbol{\Theta}}^{(0)}$,
   $\hat{\mathbf{x}}_0^{(0)}$, $\hat{\mathcal{L}}^{(0)}$}
@@ -529,3 +526,9 @@ sparsity of the Jacobian matrix $\mathbf{H}$, the algorithmic complexity can
 be largely reduced in terms of memory footprint and computation. To this end, we
 have used the SuiteSparseQR~\cite{davis11algorithm} package for performing
 TQR optimization.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:
