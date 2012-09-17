@@ -66,10 +66,23 @@ the latest information, while unobservable parts will remain at their initial
 guess. Novel sets of measurements are detected using a mutual information test,
 and added to a working set that is used to estimate the parameters. The result
 is an algorithm that listens to an incoming stream of data, automatically
-accumulating a batch of data that may be used to calibrate an full robot system.
+accumulating a batch of data that may be used to calibrate a full robot system.
 The only requirement is that it is possible to implement a batch Gauss-Newton
 estimator for the system state and calibration parameters based on a set of
-measurements.
+measurements. Fig.~\ref{fig:calib_demo} shows a typical calibration run of our
+algorithm.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/slam_calib_it3.eps}
+\caption{Exemplary output of our calibration algorithm (best viewed in
+color). The ground truth trajectory and landmark positions are shown in green
+and their respective estimates in blue. While dealing with degenerate cases, our
+method only selects batches of data that provide enough information to the
+estimator. In this example, the observed shift in the estimate comes from the
+absence of any prior information.}
+\label{fig:calib_demo}
+\end{figure}
 
 The remainder of the paper is structured as follows. Section~\ref{sec:rel}
 will give a brief overview over related approaches. Section~\ref{sec:model} is
