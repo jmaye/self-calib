@@ -99,9 +99,10 @@ resort to non-linear least squares methods that iteratively solve a linearized
 version of the problem. In the following, we employ the \emph{Gauss-Newton}
 algorithm~\cite{aster11parameter} for this purpose.
 
-From \eqref{eqn:map_estimator} and the approximation that the densities involved are normal, we can turn the
-MAP problem into the minimization of a sum of quadratic functions. Non-linear
-optimization techniques start with an initial guess,
+From \eqref{eqn:map_estimator} and the approximation that the densities involved
+are normal, we can turn the MAP problem into the minimization of a sum of
+quadratic functions. Non-linear optimization techniques start with an initial
+guess,
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, and refine
 it iteratively with
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ until
@@ -110,8 +111,8 @@ $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ is
 chosen in such a way that it minimizes a quadratic approximation of the
 objective function around
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
-Gauss-Newton method only requires the stacked Jacobian matrix of the error terms,
-$\mathbf{H}$. In block
+Gauss-Newton method only requires the stacked Jacobian matrix of the error
+terms, $\mathbf{H}$. In block
 matrix form, the update takes the form
 \begin{equation}\label{eqn:dx_update}
   \begin{aligned}
@@ -309,26 +310,27 @@ FIM might appear to be theoretically full rank although it is actually
   \end{aligned}
 \end{equation}
 
-Although $\mathbf{A}$ is technically full rank, it was constructed from a rank deficient
-matrix (the second row is a linear combination of the first and the last row)
-with added Gaussian noise. In the following, we call $\mathbf{A}$
+Although $\mathbf{A}$ is technically full rank, it was constructed from a rank
+deficient matrix (the second row is a linear combination of the first and the
+last row) with added Gaussian noise. In the following, we call $\mathbf{A}$
 a \emph{numerically rank deficient} matrix. The issue of rank deficiency often
 appears in robotics state estimation and is related to the problem of
 \emph{observability} in control theory~\cite{jauffret07observability}.
 
 Using SVD decomposition, we can identify a numerically rank deficient matrix by
-analyzing its singular values \cite{hansen1998rank}. The \emph{numerical rank} $r$ of a matrix is
-defined as the index of its smallest singular value $\sigma_r$ larger than
-a user-defined tolerance $\epsilon$, i.e.,
+analyzing its singular values \cite{hansen1998rank}. The \emph{numerical rank}
+$r$ of a matrix is defined as the index of its smallest singular value
+$\sigma_r$ larger than a user-defined tolerance $\epsilon$, i.e.,
 
 \begin{equation}\label{eqn:numerical_rank}
   \begin{aligned}
   r &= \argmax_i \sigma_i\geq\epsilon.
   \end{aligned}
 \end{equation}
-For example, the singular values of $\mathbf{A}$ are approximately 16.8, 1.1, and 0.0001.
-From \eqref{eqn:dx_svd_solve}, we can see that if some of the $\sigma_i$ are
-close to zero, i.e. $r<n$, the update vector
+
+For example, the singular values of $\mathbf{A}$ are approximately 16.8, 1.1,
+and 0.0001. From \eqref{eqn:dx_svd_solve}, we can see that if some of the
+$\sigma_i$ are close to zero, i.e. $r<n$, the update vector
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
 {(SVD)}$ will be large and eventually lead to a divergence of the solution. In
 order to cope with this issue, we can approximate $\mathbf{L}\mathbf{H}$ with a
@@ -526,9 +528,3 @@ sparsity of the Jacobian matrix $\mathbf{H}$, the algorithmic complexity can
 be largely reduced in terms of memory footprint and computation. To this end, we
 have used the SuiteSparseQR~\cite{davis11algorithm} package for performing
 TQR optimization.
-
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../main"
-%%% End:
