@@ -62,8 +62,12 @@ we first derive a Maximum a Posteriori (MAP) estimator for the mean,
   \end{aligned}
 \end{equation}
 
-We further refine our problem by defining a \emph{motion} and \emph{observation}
-model
+\noindent When setting the prior $p(\boldsymbol{\Theta}, \mathbf{x}_0,
+\mathcal{L})$ to a uniform distribution, \eqref{eqn:map_estimator} becomes a
+Maximum Likelihood (ML) estimator.
+
+We shall further refine our problem by defining a \emph{motion} and
+\emph{observation} model,
 
 \begin{equation}\label{eqn:process_model}
   \begin{aligned}
@@ -297,7 +301,7 @@ matrix is the maximum number of linearly independent column or row vectors. A
 matrix with $m$ rows and $n$ columns has full rank when its rank is equal to
 $\min(m,n)$. In real-world scenarios, where data is contaminated by noise, the
 FIM might appear to be theoretically full rank although it is actually
-\emph{rank deficient}. We can illustrate this with the matrix
+\emph{rank-deficient}. We can illustrate this with the matrix
 
 \begin{equation}\label{eqn:rank_deficient_matrix}
   \begin{aligned}
@@ -310,14 +314,14 @@ FIM might appear to be theoretically full rank although it is actually
   \end{aligned}
 \end{equation}
 
-Although $\mathbf{A}$ is technically full rank, it was constructed from a rank
+Although $\mathbf{A}$ is technically full rank, it was constructed from a rank-
 deficient matrix (the second row is a linear combination of the first and the
 last row) with added Gaussian noise. In the following, we call $\mathbf{A}$
-a \emph{numerically rank deficient} matrix. The issue of rank deficiency often
+a \emph{numerically rank-deficient} matrix. The issue of rank deficiency often
 appears in robotics state estimation and is related to the problem of
 \emph{observability} in control theory~\cite{jauffret07observability}.
 
-Using SVD decomposition, we can identify a numerically rank deficient matrix by
+Using SVD decomposition, we can identify a numerically rank-deficient matrix by
 analyzing its singular values \cite{hansen98rank}. The \emph{numerical rank}
 $r$ of a matrix is defined as the index of its smallest singular value
 $\sigma_r$ larger than a user-defined tolerance $\epsilon$, i.e.,
@@ -354,8 +358,10 @@ matrix.
 
 It is worth noting that TSVD applies a \emph{sharp} filter to the system,
 whereas \emph{regularization} methods such as Tikhonov or ridge regression work
-as a \emph{smooth} filter. As shown in~\cite{hansen87truncated}, it produces
-similar results at lower computational costs.
+as a \emph{smooth} filter. As shown in~\cite{hansen87truncated}, it nevertheless
+produces similar results at lower computational costs when the matrix has a
+well-determined numerical rank.
+\todo{maybe talk about over-fitting}
 
 A similar approach can be derived using \emph{rank-revealing} QR
 decomposition~\cite{hong92rank} yielding to the Truncated QR (TQR)
