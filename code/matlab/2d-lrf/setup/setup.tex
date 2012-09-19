@@ -71,8 +71,10 @@
 
   % lrf pose
   \begin{scope} [xshift = 2cm, yshift = 2cm, rotate = 45]
-    \draw[densely dashed] (0.9, 0) node[below = -1pt, right = 5pt] {$\delta_x$} -- (0.9, 0.45);
-    \draw[densely dashed] (0, 0.45) node[left = 3pt, below = -5pt] {$\delta_y$} -- (3, 0.45);
+    \draw[densely dashed] (0.9, 0) node[below = -1pt, right = 5pt] {$\delta_x$}
+      -- (0.9, 0.45);
+    \draw[densely dashed] (0, 0.45) node[left = 3pt, below = -5pt] {$\delta_y$}
+      -- (3, 0.45);
     \filldraw[fill = green!20, draw = anglecolor] (0.9, 0.45) -- (2.5, 0.45) arc
       (0:14.8:1.6) -- cycle;
     \draw[xshift = 0.9cm, yshift = 0.45cm] (7:1.2) node[anglecolor] {$\psi$};
