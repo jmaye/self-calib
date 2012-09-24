@@ -59,7 +59,6 @@ end
 ii = zeros(nzmax, 1);
 jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
-H = spalloc((ns - 1) * 3 + numObs, numVar, nzmax);
 
 % error term
 e = zeros((ns - 1) * 3 + numObs, 1);
@@ -74,7 +73,7 @@ invNChol = sqrt(diag(1 ./ diag(R)));
 nl = rows(l);
 
 % Jacobian of motion model with respect to state variable
-Hx = zeros(3, 3);
+Hx = eye(3, 3);
 
 % Jacobian of motion model with respect to noise
 Hw = zeros(3, 2);
@@ -156,9 +155,8 @@ for s = 1:maxIter
       (x_est(i - 1, 1) + (t(i) - t(i - 1)) * ctm1 * u(i, 1)));
     e(row + 1) = invWChol(2, 2) *...
       (x_est(i, 2) - (x_est(i - 1, 2) + (t(i) - t(i - 1)) * stm1 * u(i, 1)));
-    e(row + 2) = anglemod(x_est(i, 3) -...
+    e(row + 2) = invWChol(3, 3) * anglemod(x_est(i, 3) -...
       (x_est(i - 1, 3) + (t(i) - t(i - 1)) * u(i, 2)));
-    e(row + 2) = invWChol(3, 3) * e(row + 2);
 
     % update row/col counter
     row = row + 3;
@@ -275,12 +273,12 @@ for s = 1:maxIter
         % update error term
         e(row) = invNChol(1, 1) * (r(i, j) - temp2);
         if numCalib < 3
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3)));
         else
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) -...
-            Theta_est(3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) - Theta_est(3)));
         end
-        e(row + 1) = invNChol(2, 2) * e(row + 1);
         row = row + 2;
       end
     end
@@ -314,6 +312,7 @@ for s = 1:maxIter
   if numCalib == 3
     Theta_est = anglemod(Theta_est);
   end
+  Theta_est
 end
 
 % compute covariance
