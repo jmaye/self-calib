@@ -66,11 +66,6 @@ end
 ii = zeros(nzmax, 1);
 jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
-if nargin < 11
-  H = spalloc((ns - 1) * 3 + numObs, numVar, nzmax);
-else
-  H = spalloc(ns * 3 + numObs, numVar, nzmax);
-end
 
 % error term
 if nargin < 11

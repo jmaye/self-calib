@@ -310,7 +310,7 @@ for s = 1:maxIter
   x_est(:, 3) = anglemod(x_est(:, 3));
   Theta_est = Theta_est + update(end - numCalib + 1:end);
   if numCalib == 3
-    Theta_est = anglemod(Theta_est);
+    Theta_est(3) = anglemod(Theta_est(3));
   end
   Theta_est
 end
