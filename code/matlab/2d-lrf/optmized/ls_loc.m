@@ -33,6 +33,9 @@ end
 % timesteps to evaluate
 steps = rows(r);
 
+% number of state variables
+ns = rows(x_hat);
+
 % number of calibration parameters
 numCalib = length(Theta);
 
@@ -43,7 +46,7 @@ anglemod = @(x) atan2(sin(x), cos(x));
 numObs = nnz(r(2:end, :)) * 2;
 
 % number of variables to estimate
-numVar = rows(x_hat) * 3;
+numVar = ns * 3;
 
 % number of non-zero entries in the Jacobian
 nzmax = (steps - 1) * 8 + numObs / 2 * 6;
@@ -52,10 +55,9 @@ nzmax = (steps - 1) * 8 + numObs / 2 * 6;
 ii = zeros(nzmax, 1);
 jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
-H = spalloc(numVar - 3 + numObs, numVar, nzmax);
 
 % error term
-e = zeros(numVar - 3 + numObs, 1);
+e = zeros((ns - 1) * 3 + numObs, 1);
 
 % transformed covariance matrix of observation model
 N = R;
@@ -67,7 +69,7 @@ invNChol = sqrt(diag(1 ./ diag(R)));
 nl = rows(l);
 
 % Jacobian of motion model with respect to state variable
-Hx = zeros(3, 3);
+Hx = eye(3, 3);
 
 % Jacobian of motion model with respect to noise
 Hw = zeros(3, 2);
@@ -145,9 +147,8 @@ for s = 1:maxIter
       (est(i - 1, 1) + (t(i) - t(i - 1)) * ctm1 * u(i, 1)));
     e(row + 1) = invWChol(2, 2) *...
       (est(i, 2) - (est(i - 1, 2) + (t(i) - t(i - 1)) * stm1 * u(i, 1)));
-    e(row + 2) = anglemod(est(i, 3) -...
+    e(row + 2) = invWChol(3, 3) * anglemod(est(i, 3) -...
       (est(i - 1, 3) + (t(i) - t(i - 1)) * u(i, 2)));
-    e(row + 2) = invWChol(3, 3) * e(row + 2);
 
     % update row/col counter
     row = row + 3;
@@ -219,17 +220,17 @@ for s = 1:maxIter
         % update error term
         e(row) = invNChol(1, 1) * (r(i, j) - temp2);
         if numCalib < 3
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - est(i, 3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - est(i, 3)));
         else
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - est(i, 3) -...
-            Theta(3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - est(i, 3) - Theta(3)));
         end
-        e(row + 1) = invNChol(2, 2) * e(row + 1);
         row = row + 2;
       end
     end
   end
-  H = sparse(ii, jj, ss, numVar - 3 + numObs, numVar, nzmax);
+  H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
 
   % convergence check
   res = norm(e);
