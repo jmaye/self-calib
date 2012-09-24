@@ -279,10 +279,11 @@ for s = 1:maxIter
         % update error term
         e(row) = invNChol(1, 1) * (r(i, j) - temp2);
         if numCalib < 3
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3)));
         else
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) -...
-            Theta(3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) - Theta(3)));
         end
         row = row + 2;
       end

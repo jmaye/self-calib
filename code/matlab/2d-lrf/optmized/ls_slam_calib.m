@@ -333,10 +333,11 @@ for s = 1:maxIter
         % update error term
         e(row) = invNChol(1, 1) * (r(i, j) - temp2);
         if numCalib < 3
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3)));
+          e(row + 1) = invNChol(2, 2) *... 
+            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3)));
         else
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) -...
-            Theta_est(3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) - Theta_est(3)));
         end
         row = row + 2;
       end
@@ -375,8 +376,9 @@ for s = 1:maxIter
     update(ns * 3 + 2:2:end - numCalib)];
   Theta_est = Theta_est + update(end - numCalib + 1:end);
   if numCalib == 3
-    Theta_est = anglemod(Theta_est);
+    Theta_est(3) = anglemod(Theta_est(3));
   end
+  Theta_est
 end
 
 % compute covariance
