@@ -37,7 +37,7 @@ numCalib = length(Theta_hat);
 anglemod = @(x) atan2(sin(x), cos(x));
 
 % number of lrf observations
-numObs = nnz(r) * 2;
+numObs = nnz(r(2:end, :)) * 2;
 
 % number of non-zero entries in the Jacobian
 if numCalib < 3
@@ -50,7 +50,6 @@ end
 ii = zeros(nzmax, 1);
 jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
-H = spalloc(numObs, numCalib, nzmax);
 
 % error term
 e = zeros(numObs, 1);
@@ -81,7 +80,7 @@ for s = 1:maxIter
   % update Jacobian and error term
   row = 1;
   nzcount = 1;
-  for i = 1:steps
+  for i = 2:steps
     % some pre-computations
     st = sin(x(i, 3));
     ct = cos(x(i, 3));
@@ -148,11 +147,12 @@ for s = 1:maxIter
         % update error term
         e(row) = invNChol(1, 1) * (r(i, j) - temp2);
         if numCalib < 3
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x(i, 3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - x(i, 3)));
         else
-          e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x(i, 3) - est(3)));
+          e(row + 1) = invNChol(2, 2) *...
+            anglemod(b(i, j) - (atan2(bb, aa) - x(i, 3) - est(3)));
         end
-        e(row + 1) = invNChol(2, 2) * e(row + 1);
         row = row + 2;
       end
     end
