@@ -17,7 +17,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % This function performs least squares localization and calibration for a robot
-% with a laser range finder with known landmark positions.
+% with a laser range finder with known landmark positions. Column-scaling
+% is used.
 
 function [x_est Theta_est Sigma] =...
   ls_loc_calib(l, x_hat, Theta_hat, u, r, b, t, Q, R, maxIter, optTol, rankTol)

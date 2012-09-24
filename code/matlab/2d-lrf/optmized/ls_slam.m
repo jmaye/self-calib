@@ -284,7 +284,6 @@ for s = 1:maxIter
           e(row + 1) = anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) -...
             Theta(3)));
         end
-        e(row + 1) = invNChol(2, 2) * e(row + 1);
         row = row + 2;
       end
     end
