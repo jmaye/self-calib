@@ -20,14 +20,14 @@
 % laser range finder.
 
 function [x_est l_est Theta_est Sigma] =...
-  ls_slam_calib(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, x0, P0, maxIter, ...
+  ls_slam_calib(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
   optTol, rankTol)
 
 % default values
-if nargin < 12
+if nargin < 10
   maxIter = 100;
 end
-if nargin < 13
+if nargin < 11
   optTol = 1e-6;
 end
 
@@ -58,9 +58,6 @@ if numCalib < 3
 else
   nzmax = (steps - 1) * 8 + numObs / 2 * 15;
 end
-if nargin >= 11
-  nzmax = nzmax + 3;
-end
 
 % Jacobian initialization
 ii = zeros(nzmax, 1);
@@ -68,11 +65,7 @@ jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
 
 % error term
-if nargin < 11
-  e = zeros((ns - 1) * 3 + numObs, 1);
-else
-  e = zeros(ns * 3 + numObs, 1);
-end
+e = zeros((ns - 1) * 3 + numObs, 1);
 
 % transformed covariance matrix of observation model
 N = R;
@@ -108,27 +101,6 @@ for s = 1:maxIter
   row = 1;
   col = 1;
   nzcount = 1;
-
-  % first pose prior if provided
-  if nargin >= 11
-    invP0Chol = sqrt(diag(1 ./ diag(P0)));
-    ii(nzcount) = row;
-    jj(nzcount) = col;
-    ss(nzcount) = invP0Chol(1, 1);
-    nzcount = nzcount + 1;
-    ii(nzcount) = row + 1;
-    jj(nzcount) = col + 1;
-    ss(nzcount) = invP0Chol(2, 2);
-    nzcount = nzcount + 1;
-    ii(nzcount) = row + 2;
-    jj(nzcount) = col + 2;
-    ss(nzcount) = invP0Chol(3, 3);
-    nzcount = nzcount + 1;
-    e(row) = invP0Chol(1, 1) * (x_est(1, 1) - x0(1));
-    e(row + 1) = invP0Chol(2, 2) * (x_est(1, 2) - x0(2));
-    e(row + 2) = invP0Chol(3, 3) * (x_est(1, 3) - x0(3));
-    row = row + 3;
-  end
 
   for i = 2:steps
     % some pre-computations
@@ -343,11 +315,7 @@ for s = 1:maxIter
       end
     end
   end
-  if nargin < 11
-    H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
-  else
-    H = sparse(ii, jj, ss, ns * 3 + numObs, numVar, nzmax);
-  end
+  H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
   norms = colNorm(H); % could be included in the above loop for speedup
   G = spdiags(1 ./ norms, 0, cols(H), cols(H));
 
@@ -367,10 +335,10 @@ for s = 1:maxIter
   res
 
   % update estimate
-  if nargin < 14
-    update = G * spqr_solve(H, -e);
+  if nargin < 12
+    update = G * spqr_solve(H * G, -e);
   else
-    update = G * spqr_solve(H, -e, struct('tol', rankTol));
+    update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
   end
   x_est = x_est + [update(1:3:ns * 3) update(2:3:ns * 3) update(3:3:ns * 3)];
   x_est(:, 3) = anglemod(x_est(:, 3));
