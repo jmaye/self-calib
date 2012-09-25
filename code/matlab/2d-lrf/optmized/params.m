@@ -40,7 +40,7 @@ R = diag([r_var; b_var]);
 Theta = [0.219; 0.1; pi / 4];
 
 % calibration steps
-steps = 2000;
+steps = 5000;
 
 % sampling time
 T = 0.1;

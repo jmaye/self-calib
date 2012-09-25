@@ -284,6 +284,8 @@ for s = 1:maxIter
     end
   end
   H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
+  norms = colNorm(H); % could be included in the above loop for speedup
+  G = spdiags(1 ./ norms, 0, cols(H), cols(H));
 
   % convergence check
   res = norm(e);
@@ -302,9 +304,9 @@ for s = 1:maxIter
 
   % update estimate
   if nargin < 12
-    update = spqr_solve(H, -e);
+    update = G * spqr_solve(H * G, -e);
   else
-    update = spqr_solve(H, -e, struct('tol', rankTol));
+    update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
   end
   x_est = x_est + [update(1:3:ns * 3) update(2:3:ns * 3) update(3:3:ns * 3)];
   x_est(:, 3) = anglemod(x_est(:, 3));
