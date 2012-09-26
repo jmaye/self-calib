@@ -43,7 +43,7 @@ numCalib = length(Theta);
 anglemod = @(x) atan2(sin(x), cos(x));
 
 % number of lrf observations
-numObs = nnz(r(2:end, :)) * 2;
+numObs = nnz(r(2:end, :) > 0) * 2;
 
 % number of variables to estimate
 numVar = ns * 3;

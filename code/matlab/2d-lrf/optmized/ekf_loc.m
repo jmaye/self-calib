@@ -77,7 +77,7 @@ for k = 2:steps
   x(k, 3) = anglemod(x(k - 1, 3) + T * u(k, 2));
 
   % number of observations
-  L_k = nnz(r(k, :));
+  L_k = nnz(r(k, :) > 0);
 
   % loop over observations if any
   if L_k > 0

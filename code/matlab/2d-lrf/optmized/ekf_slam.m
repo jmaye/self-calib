@@ -37,7 +37,7 @@ nl = cols(r);
 rr = 1:3;
 
 % pointer to map
-mm = [4:4 + nl * 2 - 1];
+mm = 4:4 + nl * 2 - 1;
 
 % init filtered output state
 x = zeros(steps, 3 + nl * 2);
@@ -128,7 +128,7 @@ for k = 2:steps
   x(k, mm) = x(k - 1, mm);
 
   % number of observations
-  L_k = nnz(r(k, :));
+  L_k = nnz(r(k, :) > 0);
 
   % loop over observations if any
   if L_k > 0

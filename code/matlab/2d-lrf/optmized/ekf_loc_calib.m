@@ -92,7 +92,7 @@ for k = 2:steps
   x(k, tt) = x(k - 1, tt);
 
   % number of observations
-  L_k = nnz(r(k, :));
+  L_k = nnz(r(k, :) > 0);
 
   % loop over observations if any
   if L_k > 0
