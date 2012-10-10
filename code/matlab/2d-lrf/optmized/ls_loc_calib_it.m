@@ -142,13 +142,13 @@ for i = 1:timesteps
       nzcount = 1;
       n = 1;
       for j = 1:numBatches
-        n = n + 1;
-
         % start of batch, don't count first point
         batchStart = (j - 1) * batchSize + 2;
 
         % process batch
         for k = batchIdx(batchStart):batchIdx(batchStart + batchSize - 2)
+          n = n + 1;
+
           % some pre-computations
           stm1 = sin(x_est_temp(n - 1, 3));
           ctm1 = cos(x_est_temp(n - 1, 3));
