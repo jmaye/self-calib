@@ -16,13 +16,12 @@
 % along with this program. If not, see <http://www.gnu.org/licenses/>.         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% This function performs least squares localization and calibration for a robot
-% with a laser range finder with known landmark positions in an iterative
-% fashion using mutual information.
+% This function performs least squares SLAM and calibration for a robot
+% with a laser range finder in an iterative fashion using mutual information.
 
-function [x_est Theta_est Sigma batchIdx] =...
-  ls_loc_calib_it(l, x_hat, Theta_hat, u, r, b, t, Q, R, maxIter, optTol, ...
-  batchSize, miTol, rankTol)
+function [x_est l_est Theta_est Sigma batchIdx] =...
+  ls_slam_calib_it(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
+  optTol, batchSize, miTol, rankTol)
 
 % default values
 if nargin < 10
@@ -65,6 +64,7 @@ nl = rows(l);
 % init estimates
 x_est = [];
 Theta_est = Theta_hat;
+l_est = l_hat;
 
 % transformed covariance matrix of observation model
 N = R;
@@ -80,6 +80,9 @@ Hw = zeros(3, 2);
 
 % Jacobian of observation model with respect to state variables
 Gx = zeros(2, 3);
+
+% Jacobian of observation model with respect to landmark variables
+Gl = zeros(2, 2);
 
 % Jacobian of observation model with respect to calibration parameters
 Gt = zeros(2, numCalib);
@@ -112,13 +115,13 @@ for i = 1:timesteps
     ns = batchSize * numBatches;
 
     % number of variables to estimate
-    numVar = ns * 3 + numCalib;
+    numVar = ns * 3 + nl * 2 + numCalib;
 
     % number of non-zero entries in the Jacobian
     if numCalib < 3
-      nzmax = (ns - numBatches) * 8 + numObs / 2 * 8;
+      nzmax = (ns - numBatches) * 8 + numObs / 2 * 12;
     else
-      nzmax = (ns - numBatches) * 8 + numObs / 2 * 11;
+      nzmax = (ns - numBatches) * 8 + numObs / 2 * 15;
     end
 
     % Jacobian initialization
@@ -131,6 +134,7 @@ for i = 1:timesteps
 
     % init temporary estimates
     x_est_temp = x_hat(batchIdx, :);
+    l_est_temp = l_est;
     Theta_est_temp = Theta_est;
 
     % non-linear least squares
@@ -226,15 +230,15 @@ for i = 1:timesteps
               if numCalib < 3
                 dct = Theta_est_temp(1) * ct1;
                 dst = Theta_est_temp(1) * st1;
-                aa = l(ll, 1) - x_est_temp(n, 1) - dct;
-                bb = l(ll, 2) - x_est_temp(n, 2) - dst;
+                aa = l_est_temp(ll, 1) - x_est_temp(n, 1) - dct;
+                bb = l_est_temp(ll, 2) - x_est_temp(n, 2) - dst;
               else
                 dxct = Theta_est_temp(1) * ct1;
                 dxst = Theta_est_temp(1) * st1;
                 dyct = Theta_est_temp(2) * ct1;
                 dyst = Theta_est_temp(2) * st1;
-                aa = l(ll, 1) - x_est_temp(n, 1) - dxct + dyst;
-                bb = l(ll, 2) - x_est_temp(n, 2) - dxst - dyct;
+                aa = l_est_temp(ll, 1) - x_est_temp(n, 1) - dxct + dyst;
+                bb = l_est_temp(ll, 2) - x_est_temp(n, 2) - dxst - dyct;
               end
               temp1 = aa^2 + bb^2;
               temp2 = sqrt(temp1);
@@ -277,6 +281,31 @@ for i = 1:timesteps
               ii(nzcount) = row + 1;
               jj(nzcount) = col + 2;
               ss(nzcount) = -invNChol(2, 2) * Gx(2, 3);
+              nzcount = nzcount + 1;
+
+              % update Jacobian of observation model with respect to land. var.
+              Gl(1, 1) = aa / temp2;
+              Gl(1, 2) = bb / temp2;
+              Gl(2, 1) = -bb / temp1;
+              Gl(2, 2) = aa / temp1;
+
+              % update sparse matrix filling
+              temp3 = ns * 3 + 1 + (ll - 1) * 2;
+              ii(nzcount) = row;
+              jj(nzcount) = temp3;
+              ss(nzcount) = -invNChol(1, 1) * Gl(1, 1);
+              nzcount = nzcount + 1;
+              ii(nzcount) = row;
+              jj(nzcount) = temp3 + 1;
+              ss(nzcount) = -invNChol(1, 1) * Gl(1, 2);
+              nzcount = nzcount + 1;
+              ii(nzcount) = row + 1;
+              jj(nzcount) = temp3;
+              ss(nzcount) = -invNChol(2, 2) * Gl(2, 1);
+              nzcount = nzcount + 1;
+              ii(nzcount) = row + 1;
+              jj(nzcount) = temp3 + 1;
+              ss(nzcount) = -invNChol(2, 2) * Gl(2, 2);
               nzcount = nzcount + 1;
 
               % update Jacobian of observation model with respect to calib. var.
@@ -365,6 +394,8 @@ for i = 1:timesteps
       x_est_temp = x_est_temp + [update(1:3:ns * 3) update(2:3:ns * 3) ...
         update(3:3:ns * 3)];
       x_est_temp(:, 3) = anglemod(x_est_temp(:, 3));
+      l_est_temp = l_est_temp + [update(ns * 3 + 1:2:end - numCalib)...
+        update(ns * 3 + 2:2:end - numCalib)];
       Theta_est_temp = Theta_est_temp + update(end - numCalib + 1:end);
       if numCalib == 3
         Theta_est_temp(3) = anglemod(Theta_est_temp(3));
@@ -381,6 +412,7 @@ for i = 1:timesteps
     if numBatches == 1 || isnan(sigmaDetRecord) % first batch always taken
       x_est = x_est_temp;
       Theta_est = Theta_est_temp;
+      l_est = l_est_temp;
       sigmaRecord = Sigma;
       sigmaDetRecord = sigmaDet;
     else
@@ -391,6 +423,7 @@ for i = 1:timesteps
       if mi > miTol
         x_est = x_est_temp;
         Theta_est = Theta_est_temp;
+        l_est = l_est_temp;
         sigmaRecord = Sigma;
         sigmaDetRecord = sigmaDet;
       else
