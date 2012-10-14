@@ -130,7 +130,7 @@ for i = 1:timesteps
     e = zeros((ns - numBatches) * 3 + numObs, 1);
 
     % init temporary estimates
-    x_est_temp = x_hat(batchIdx, :);
+    x_est_temp = [x_est; x_hat(batchIdx(end - batchSize  + 1:end), :)];
     Theta_est_temp = Theta_est;
 
     % non-linear least squares
@@ -144,11 +144,10 @@ for i = 1:timesteps
       for j = 1:numBatches
         % start of batch, don't count first point
         batchStart = (j - 1) * batchSize + 2;
+        n = n + 1;
 
         % process batch
         for k = batchIdx(batchStart):batchIdx(batchStart + batchSize - 2)
-          n = n + 1;
-
           % some pre-computations
           stm1 = sin(x_est_temp(n - 1, 3));
           ctm1 = cos(x_est_temp(n - 1, 3));
@@ -337,7 +336,9 @@ for i = 1:timesteps
               row = row + 2;
             end
           end
+          n = n + 1;
         end
+        col = col + 3;
       end
 
       H = sparse(ii, jj, ss, (ns - numBatches) * 3 + numObs, numVar, nzmax);
