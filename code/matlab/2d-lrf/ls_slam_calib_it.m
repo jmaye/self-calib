@@ -59,12 +59,12 @@ sigmaDetRecord = [];
 timesteps = rows(x_hat);
 
 % number of landmarks
-nl = rows(l);
+nl = rows(l_hat);
 
 % init estimates
 x_est = [];
-Theta_est = Theta_hat;
 l_est = l_hat;
+Theta_est = Theta_hat;
 
 % transformed covariance matrix of observation model
 N = R;
@@ -133,7 +133,7 @@ for i = 1:timesteps
     e = zeros((ns - numBatches) * 3 + numObs, 1);
 
     % init temporary estimates
-    x_est_temp = x_hat(batchIdx, :);
+    x_est_temp = [x_est; x_hat(batchIdx(end - batchSize  + 1:end), :)];
     l_est_temp = l_est;
     Theta_est_temp = Theta_est;
 
@@ -148,11 +148,10 @@ for i = 1:timesteps
       for j = 1:numBatches
         % start of batch, don't count first point
         batchStart = (j - 1) * batchSize + 2;
+        n = n + 1;
 
         % process batch
         for k = batchIdx(batchStart):batchIdx(batchStart + batchSize - 2)
-          n = n + 1;
-
           % some pre-computations
           stm1 = sin(x_est_temp(n - 1, 3));
           ctm1 = cos(x_est_temp(n - 1, 3));
@@ -366,7 +365,9 @@ for i = 1:timesteps
               row = row + 2;
             end
           end
+          n = n + 1;
         end
+        col = col + 3;
       end
 
       H = sparse(ii, jj, ss, (ns - numBatches) * 3 + numObs, numVar, nzmax);
@@ -409,10 +410,10 @@ for i = 1:timesteps
     sigmaDet = det(Sigma);
 
     % check if we need this batch
-    if numBatches == 1 || isnan(sigmaDetRecord) % first batch always taken
+    if numBatches == 1 % first batch always taken
       x_est = x_est_temp;
-      Theta_est = Theta_est_temp;
       l_est = l_est_temp;
+      Theta_est = Theta_est_temp;
       sigmaRecord = Sigma;
       sigmaDetRecord = sigmaDet;
     else
@@ -422,8 +423,8 @@ for i = 1:timesteps
       % add batch if needed
       if mi > miTol
         x_est = x_est_temp;
-        Theta_est = Theta_est_temp;
         l_est = l_est_temp;
+        Theta_est = Theta_est_temp;
         sigmaRecord = Sigma;
         sigmaDetRecord = sigmaDet;
       else

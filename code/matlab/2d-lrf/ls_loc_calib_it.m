@@ -379,7 +379,7 @@ for i = 1:timesteps
     sigmaDet = det(Sigma);
 
     % check if we need this batch
-    if numBatches == 1 || isnan(sigmaDetRecord) % first batch always taken
+    if numBatches == 1 % first batch always taken
       x_est = x_est_temp;
       Theta_est = Theta_est_temp;
       sigmaRecord = Sigma;
