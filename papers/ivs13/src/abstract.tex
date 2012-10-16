@@ -1,0 +1,12 @@
+In this paper, we address the problem of sensors calibration for mobile robots.
+In particular, we are aiming towards an automated system ready to be deployed
+for long-term and online operation in the hands on non-experts. To this end, we
+augment the classical SLAM formulation with calibration parameters and derive
+an MAP estimator that we compute using a Gauss-Newton algorithm. Degenerate
+dimensions in sensor data are identified by means of QR decomposition and
+automatically discarded from the optimization via a truncated method, such that
+only observable parts are exploited. Finally, incoming sensor data is processed
+in batch and selected using an information theoretic measure. Through an
+extensive set of simulated and real-world experiments, we are able to
+demonstrate that our method outperforms state-of-the-art algorithms in terms
+of accuracy and speed.
