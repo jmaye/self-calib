@@ -6,6 +6,10 @@ methods.
 
 \subsection{Experimental Setup}
 
+Our method has been fully implemented in MATLAB and we have used the
+SuiteSparseQR~\cite{davis11algorithm} package for performing sparse matrices
+operations.
+
 In our experiments, we consider the problem of a mobile robot moving on a plane.
 Fig.~\ref{fig:exp_setup} depicts our experimental setup. The platform is
 equipped with a range sensor delivering range and bearing angles measurements.
@@ -155,7 +159,7 @@ parameters.
 \subsection{Simulated Data}
 
 In our simulation, we can generate various paths for the robot, along with
-corresponding sensor measurements, and thus analyze the convergence of multiple
+corresponding sensor measurements, and thus analyze the behavior of multiple
 algorithms, especially in degenerate cases. We have created an environment
 with $N=17$ landmarks uniformly distributed on a $10m\times 10m$ grid. We have
 set the noise parameters empirically to $\sigma^2_v=4.4\times 10^{-3}$,
@@ -163,47 +167,50 @@ $\sigma^2_w=8.2\times 10^{-2}$, $\sigma^2_r=9.0036\times 10^{-4}$, and
 $\sigma^2_\phi=6.7143\times 10^{-4}$. The calibration parameters are set to
 $\delta_x=0.219$ [m], $\delta_y=0.1$ [m], and $\psi=\pi/4$ [rad].
 
-In a first experiment, we have driven the robot along a straight path a $100$
-times, maintaining identical initial conditions over the different runs, and
-monitored the convergence of the calibration parameters.
-Fig.~\ref{fig:straight_comp} shows the performance of different algorithms,
-namely an Extended Kalman Filter (EKF) similar to~\cite{martinelli06automatic},
-a standard batch non-linear least squares method without
-regularization~\cite{kuemmerle11simultaneous}, and our TQR-MI approach.
+In a first effort, we want to support the claims of Sec.~\ref{sec:tsvd} with some
+illustrative examples.
 
-\todo{more text to come discussing the results}
+%In a first experiment, we have driven the robot along a straight path a $100$
+%times, maintaining identical initial conditions over the different runs, and
+%monitored the convergence of the calibration parameters.
+%Fig.~\ref{fig:straight_comp} shows the performance of different algorithms,
+%namely an Extended Kalman Filter (EKF) similar to~\cite{martinelli06automatic},
+%a standard batch non-linear least squares method without
+%regularization~\cite{kuemmerle11simultaneous}, and our TQR-MI approach.
 
-\begin{figure}[t]
-\centering
-\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
-\caption{A comparison of different algorithms on a straight path.}
-\label{fig:straight_comp}
-\end{figure}
+%\todo{more text to come discussing the results}
 
-In a second step, we have run similar experiments as above, but with a loop
-after the straight path. Fig.~\ref{fig:loop_comp} displays a comparison of the
-different methods.
+%\begin{figure}[t]
+%\centering
+%\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
+%\caption{A comparison of different algorithms on a straight path.}
+%\label{fig:straight_comp}
+%\end{figure}
 
-\todo{more text to come discussing the results}
+%In a second step, we have run similar experiments as above, but with a loop
+%after the straight path. Fig.~\ref{fig:loop_comp} displays a comparison of the
+%different methods.
 
-\begin{figure}[t]
-\centering
-\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
-\caption{A comparison of different algorithms on a well-behaved path.}
-\label{fig:loop_comp}
-\end{figure}
+%\todo{more text to come discussing the results}
 
-The last simulated experiment aims at analyzing the singular values, or the
-diagonal elements of the $\mathbf{R}$ matrix, of the FIM.
-Fig.~\ref{fig:sing_values} shows...
-\todo{more text to come discussing the results}
+%\begin{figure}[t]
+%\centering
+%\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
+%\caption{A comparison of different algorithms on a well-behaved path.}
+%\label{fig:loop_comp}
+%\end{figure}
 
-\begin{figure}[t]
-\centering
-\missingfigure[figwidth=\columnwidth]{Singular values of the FIM.}
-\caption{Singular values.}
-\label{fig:sing_values}
-\end{figure}
+%The last simulated experiment aims at analyzing the singular values, or the
+%diagonal elements of the $\mathbf{R}$ matrix, of the FIM.
+%Fig.~\ref{fig:sing_values} shows...
+%\todo{more text to come discussing the results}
+
+%\begin{figure}[t]
+%\centering
+%\missingfigure[figwidth=\columnwidth]{Singular values of the FIM.}
+%\caption{Singular values.}
+%\label{fig:sing_values}
+%\end{figure}
 
 \subsection{Real-world Data}
 
