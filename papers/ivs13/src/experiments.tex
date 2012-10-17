@@ -161,14 +161,34 @@ parameters.
 In our simulation, we can generate various paths for the robot, along with
 corresponding sensor measurements, and thus analyze the behavior of multiple
 algorithms, especially in degenerate cases. We have created an environment
-with $N=17$ landmarks uniformly distributed on a $10m\times 10m$ grid. We have
+with $N=17$ landmarks uniformly distributed on a $20m\times 20m$ grid. We have
 set the noise parameters empirically to $\sigma^2_v=4.4\times 10^{-3}$,
 $\sigma^2_w=8.2\times 10^{-2}$, $\sigma^2_r=9.0036\times 10^{-4}$, and
 $\sigma^2_\phi=6.7143\times 10^{-4}$. The calibration parameters are set to
 $\delta_x=0.219$ [m], $\delta_y=0.1$ [m], and $\psi=\pi/4$ [rad].
 
-In a first effort, we want to support the claims of Sec.~\ref{sec:tsvd} with some
-illustrative examples.
+In a first effort, we want to support the claims of Sec.~\ref{sec:tsvd} with
+some representative examples. We have first driven the robot along a straight
+path as shown in Fig.~\ref{fig:straight-path}. Intuitively, the problem is
+structurally unobservable. Indeed, it hat 5 unobservable modes, 3 for the
+initial robot pose $\mathbf{x}_0$ and 2 for the calibration offset variables
+$\delta_x$ and $\delta_y$. If we set the noise matrices $\mathbf{Q}_k$ and
+$\mathbf{R}_k$ to $\mathbf{0}$ and examine the singular values of the Jacobian
+matrix, 5 values are exactly $0$, i.e., a structural rank deficiency. By adding
+noise to the system, only 2 singular values remain at $0$ for the same problem.
+From the integrated odometry path in Fig.~\ref{fig:straight-path}, the
+system believes that the calibration parameters are indeed observable and will
+thus wrongly optimize. This justifies the need for our TSVD/TQR method.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/straight-path.eps}
+\caption{Straight path example. The green line represents the ground truth
+  path, the red line the integrated odometry path, the green crosses the ground
+  truth landmark positions, and the red crosses the guessed landmark positions
+  from measurements.}
+\label{fig:straight-path}
+\end{figure}
 
 %In a first experiment, we have driven the robot along a straight path a $100$
 %times, maintaining identical initial conditions over the different runs, and
