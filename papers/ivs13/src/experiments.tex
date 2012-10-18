@@ -168,17 +168,26 @@ $\sigma^2_\phi=6.7143\times 10^{-4}$. The calibration parameters are set to
 $\delta_x=0.219$ [m], $\delta_y=0.1$ [m], and $\psi=\pi/4$ [rad].
 
 In a first effort, we want to support the claims of Sec.~\ref{sec:tsvd} with
-some representative examples. We have first driven the robot along a straight
+a representative example. We have driven the robot along a straight
 path as shown in Fig.~\ref{fig:straight-path}. Intuitively, the problem is
 structurally unobservable. Indeed, it hat 5 unobservable modes, 3 for the
 initial robot pose $\mathbf{x}_0$ and 2 for the calibration offset variables
 $\delta_x$ and $\delta_y$. If we set the noise matrices $\mathbf{Q}_k$ and
 $\mathbf{R}_k$ to $\mathbf{0}$ and examine the singular values of the Jacobian
-matrix, 5 values are exactly $0$, i.e., a structural rank deficiency. By adding
-noise to the system, only 2 singular values remain at $0$ for the same problem.
-From the integrated odometry path in Fig.~\ref{fig:straight-path}, the
-system believes that the calibration parameters are indeed observable and will
-thus wrongly optimize. This justifies the need for our TSVD/TQR method.
+matrix, 5 values are $0$ up to machine precision, i.e., a structural rank
+deficiency. By adding noise to the system, only 2 singular values remain at $0$
+for the same problem. From the integrated odometry path in
+Fig.~\ref{fig:straight-path}, the calibration parameters appear indeed as
+observable and a naive algorithm without regularization will thus wrongly
+optimize. Fig.~\ref{fig:straight-path-analysis} shows the singular values in
+these two cases and the related concept in the QR decomposition. With our
+TSVD/TQR method, we can deal with this issue by setting an adequate $\epsilon$
+threshold that will recover the correct rank deficiency and therefore only
+optimize the observable parts. The threshold is application-specific and should
+be a function of the system noise. Obviously, at a certain level of noise, gaps
+in the singular values spectrum become indistinguishable. In our setup, we have
+determined the threshold empirically from the scaled system and set it to
+$\epsilon=0.013$.
 
 \begin{figure}[t]
 \centering
@@ -188,6 +197,31 @@ thus wrongly optimize. This justifies the need for our TSVD/TQR method.
   truth landmark positions, and the red crosses the guessed landmark positions
   from measurements.}
 \label{fig:straight-path}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{minipage}{.492\columnwidth}
+  \centering
+  \includegraphics[width=\columnwidth]{fig/straight-path-noisefree-svd.eps}
+\end{minipage}
+\begin{minipage}{.492\columnwidth}
+  \centering
+  \includegraphics[width=\columnwidth]{fig/straight-path-svd.eps}
+\end{minipage}
+\begin{minipage}{.492\columnwidth}
+  \centering
+  \includegraphics[width=\columnwidth]{fig/straight-path-noisefree-spqr.eps}
+\end{minipage}
+\begin{minipage}{.492\columnwidth}
+  \centering
+  \includegraphics[width=\columnwidth]{fig/straight-path-spqr.eps}
+\end{minipage}
+\caption{Straight path example analysis. The first column shows the singular
+  values and the diagonal elements of the $\mathbf{R}$ matrix from the QR
+  decomposition in the noise-free case, and the second column in the noisy
+  case. Only the 100 lower values are plotted for visualization purpose.}
+\label{fig:straight-path-analysis}
 \end{figure}
 
 %In a first experiment, we have driven the robot along a straight path a $100$
