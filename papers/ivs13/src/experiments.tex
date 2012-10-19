@@ -203,26 +203,37 @@ determined the threshold empirically from the scaled system
 \centering
 \begin{minipage}{.492\columnwidth}
   \centering
-  \includegraphics[width=\columnwidth]{fig/straight-path-noisefree-svd.eps}
+  \includegraphics[width=\columnwidth]
+    {fig/straight-path-noisefree-svd-scaled.eps}
 \end{minipage}
 \begin{minipage}{.492\columnwidth}
   \centering
-  \includegraphics[width=\columnwidth]{fig/straight-path-svd.eps}
+  \includegraphics[width=\columnwidth]
+    {fig/straight-path-svd-scaled.eps}
 \end{minipage}
 \begin{minipage}{.492\columnwidth}
   \centering
-  \includegraphics[width=\columnwidth]{fig/straight-path-noisefree-spqr.eps}
+  \includegraphics[width=\columnwidth]
+    {fig/straight-path-noisefree-spqr-scaled.eps}
 \end{minipage}
 \begin{minipage}{.492\columnwidth}
   \centering
-  \includegraphics[width=\columnwidth]{fig/straight-path-spqr.eps}
+  \includegraphics[width=\columnwidth]
+    {fig/straight-path-spqr-scaled.eps}
 \end{minipage}
 \caption{Straight path example analysis. The first column shows the singular
   values and the diagonal elements of the $\mathbf{R}$ matrix from the QR
   decomposition in the noise-free case, and the second column in the noisy
-  case. Only the 100 lower values are plotted for visualization purpose.}
+  case. Only the 100 lower values from the scaled system
+  \eqref{eqn:scaled_system} are plotted for visualization purpose.}
 \label{fig:straight-path-analysis}
 \end{figure}
+
+Add a paragraph about computation time, comparison between SPQR and SVD
+
+Add a paragraph about selection of batch size and mutual information threshold
+
+Add a paragraph about the use of prior
 
 %In a first experiment, we have driven the robot along a straight path a $100$
 %times, maintaining identical initial conditions over the different runs, and
