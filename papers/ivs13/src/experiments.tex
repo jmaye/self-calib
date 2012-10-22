@@ -229,53 +229,37 @@ determined the threshold empirically from the scaled system
 \label{fig:straight-path-analysis}
 \end{figure}
 
-Add a paragraph about computation time, comparison between SPQR and SVD
+For this first example, Fig.~\ref{fig:straight-path-time} shows the mean
+computation time for some dataset sizes over 100 repetitions for one iteration
+of the Gauss-Newton algorithm using SVD or sparse QR decomposition on a
+quad-core desktop machine. It usually takes less than 10 iterations for the
+optimization to converge. The SVD method rapidly becomes prohibitive due to the
+exponential computation time.
 
-Add a paragraph about selection of batch size and mutual information threshold
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/straight-path-time.eps}
+\caption{Mean computation time over 100 repetitions for one step of
+  optimization using SVD and sparse QR decomposition.}
+\label{fig:straight-path-time}
+\end{figure}
 
-Add a paragraph about the use of prior
+The batch size $k$ and mutual information threshold $\theta$ are the last two
+free parameters of our calibration algorithm. Optimally, $k$ should be the
+expected time the robot has the same actuators commands. While a large $k$
+induces storage of uninformative measurements, a small $k$ leads to useless
+runs of optimization. In this setup, we have used a batch size of $k=100$. For
+the mutual information threshold, a small $\theta$ will keep most of the
+measurements and a large $\theta$ will ignore them all. We have set this value
+to $\theta=0.5$ in our experiments.
 
-%In a first experiment, we have driven the robot along a straight path a $100$
-%times, maintaining identical initial conditions over the different runs, and
-%monitored the convergence of the calibration parameters.
-%Fig.~\ref{fig:straight_comp} shows the performance of different algorithms,
-%namely an Extended Kalman Filter (EKF) similar to~\cite{martinelli06automatic},
-%a standard batch non-linear least squares method without
-%regularization~\cite{kuemmerle11simultaneous}, and our TQR-MI approach.
+\todo{What about prior information?}
 
-%\todo{more text to come discussing the results}
-
-%\begin{figure}[t]
-%\centering
-%\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
-%\caption{A comparison of different algorithms on a straight path.}
-%\label{fig:straight_comp}
-%\end{figure}
-
-%In a second step, we have run similar experiments as above, but with a loop
-%after the straight path. Fig.~\ref{fig:loop_comp} displays a comparison of the
-%different methods.
-
-%\todo{more text to come discussing the results}
-
-%\begin{figure}[t]
-%\centering
-%\missingfigure[figwidth=\columnwidth]{A comparison of different algorithms.}
-%\caption{A comparison of different algorithms on a well-behaved path.}
-%\label{fig:loop_comp}
-%\end{figure}
-
-%The last simulated experiment aims at analyzing the singular values, or the
-%diagonal elements of the $\mathbf{R}$ matrix, of the FIM.
-%Fig.~\ref{fig:sing_values} shows...
-%\todo{more text to come discussing the results}
-
-%\begin{figure}[t]
-%\centering
-%\missingfigure[figwidth=\columnwidth]{Singular values of the FIM.}
-%\caption{Singular values.}
-%\label{fig:sing_values}
-%\end{figure}
+To conclude this section on simulated data, we will analyze the performance of
+different algorithms, namely an Extended Kalman Filter (EKF) similar
+to~\cite{martinelli06automatic}, a standard batch non-linear least squares
+method without regularization~\cite{kuemmerle11simultaneous}, and our TQR-MI
+approach, on the straight path scenario and on a well-behaved path with turns.
 
 \subsection{Real-world Data}
 

@@ -563,5 +563,5 @@ $t\leftarrow1$ \;
 Given the structure of the model~\eqref{eqn:post_joint_factorized}, the
 Jacobian matrix $\mathbf{H}$ will be sparsely populated. Therefore, in order to
 obtain a tractable and scalable method, we adopt sparse matrices algorithms and
-data structures. The memory and computational costs are then $\mathcal{O}(n)$,
-where $n$ is the number of timesteps considered for optimization.
+data structures. The memory and computational costs are then
+$\mathcal{O}(\card(\mathcal{X})\times\card(\mathcal{L}))$.
