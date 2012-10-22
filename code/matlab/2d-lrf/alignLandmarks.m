@@ -16,46 +16,20 @@
 % along with this program. If not, see <http://www.gnu.org/licenses/>.         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% This file contains simulation and estimation parameters.
+function [R t] = alignLandmarks(l_est, l)
 
-% translational speed measurement noise
-v_var = 0.0044;
+% compute centroids
+a0 = mean(l);
+b0 = mean(l_est);
 
-% rotational speed measurement noise
-om_var = 0.0082;
+% compute deviations from centroids
+n = rows(l);
+at = l - repmat(a0, n, 1);
+bt = l_est - repmat(b0, n, 1);
 
-% odometry covariance matrix
-Q = diag([v_var; om_var]);
+A = at';
+B = bt';
+[U, S, V] = svd(A * B');
 
-% range measurement noise
-r_var = 9.0036e-04;
-
-% bearing measurement noise
-b_var = 6.7143e-04;
-
-% lrf covariance matrix
-R = diag([r_var; b_var]);
-
-% true calibration parameters
-Theta = [0.219; 0.1; pi / 4];
-
-% calibration steps
-steps = 5000;
-
-% sampling time
-T = 0.1;
-
-% initial pose
-x0 = [1; 1; pi / 4];
-
-% calibration parameters guess
-Theta_hat = Theta + 0.05 .* randn(3, 1);
-
-% maximum number of optimization iterations
-maxIter = 100;
-
-% tolerance for optimization
-optTol = 1e-6;
-
-% tolerance for TQR
-rankTol = 10;
+R = V * U';
+t = R' * b0' - a0';
