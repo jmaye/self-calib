@@ -397,6 +397,12 @@ for i = 1:timesteps
       x_est_temp(:, 3) = anglemod(x_est_temp(:, 3));
       l_est_temp = l_est_temp + [update(ns * 3 + 1:2:end - numCalib)...
         update(ns * 3 + 2:2:end - numCalib)];
+      % deal with invisible landmarks that will become NaN
+      for ll = 1:nl
+        if isnan(l_est_temp(ll, 1)) || isnan(l_est_temp(ll, 2))
+          l_est_temp(ll, :) = l_est(ll, :);
+        end
+      end
       Theta_est_temp = Theta_est_temp + update(end - numCalib + 1:end);
       if numCalib == 3
         Theta_est_temp(3) = anglemod(Theta_est_temp(3));
