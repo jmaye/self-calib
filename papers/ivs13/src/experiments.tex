@@ -247,11 +247,12 @@ prohibitive due to the polynomial computation time.
 The batch size $k$ and mutual information threshold $\theta$ are the last two
 free parameters of our calibration algorithm. Optimally, $k$ should be the
 expected time the robot has the same actuators commands. While a large $k$
-induces storage of uninformative measurements, a small $k$ leads to useless
-runs of optimization. In this setup, we have used a batch size of $k=100$. For
-the mutual information threshold, a small $\theta$ will keep most of the
-measurements and a large $\theta$ will ignore them all. We have set this value
-to $\theta=0.5$ in our experiments.
+induces storage of uninformative measurements\todo{Should we show that?}, a small $k$ leads to useless
+runs of optimization and inability of discovering informative batches. In this
+setup, we have used a batch size of $k=100$. For the mutual information
+threshold, a small $\theta$ will keep most of the measurements and a large
+$\theta$ will ignore them all. We have set this value to $\theta=0.5$ in our
+experiments.
 
 \todo{What about prior information?}
 
