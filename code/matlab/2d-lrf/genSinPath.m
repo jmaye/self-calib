@@ -18,15 +18,32 @@
 
 % This function generates a sinus path.
 
-function u = genSinPath(steps, tspeed, rspeed)
+function u = genSinPath(steps, amplitude, frequency, T)
 
 % true translational speed of the robot
 v = zeros(steps, 1);
-v(1:end) = tspeed;
 
 % true rotational speed of the robot
 om = zeros(steps, 1);
-om(1:end) = rspeed;
+
+% generate sin wave
+t = 0:T:steps * T;
+sint = zeros(length(t), 1);
+cost = zeros(length(t), 1);
+for i = 1:length(t)
+  sint(i) = amplitude * sin(2 * pi * frequency * t(i));
+  cost(i) = amplitude * cos(2 * pi * frequency * t(i));
+end
+
+% sample path and generate commands
+theta = 0;
+for i = 2:length(t)
+  theta_new = atan(cost(i));
+%  v(i) = sqrt(T^2 + (sint(i) - sint(i - 1))^2) / T;
+  v(i) = 2 * pi * frequency * (sqrt(1 + cost(i)^2) + sqrt(1 + cost(i - 1)^2)) / 2;
+  om(i) = (theta_new - theta) / T;
+  theta = theta_new;
+end
 
 % motion commands
 u = [v, om];
