@@ -39,8 +39,8 @@ end
 theta = 0;
 for i = 2:length(t)
   theta_new = atan(cost(i));
-%  v(i) = sqrt(T^2 + (sint(i) - sint(i - 1))^2) / T;
-  v(i) = 2 * pi * frequency * (sqrt(1 + cost(i)^2) + sqrt(1 + cost(i - 1)^2)) / 2;
+  v(i) = 2 * pi * frequency *...
+    (sqrt(1 + cost(i)^2) + sqrt(1 + cost(i - 1)^2)) / 2;
   om(i) = (theta_new - theta) / T;
   theta = theta_new;
 end
