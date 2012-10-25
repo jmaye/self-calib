@@ -161,9 +161,11 @@ determined the threshold empirically from the scaled system
 \label{fig:straight-path-analysis}
 \end{figure}
 
+
+
 For this first example, Fig.~\ref{fig:straight-path-time} shows the mean
 computation time for some dataset sizes over 100 repetitions for one iteration
-of the Gauss-Newton algorithm using SVD or sparse QR decomposition on a
+of the Gauss-Newton algorithm using SVD and sparse QR decomposition on a
 quad-core desktop machine. It usually takes less than 10 iterations for the
 optimization to converge. Nevertheless, the SVD method rapidly becomes
 prohibitive due to the polynomial computation time.
@@ -176,17 +178,22 @@ prohibitive due to the polynomial computation time.
 \label{fig:straight-path-time}
 \end{figure}
 
-The batch size $k$ and mutual information threshold $\theta$ are the last two
+The batch size $k$ and MI threshold $\lambda$ are the last two
 free parameters of our calibration algorithm. Optimally, $k$ should be the
 expected time the robot has the same actuators commands. While a large $k$
 induces storage of uninformative measurements\todo{Should we show that?}, a small $k$ leads to useless
 runs of optimization and inability of discovering informative batches. In this
 setup, we have used a batch size of $k=100$. For the mutual information
-threshold, a small $\theta$ will keep most of the measurements and a large
-$\theta$ will ignore them all. We have set this value to $\theta=0.5$ in our
-experiments.
+threshold, a small $\lambda$ will keep most of the measurements and a large
+$\lambda$ will ignore them all. We have set this value to
+$\lambda=0.5\;\text{[bits]}$ in our experiments.
 
-\todo{What about prior information?}
+Throughout our experiments, we have used a non-informative prior
+$p(\boldsymbol{\Theta}, \mathbf{x}_0, \mathcal{L})$, i.e., a uniform
+distribution. The use of priors is still subject to controversial
+discussions~\cite{gelman08objections} between Bayesian and non-Bayesian
+statisticians. Here, we argue that everything should come from the data itself
+and not from some subjective prior information that could bias the inference.\todo{Maybe more on that?}
 
 To conclude this section on simulated data, we will analyze the performance of
 different algorithms, namely an Extended Kalman Filter (EKF) similar

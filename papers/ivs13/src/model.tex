@@ -512,7 +512,7 @@ during $k$ timesteps and compute
 $p(\mathbf{\Theta}\mid\mathcal{D}^{info},\mathcal{D}^{new})$ using Gauss-Newton
 method with TQR updates and threshold $\epsilon$. In a second step, if
 $I(\mathbf{\Theta}\mid\mathcal{D}^{info};\mathcal{D}^{new})$ is larger
-than a user-defined threshold $\theta$, $\mathcal{D}^{new}$ is added to
+than a user-defined threshold $\lambda$, $\mathcal{D}^{new}$ is added to
 $\mathcal{D}^{info}$ and the estimate of $\mathbf{\Theta}$ is updated.
 
 \begin{algorithm}[ht]
@@ -523,7 +523,7 @@ $\mathcal{D}^{info}$ and the estimate of $\mathbf{\Theta}$ is updated.
 \KwIn{Initial guesses $\hat{\boldsymbol{\Theta}}^{(0)}$,
   $\hat{\mathbf{x}}_0^{(0)}$, $\hat{\mathcal{L}}^{(0)}$}
 \KwIn{Motion $\mathbf{h}(\cdot)$ and observation $\mathbf{g}(\cdot)$ models}
-\KwIn{Batch size $k$, TQR threshold $\epsilon$, MI threshold $\theta$}
+\KwIn{Batch size $k$, TQR threshold $\epsilon$, MI threshold $\lambda$}
 \KwOut{$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ and
   $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$}
 \vskip 0.2cm
@@ -551,7 +551,7 @@ $t\leftarrow1$ \;
   $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}\leftarrow
     \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ \;
   \Comment*[h]{MI decision} \;
-  \If {$I(\mathbf{\Theta}\mid\mathcal{D}^{info};\mathcal{D}^{new})>\theta$} {
+  \If {$I(\mathbf{\Theta}\mid\mathcal{D}^{info};\mathcal{D}^{new})>\lambda$} {
     $\mathcal{D}^{info}\leftarrow\mathcal{D}^{info}\cup\mathcal{D}^{new}$ \;
     $\boldsymbol{\Theta}\sim\mathcal{N}(
       \hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}},
