@@ -161,8 +161,6 @@ determined the threshold empirically from the scaled system
 \label{fig:straight-path-analysis}
 \end{figure}
 
-
-
 For this first example, Fig.~\ref{fig:straight-path-time} shows the mean
 computation time for some dataset sizes over 100 repetitions for one iteration
 of the Gauss-Newton algorithm using SVD and sparse QR decomposition on a
@@ -174,7 +172,8 @@ prohibitive due to the polynomial computation time.
 \centering
 \includegraphics[width=\columnwidth]{fig/straight-path-time.eps}
 \caption{Mean computation time over 100 repetitions for one step of
-  optimization using SVD and sparse QR decomposition.}
+  optimization using SVD (polynomial time) and sparse QR (linear time)
+  decomposition.}
 \label{fig:straight-path-time}
 \end{figure}
 
@@ -186,7 +185,7 @@ runs of optimization and inability of discovering informative batches. In this
 setup, we have used a batch size of $k=100$. For the mutual information
 threshold, a small $\lambda$ will keep most of the measurements and a large
 $\lambda$ will ignore them all. We have set this value to
-$\lambda=0.5\;\text{[bits]}$ in our experiments.
+$\lambda=0.5$[bits] in our experiments.
 
 Throughout our experiments, we have used a non-informative prior
 $p(\boldsymbol{\Theta}, \mathbf{x}_0, \mathcal{L})$, i.e., a uniform
@@ -208,6 +207,23 @@ In order to validate our method on real-world data, we have used the ``Lost in
 the Woods Dataset'' provided with the courtesy of Tim Barfoot. This dataset
 contains approximately $20$ minutes of a robot driving amongst a forest of
 tubes which serve as landmarks. The ground truth comes from a motion capture
-system that tracks robot motion and tube locations. Apart from the calibration
-parameters, which are set to $\mathbf{\Theta}=[\delta_x=0.219\;\delta_y=0\;
-\phi=0]^T$, the others remain unchanged.
+system that tracks robot motion and tube locations. For the calibration
+parameters, we have only access to $\delta_x=0.219$ [m] that was roughly
+measured with a tape. Fig.~\ref{fig:dataset2-path-result} displays the
+qualitative result of our algorithm. Using only $10\%$ of the measurements, we
+could recover accurate landmark positions, robot poses, and calibration
+parameter. Due to the absence of pose prior and for visualization purpose,
+estimated landmarks and poses have been aligned to the ground truth using an
+algorithm from~\cite{fiore01efficient}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{fig/dataset2-path-result.eps}
+\caption{Application of our algorithm on the ``Lost in the Woods dataset''. The
+  green line represents the ground truth path, the red line the integrated
+  odometry path, the green crosses the ground truth landmark positions, the blue
+  points the estimated landmark positions, and the blue crosses the estimated
+  robot poses. Our MI selection scheme selects only $10\%$ of the measurements
+  for the optimization.}
+\label{fig:dataset2-path-result}
+\end{figure}
