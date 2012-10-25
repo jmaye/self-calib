@@ -152,9 +152,8 @@ for s = 1:maxIter
       (x_est(i - 1, 1) + (t(i) - t(i - 1)) * ctm1 * u(i, 1)));
     e(row + 1) = invWChol(2, 2) *...
       (x_est(i, 2) - (x_est(i - 1, 2) + (t(i) - t(i - 1)) * stm1 * u(i, 1)));
-    e(row + 2) = anglemod(x_est(i, 3) -...
+    e(row + 2) = invWChol(3, 3) * anglemod(x_est(i, 3) -...
       (x_est(i - 1, 3) + (t(i) - t(i - 1)) * u(i, 2)));
-    e(row + 2) = invWChol(3, 3) * e(row + 2);
 
     % update row/col counter
     row = row + 3;

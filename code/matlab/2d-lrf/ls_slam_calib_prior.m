@@ -17,11 +17,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % This function performs least squares SLAM and calibration for a robot with a
-% laser range finder.
+% laser range finder. A prior on the first pose and the calibration parameters
+% can be added.
 
 function [x_est l_est Theta_est Sigma] =...
-  ls_slam_calib(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
-  optTol, rankTol)
+  ls_slam_calib_prior(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
+  optTol, x0, P0, Theta0, Sigma0)
 
 % default values
 if nargin < 10
@@ -58,6 +59,14 @@ if numCalib < 3
 else
   nzmax = (steps - 1) * 8 + numObs / 2 * 15;
 end
+if nargin >= 13
+  nzmax = nzmax + 3;
+  disp('pose prior');
+end
+if nargin == 15
+  nzmax = nzmax + numCalib;
+  disp('calib prior');
+end
 
 % Jacobian initialization
 ii = zeros(nzmax, 1);
@@ -65,7 +74,13 @@ jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
 
 % error term
-e = zeros((ns - 1) * 3 + numObs, 1);
+if nargin < 13
+  e = zeros((ns - 1) * 3 + numObs, 1);
+elseif nargin == 13
+  e = zeros((ns - 1) * 3 + numObs + 3, 1);
+elseif nargin == 15
+  e = zeros((ns - 1) * 3 + numObs + 3 + numCalib, 1);
+end
 
 % transformed covariance matrix of observation model
 N = R;
@@ -101,6 +116,56 @@ for s = 1:maxIter
   row = 1;
   col = 1;
   nzcount = 1;
+
+  % first pose prior
+  if nargin >= 13
+    invP0 = sqrt(diag(1 ./ diag(P0)));
+    ii(nzcount) = row;
+    jj(nzcount) = col;
+    ss(nzcount) = invP0(1, 1);
+    nzcount = nzcount + 1;
+    ii(nzcount) = row + 1;
+    jj(nzcount) = col + 1;
+    ss(nzcount) = invP0(2, 2);
+    nzcount = nzcount + 1;
+    ii(nzcount) = row + 2;
+    jj(nzcount) = col + 2;
+    ss(nzcount) = invP0(3, 3);
+    nzcount = nzcount + 1;
+    e(row) = invP0(1, 1) * (x_est(1, 1) - x0(1));
+    e(row + 1) = invP0(2, 2) * (x_est(1, 2) - x0(2));
+    e(row + 2) = invP0(3, 3) * anglemod(x_est(1, 3) - x0(3));
+    row = row + 3;
+  end
+
+  % calibration prior
+  if nargin == 15
+    invSigma0 = sqrt(diag(1 ./ diag(Sigma0)));
+    if numCalib < 3
+      ii(nzcount) = row;
+      jj(nzcount) = numVar;
+      ss(nzcount) = invSigma0(1, 1);
+      nzcount = nzcount + 1;
+      e(row) = invSigma0(1, 1) * (Theta_est(1) - Theta0(1));
+    else
+      ii(nzcount) = row;
+      jj(nzcount) = numVar - 2;
+      ss(nzcount) = invSigma0(1, 1);
+      nzcount = nzcount + 1;
+      ii(nzcount) = row + 1;
+      jj(nzcount) = numVar - 1;
+      ss(nzcount) = invSigma0(2, 2);
+      nzcount = nzcount + 1;
+      ii(nzcount) = row + 2;
+      jj(nzcount) = numVar;
+      ss(nzcount) = invSigma0(3, 3);
+      nzcount = nzcount + 1;
+      e(row) = invSigma0(1, 1) * (Theta_est(1) - Theta0(1));
+      e(row + 1) = invSigma0(2, 2) * (Theta_est(2) - Theta0(2));
+      e(row + 2) = invSigma0(3, 3) * anglemod(Theta_est(3) - Theta0(3));
+    end
+    row = row + numCalib;
+  end
 
   for i = 2:steps
     % some pre-computations
@@ -314,7 +379,13 @@ for s = 1:maxIter
       end
     end
   end
-  H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
+  if nargin < 13
+    H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
+  elseif nargin == 13
+    H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs + 3, numVar, nzmax);
+  elseif nargin == 15
+    H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs + 3 + numCalib, numVar, nzmax);
+  end
   norms = colNorm(H); % could be included in the above loop for speedup
   G = spdiags(1 ./ norms, 0, cols(H), cols(H));
 
@@ -334,11 +405,7 @@ for s = 1:maxIter
   res
 
   % update estimate
-  if nargin < 12
-    update = G * spqr_solve(H * G, -e);
-  else
-    update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
-  end
+  update = G * spqr_solve(H * G, -e);
   x_est = x_est + [update(1:3:ns * 3) update(2:3:ns * 3) update(3:3:ns * 3)];
   x_est(:, 3) = anglemod(x_est(:, 3));
   l_est = l_est + [update(ns * 3 + 1:2:end - numCalib)...

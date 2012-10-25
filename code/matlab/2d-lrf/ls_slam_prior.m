@@ -16,12 +16,12 @@
 % along with this program. If not, see <http://www.gnu.org/licenses/>.         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% This function performs least squares SLAM and calibration for a robot with a
-% laser range finder.
+% This function performs least squares SLAM for a robot with a laser
+% range finder with known calibration parameters. A prior on the first pose
+% can be added to make the problem full rank.
 
-function [x_est l_est Theta_est Sigma] =...
-  ls_slam_calib(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
-  optTol, rankTol)
+function [x_est l_est] = ls_slam_prior(Theta, x_hat, l_hat, u, r, b, t, Q, ...
+  R, maxIter, optTol, x0, P0)
 
 % default values
 if nargin < 10
@@ -41,7 +41,7 @@ nl = rows(l_hat);
 ns = rows(x_hat);
 
 % number of calibration parameters
-numCalib = length(Theta_hat);
+numCalib = length(Theta);
 
 % angle normalization between -pi and pi
 anglemod = @(x) atan2(sin(x), cos(x));
@@ -50,13 +50,12 @@ anglemod = @(x) atan2(sin(x), cos(x));
 numObs = nnz(r(2:end, :) > 0) * 2;
 
 % number of variables to estimate
-numVar = ns * 3 + nl * 2 + numCalib;
+numVar = ns * 3 + nl * 2;
 
 % number of non-zero entries in the Jacobian
-if numCalib < 3
-  nzmax = (steps - 1) * 8 + numObs / 2 * 12;
-else
-  nzmax = (steps - 1) * 8 + numObs / 2 * 15;
+nzmax = (steps - 1) * 8 + numObs / 2 * 10;
+if nargin == 13
+  nzmax = nzmax + 3;
 end
 
 % Jacobian initialization
@@ -65,7 +64,11 @@ jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
 
 % error term
-e = zeros((ns - 1) * 3 + numObs, 1);
+if nargin < 13
+  e = zeros((ns - 1) * 3 + numObs, 1);
+else
+  e = zeros((ns - 1) * 3 + numObs + 3, 1);
+end
 
 % transformed covariance matrix of observation model
 N = R;
@@ -85,14 +88,10 @@ Gx = zeros(2, 3);
 % Jacobian of observation model with respect to landmark variables
 Gl = zeros(2, 2);
 
-% Jacobian of observation model with respect to calibration parameters
-Gt = zeros(2, numCalib);
-
 % non-linear least squares
 oldRes = 0;
 x_est = x_hat;
 l_est = l_hat;
-Theta_est = Theta_hat;
 for s = 1:maxIter
   % print out iteration number
   s
@@ -101,6 +100,27 @@ for s = 1:maxIter
   row = 1;
   col = 1;
   nzcount = 1;
+
+  % first pose prior
+  if nargin == 13
+    invP0 = sqrt(diag(1 ./ diag(P0)));
+    ii(nzcount) = row;
+    jj(nzcount) = col;
+    ss(nzcount) = invP0(1, 1);
+    nzcount = nzcount + 1;
+    ii(nzcount) = row + 1;
+    jj(nzcount) = col + 1;
+    ss(nzcount) = invP0(2, 2);
+    nzcount = nzcount + 1;
+    ii(nzcount) = row + 2;
+    jj(nzcount) = col + 2;
+    ss(nzcount) = invP0(3, 3);
+    nzcount = nzcount + 1;
+    e(row) = invP0(1, 1) * (x_est(1, 1) - x0(1));
+    e(row + 1) = invP0(2, 2) * (x_est(1, 2) - x0(2));
+    e(row + 2) = invP0(3, 3) * anglemod(x_est(1, 3) - x0(3));
+    row = row + 3;
+  end
 
   for i = 2:steps
     % some pre-computations
@@ -177,15 +197,15 @@ for s = 1:maxIter
       if r(i, j) > 0
         % some pre-computations
         if numCalib < 3
-          dct = Theta_est(1) * ct1;
-          dst = Theta_est(1) * st1;
+          dct = Theta(1) * ct1;
+          dst = Theta(1) * st1;
           aa = l_est(j, 1) - x_est(i, 1) - dct;
           bb = l_est(j, 2) - x_est(i, 2) - dst;
         else
-          dxct = Theta_est(1) * ct1;
-          dxst = Theta_est(1) * st1;
-          dyct = Theta_est(2) * ct1;
-          dyst = Theta_est(2) * st1;
+          dxct = Theta(1) * ct1;
+          dxst = Theta(1) * st1;
+          dyct = Theta(2) * ct1;
+          dyst = Theta(2) * st1;
           aa = l_est(j, 1) - x_est(i, 1) - dxct + dyst;
           bb = l_est(j, 2) - x_est(i, 2) - dxst - dyct;
         end
@@ -256,65 +276,24 @@ for s = 1:maxIter
         ss(nzcount) = -invNChol(2, 2) * Gl(2, 2);
         nzcount = nzcount + 1;
 
-        % update Jacobian of observation model with respect to calib. variable
-        if numCalib < 3
-          Gt(1, 1) = -(aa * ct1 + bb * st1) / temp2;
-          Gt(2, 1) = (-aa * st1 + bb * ct1) / temp1;
-        else
-          Gt(1, 1) = -(aa * ct1 + bb * st1) / temp2;
-          Gt(1, 2) = (aa * st1 - bb * ct1) / temp2;
-          Gt(2, 1) = (-aa * st1 + bb * ct1) / temp1;
-          Gt(2, 2) = -(aa * ct1 + bb * st1) / temp1;
-          Gt(2, 3) = -1;
-        end
-
-        % update sparse matrix filling
-        if numCalib < 3
-          ii(nzcount) = row;
-          jj(nzcount) = numVar;
-          ss(nzcount) = -invNChol(1, 1) * Gt(1, 1);
-          nzcount = nzcount + 1;
-          ii(nzcount) = row + 1;
-          jj(nzcount) = numVar;
-          ss(nzcount) = -invNChol(2, 2) * Gt(2, 1);
-          nzcount = nzcount + 1;
-        else
-          ii(nzcount) = row;
-          jj(nzcount) = numVar - 2;
-          ss(nzcount) = -invNChol(1, 1) * Gt(1, 1);
-          nzcount = nzcount + 1;
-          ii(nzcount) = row;
-          jj(nzcount) = numVar - 1;
-          ss(nzcount) = -invNChol(1, 1) * Gt(1, 2);
-          nzcount = nzcount + 1;
-          ii(nzcount) = row + 1;
-          jj(nzcount) = numVar - 2;
-          ss(nzcount) = -invNChol(2, 2) * Gt(2, 1);
-          nzcount = nzcount + 1;
-          ii(nzcount) = row + 1;
-          jj(nzcount) = numVar - 1;
-          ss(nzcount) = -invNChol(2, 2) * Gt(2, 2);
-          nzcount = nzcount + 1;
-          ii(nzcount) = row + 1;
-          jj(nzcount) = numVar;
-          ss(nzcount) = -invNChol(2, 2) * Gt(2, 3);
-          nzcount = nzcount + 1;
-        end
-
         % update error term
         e(row) = invNChol(1, 1) * (r(i, j) - temp2);
         if numCalib < 3
-          e(row + 1) = invNChol(2, 2) *... 
+          e(row + 1) = invNChol(2, 2) *...
             anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3)));
         else
           e(row + 1) = invNChol(2, 2) *...
-            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) - Theta_est(3)));
+            anglemod(b(i, j) - (atan2(bb, aa) - x_est(i, 3) - Theta(3)));
         end
         row = row + 2;
       end
     end
   end
-  H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
+  if nargin < 13
+    H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
+  else
+    H = sparse(ii, jj, ss, (ns - 1) * 3 + numObs + 3, numVar, nzmax);
+  end
   norms = colNorm(H); % could be included in the above loop for speedup
   G = spdiags(1 ./ norms, 0, cols(H), cols(H));
 
@@ -334,21 +313,8 @@ for s = 1:maxIter
   res
 
   % update estimate
-  if nargin < 12
-    update = G * spqr_solve(H * G, -e);
-  else
-    update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
-  end
+  update = G * spqr_solve(H * G, -e);
   x_est = x_est + [update(1:3:ns * 3) update(2:3:ns * 3) update(3:3:ns * 3)];
   x_est(:, 3) = anglemod(x_est(:, 3));
-  l_est = l_est + [update(ns * 3 + 1:2:end - numCalib)...
-    update(ns * 3 + 2:2:end - numCalib)];
-  Theta_est = Theta_est + update(end - numCalib + 1:end);
-  if numCalib == 3
-    Theta_est(3) = anglemod(Theta_est(3));
-  end
-  Theta_est
+  l_est = l_est + [update(ns * 3 + 1:2:end) update(ns * 3 + 2:2:end)];
 end
-
-% compute covariance
-Sigma = computeCov(H, e, numCalib);
