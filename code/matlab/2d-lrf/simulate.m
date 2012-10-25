@@ -19,7 +19,7 @@
 % This function simulates a robot run.
 
 function [x_true y_true th_true r b v om t] =...
-  simulate(u, x_0, l, Q, R, Theta, T)
+  simulate(u, x_0, l, Q, R, Theta, T, maxRange)
 
 % number of steps inferred from motion commands
 steps = rows(u);
@@ -82,12 +82,15 @@ for i = 2:steps
       aa = l(j, 1) - x_true(i) - Theta(1) * ct + Theta(2) * st;
       bb = l(j, 2) - y_true(i) - Theta(1) * st - Theta(2) * ct;
     end
-    r(i, j) = sqrt(aa^2 + bb^2) + randn * sqrt(R(1, 1));
-    if numCalib < 3
-      b(i, j) = anglemod(atan2(bb, aa) - th_true(i) + randn * sqrt(R(2, 2)));
-    else
-      b(i, j)= anglemod(atan2(bb, aa) - th_true(i) - Theta(3) + randn *...
-        sqrt(R(2, 2)));
+    range = sqrt(aa^2 + bb^2) + randn * sqrt(R(1, 1));
+    if nargin < 8 || (nargin == 8 && range < maxRange)
+      r(i, j) = range;
+      if numCalib < 3
+        b(i, j) = anglemod(atan2(bb, aa) - th_true(i) + randn * sqrt(R(2, 2)));
+      else
+        b(i, j)= anglemod(atan2(bb, aa) - th_true(i) - Theta(3) + randn *...
+          sqrt(R(2, 2)));
+      end
     end
   end
 end
