@@ -88,16 +88,34 @@ $\mathbf{R}_k=\diag(\sigma^2_r,\sigma^2_\phi)$, and
 $\mathbf{\Theta}=[\delta_x\;\delta_y\;\phi]^T$ the range sensor's calibration
 parameters.
 
+Throughout our experiments, we have used a non-informative prior
+$p(\boldsymbol{\Theta}, \mathbf{x}_0, \mathcal{L})$, i.e., a uniform
+distribution. The use of priors is still subject to controversial
+discussions~\cite{gelman08objections} between Bayesian and non-Bayesian
+statisticians. Here, we argue that everything should come from the data itself
+and not from some subjective prior information that could bias the inference.
+
+Our algorithm requires only 3 free parameters, namely the rank threshold
+$\epsilon$, the batch size $k$, and the MI threshold $\lambda$. Optimally, $k$
+should be inferred from the dynamic of the system. While a large $k$
+induces storage of uninformative measurements, a small $k$ leads to useless
+runs of optimization and inability of discovering informative batches. In this
+setup, we have used a batch size of $k=100$. Concerning the MI threshold, a
+small $\lambda$ will keep most of the measurements and a large $\lambda$ will
+ignore them all. We have set this value to $\lambda=0.5$ [bits] in our
+experiments. The $\epsilon$ parameter shall be discussed below.
+
 \subsection{Simulated Data}
 
-In our simulation, we can generate various paths for the robot, along with
-corresponding sensor measurements, and thus analyze the behavior of multiple
-algorithms, especially in degenerate cases. We have created an environment
-with $N=17$ landmarks uniformly distributed on a $20m\times 20m$ grid. We have
-set the noise parameters empirically to $\sigma^2_v=4.4\times 10^{-3}$,
-$\sigma^2_w=8.2\times 10^{-2}$, $\sigma^2_r=9.0036\times 10^{-4}$, and
-$\sigma^2_\phi=6.7143\times 10^{-4}$. The calibration parameters are set to
-$\delta_x=0.219$ [m], $\delta_y=0.1$ [m], and $\psi=\pi/4$ [rad].
+In our simulation environment, we can generate various paths for the robot,
+along with corresponding sensor measurements, and thus analyze the behavior of
+multiple algorithms, especially in degenerate cases. We have created an
+environment with $N=17$ landmarks uniformly distributed on a $20m\times 20m$
+grid. We have set the noise parameters empirically to
+$\sigma^2_v=4.4\times 10^{-3}$, $\sigma^2_w=8.2\times 10^{-2}$,
+$\sigma^2_r=9.0036\times 10^{-4}$, and $\sigma^2_\phi=6.7143\times 10^{-4}$. The
+calibration parameters are fixed at $\delta_x=0.219$ [m], $\delta_y=0.1$ [m],
+and $\psi=\pi/4$ [rad].
 
 In a first effort, we want to support the claims of Sec.~\ref{sec:tsvd} with
 a representative example. We have driven the robot along a straight
@@ -124,10 +142,10 @@ determined the threshold empirically from the scaled system
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig/straight-path.eps}
-\caption{Straight path example. The green line represents the ground truth
-  path, the red line the integrated odometry path, the green crosses the ground
-  truth landmark positions, and the red crosses the guessed landmark positions
-  from measurements.}
+\caption{Straight path example (best viewed in color). The green line
+  represents the ground truth path, the red line the integrated odometry path,
+  the green crosses the ground truth landmark positions, and the red crosses the
+  guessed landmark positions from measurements.}
 \label{fig:straight-path}
 \end{figure}
 
@@ -177,23 +195,6 @@ prohibitive due to the polynomial computation time.
 \label{fig:straight-path-time}
 \end{figure}
 
-The batch size $k$ and MI threshold $\lambda$ are the last two
-free parameters of our calibration algorithm. Optimally, $k$ should be the
-expected time the robot has the same actuators commands. While a large $k$
-induces storage of uninformative measurements\todo{Should we show that?}, a small $k$ leads to useless
-runs of optimization and inability of discovering informative batches. In this
-setup, we have used a batch size of $k=100$. For the mutual information
-threshold, a small $\lambda$ will keep most of the measurements and a large
-$\lambda$ will ignore them all. We have set this value to
-$\lambda=0.5$ [bits] in our experiments.
-
-Throughout our experiments, we have used a non-informative prior
-$p(\boldsymbol{\Theta}, \mathbf{x}_0, \mathcal{L})$, i.e., a uniform
-distribution. The use of priors is still subject to controversial
-discussions~\cite{gelman08objections} between Bayesian and non-Bayesian
-statisticians. Here, we argue that everything should come from the data itself
-and not from some subjective prior information that could bias the inference.\todo{Maybe more on that?}
-
 To conclude this section on simulated data, we will analyze the performance of
 different algorithms, namely an Extended Kalman Filter (EKF) similar
 to~\cite{martinelli06automatic}, a standard batch non-linear least squares
@@ -209,21 +210,24 @@ contains approximately $20$ minutes of a robot driving amongst a forest of
 tubes which serve as landmarks. The ground truth comes from a motion capture
 system that tracks robot motion and tube locations. For the calibration
 parameters, we have only access to $\delta_x=0.219$ [m] that was roughly
-measured with a tape. Fig.~\ref{fig:dataset2-path-result} displays the
-qualitative result of our algorithm. Using only $10\%$ of the measurements, we
-could recover accurate landmark positions, robot poses, and calibration
-parameter. Due to the absence of pose prior and for visualization purpose,
-estimated landmarks and poses have been aligned to the ground truth using an
-algorithm from~\cite{fiore01efficient}.
+measured with a tape. We assume the others are implicitly set to $0$
+($\delta_y=0$ [m] and $\psi=0$ [rad]).
+Fig.~\ref{fig:dataset2-path-result} displays the qualitative result of our
+algorithm. Using only $10\%$ of the measurements, we could recover accurate
+landmark positions, robot poses, and calibration parameters. Due to the absence
+of pose prior and for visualization purpose, estimated landmarks and poses have
+been aligned to the ground truth using an algorithm
+from~\cite{fiore01efficient}.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig/dataset2-path-result.eps}
-\caption{Application of our algorithm on the ``Lost in the Woods dataset''. The
+\caption{Application of our algorithm on the ``Lost in the Woods dataset''
+  (best viewed in color). The
   green line represents the ground truth path, the red line the integrated
   odometry path, the green crosses the ground truth landmark positions, the blue
   points the estimated landmark positions, and the blue crosses the estimated
-  robot poses. Our MI selection scheme selects only $10\%$ of the measurements
+  robot poses. Our MI selection scheme picks only $10\%$ of the measurements
   for the optimization.}
 \label{fig:dataset2-path-result}
 \end{figure}
