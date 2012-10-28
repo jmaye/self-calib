@@ -6,20 +6,27 @@ methods.
 
 \subsection{Experimental Setup}
 
-Our method has been fully implemented in MATLAB and we have used the
-SuiteSparseQR~\cite{davis11algorithm} package for performing sparse matrices
-operations.
 
-In our experiments, we consider the problem of a mobile robot moving on a plane.
-Fig.~\ref{fig:exp_setup} depicts our experimental setup. The platform is
-equipped with a range sensor delivering range and bearing angles measurements.
-The calibration parameters of the range sensor consist in the transformation of
-its coordinate system to the robot's coordinate system. The platform is further
-endowed with wheel odometers outputting translational and rotational speeds.
-While navigating on the plane, the robot observes a known number of landmarks
-through its range sensor. Despite the apparent simplicity of the setup, our
-algorithm is flexible enough to cope with more complex scenarios, e.g., multiple
-heterogeneous sensors or 3D motion.
+Although our eventual goal is full, self-supervised calibration for an
+autonomous vehicle system with multiple heterogeneous sensors, the
+experiments in this paper are based on a realistic, but somewhat
+simplified robotic system. This allows us to precisely control the
+observability properties in simulation and test the behavior of our
+algorithm.
+
+Fig.~\ref{fig:exp_setup} depicts our experimental setup. The platform
+is a differential drive mobile robot equipped with a range sensor
+delivering range and bearing measurements.  The calibration parameters
+of the range sensor consist in the transformation of its coordinate
+system to the robot's coordinate system. The platform is further
+endowed with wheel odometers outputting translational and rotational
+speeds.  While navigating on the plane, the robot observes a known
+number of landmarks through its range sensor. Both the range sensor 
+and the odometry produce data at 10 Hz.
+%Despite the apparent
+%simplicity of the setup, our algorithm is flexible enough to cope with
+%more complex scenarios, e.g., multiple heterogeneous sensors or 3D
+%motion.
 
 \begin{figure}[t]
 \centering
@@ -85,7 +92,7 @@ $\boldsymbol{\ell}_i=[x_i\;y_i]^T$, $\mathbf{w}_k\sim\mathcal{N}(\mathbf{0},
 \mathbf{Q}_k)$ with $\mathbf{Q}_k=\diag(\sigma^2_v,\sigma^2_w)$,
 $\mathbf{n}_k\sim\mathcal{N}(\mathbf{0}, \mathbf{R}_k)$ with
 $\mathbf{R}_k=\diag(\sigma^2_r,\sigma^2_\phi)$, and
-$\mathbf{\Theta}=[\delta_x\;\delta_y\;\phi]^T$ the range sensor's calibration
+$\mathbf{\Theta}=[\delta_x\;\delta_y\;\psi]^T$ the range sensor's calibration
 parameters.
 
 Throughout our experiments, we have used a non-informative prior
@@ -97,10 +104,11 @@ and not from some subjective prior information that could bias the inference.
 
 Our algorithm requires only 3 free parameters, namely the rank threshold
 $\epsilon$, the batch size $k$, and the MI threshold $\lambda$. Optimally, $k$
-should be inferred from the dynamic of the system. While a large $k$
+should be inferred from the dynamics of the system. While a large $k$
 induces storage of uninformative measurements, a small $k$ leads to useless
-runs of optimization and inability of discovering informative batches. In this
-setup, we have used a batch size of $k=100$. Concerning the MI threshold, a
+runs of optimization and makes it difficult to discover informative sequences 
+of measurements. In this
+setup, we have used a batch size of $k=100$ (ten seconds of data). Concerning the MI threshold, a
 small $\lambda$ will keep most of the measurements and a large $\lambda$ will
 ignore them all. We have set this value to $\lambda=0.5$ [bits] in our
 experiments. The $\epsilon$ parameter shall be discussed below.
@@ -118,10 +126,9 @@ calibration parameters are fixed at $\delta_x=0.219$ [m], $\delta_y=0.1$ [m],
 and $\psi=\pi/4$ [rad].
 
 In a first effort, we want to support the claims of Sec.~\ref{sec:tsvd} with
-a representative example. We have driven the robot along a straight
+a representative example. We simulated the robot driving along a straight
 path as shown in Fig.~\ref{fig:straight-path}. Intuitively, the problem is
-structurally unobservable. Indeed, it hat 5 unobservable modes, 3 for the
-initial robot pose $\mathbf{x}_0$ and 2 for the calibration offset variables
+structurally unobservable. Indeed, it has 5 unobservable parameters, 3 corresponding to the global pose of the map and trajectory (as no global measurements or prior are included) and 2 for the calibration offset variables
 $\delta_x$ and $\delta_y$. If we set the noise matrices $\mathbf{Q}_k$ and
 $\mathbf{R}_k$ to $\mathbf{0}$ and examine the singular values of the Jacobian
 matrix, 5 values are $0$ up to machine precision, i.e., a structural rank
@@ -205,7 +212,7 @@ We have repeated the experiments 100 times with the same initial conditions.
 \subsection{Real-world Data}
 
 In order to validate our method on real-world data, we have used the ``Lost in
-the Woods Dataset'' provided with the courtesy of Tim Barfoot. This dataset
+the Woods Dataset'' provided with the courtesy of Tim Barfoot \cite{tong_crv12}. This dataset
 contains approximately $20$ minutes of a robot driving amongst a forest of
 tubes which serve as landmarks. The ground truth comes from a motion capture
 system that tracks robot motion and tube locations. For the calibration
@@ -214,9 +221,9 @@ measured with a tape. We assume the others are implicitly set to $0$
 ($\delta_y=0$ [m] and $\psi=0$ [rad]).
 Fig.~\ref{fig:dataset2-path-result} displays the qualitative result of our
 algorithm. Using only $10\%$ of the measurements, we could recover accurate
-landmark positions, robot poses, and calibration parameters. Due to the absence
-of pose prior and for visualization purpose, estimated landmarks and poses have
-been aligned to the ground truth using an algorithm
+landmark positions, robot poses, and calibration parameters. For visualization, 
+estimated landmarks and poses have
+been aligned to the ground truth using the algorithm
 from~\cite{fiore01efficient}.
 
 \begin{figure}[t]
@@ -268,3 +275,8 @@ $K$ & $12609$ & $1209$\\
 \hline
 \end{tabular}
 \end{table}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End: 

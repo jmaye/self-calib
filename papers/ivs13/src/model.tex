@@ -20,7 +20,7 @@ $\mathcal{U}=\{\mathbf{u}_{1:K}\}$ a set of \emph{observable} random variables
 (ORV) representing measured control inputs,
 $\mathcal{L}=\{\boldsymbol{\ell}_{1:N}\}$ a set of LRV representing $N$
 landmark positions, $\mathcal{Z}=\{\mathbf{z}_{1_{1:N}:K_{1:N}}\}$ a set of ORV
-representing $K \times N$ landmark measurements, and $\boldsymbol{\Theta}$, an
+representing $K \times N$ landmark measurements, and $\boldsymbol{\Theta}$ an
 LRV representing the calibration parameters of the robot's sensor. The goal of
 the calibration procedure is to compute the posterior marginal distribution of
 $\boldsymbol{\Theta}$ given all the measurements up to timestep $K$,
@@ -66,12 +66,12 @@ we first derive a Maximum a Posteriori (MAP) estimator for the mean,
 \mathcal{L})$ to a uniform distribution, \eqref{eqn:map_estimator} becomes a
 Maximum Likelihood (ML) estimator.
 
-We shall further refine our problem by defining a \emph{motion} and
-\emph{observation} model,
+We shall further refine our problem by defining  \emph{motion} and
+\emph{observation} models,
 
 \begin{equation}\label{eqn:process_model}
   \begin{aligned}
-  \mathbf{x}_k &= \mathbf{h}(\mathbf{x}_{k-1}, \mathbf{u}_k, \mathbf{w}_k)\\
+  \mathbf{x}_k &= \mathbf{h}(\mathbf{x}_{k-1}, \mathbf{u}_k, \mathbf{w}_k),\\
   \mathbf{z}_{k_i} &= \mathbf{g}(\mathbf{x}_{k}, \boldsymbol{\ell}_i,
     \boldsymbol{\Theta}, \mathbf{n}_k),
   \end{aligned}
@@ -81,14 +81,14 @@ We shall further refine our problem by defining a \emph{motion} and
 
 \begin{equation}\label{eqn:noise_model}
   \begin{aligned}
-  \mathbf{w}_k \sim \mathcal{N}(\mathbf{0},\mathbf{Q}_k)\\
-  \mathbf{n}_k \sim \mathcal{N}(\mathbf{0},\mathbf{R}_k)
+  \mathbf{w}_k &\sim \mathcal{N}(\mathbf{0},\mathbf{Q}_k),\text{ and}\\
+  \mathbf{n}_k &\sim \mathcal{N}(\mathbf{0},\mathbf{R}_k)
   \end{aligned}
 \end{equation}
 
 \noindent are normally distributed process and observation noise variables,
-$\mathbf{Q}_k$ and $\mathbf{R}_k$ being known covariance matrices. Although, the
-functions $\mathbf{h}(\cdot)$ and $\mathbf{g}(\cdot)$ might be non-linear in
+with known covariance $\mathbf{Q}_k$ and $\mathbf{R}_k$. Although, the
+functions $\mathbf{h}(\cdot)$ and $\mathbf{g}(\cdot)$ might be nonlinear in
 their parameters, we can approximate
 $p(\mathbf{x}_k\mid\mathbf{x}_{k - 1},\mathbf{u}_k)$ and
 $p(\mathbf{z}_{k_i}\mid\mathbf{x}_k, \mathbf{l}_i,\boldsymbol{\Theta})$ as
@@ -99,13 +99,13 @@ normal distributions through linearization.
 In case of linear motion and observation models, there exists a closed-form
 solution to \eqref{eqn:map_estimator} based on the \emph{least squares} method
 due to the normally distributed noise variables. In the other case, one can
-resort to non-linear least squares methods that iteratively solve a linearized
+resort to nonlinear least squares methods that iteratively solve a linearized
 version of the problem. In the following, we employ the \emph{Gauss-Newton}
 algorithm~\cite{aster11parameter} for this purpose.
 
 From \eqref{eqn:map_estimator} and the approximation that the densities involved
 are normal, we can turn the MAP problem into the minimization of a sum of
-quadratic functions. Non-linear optimization techniques start with an initial
+quadratic functions. Nonlinear optimization techniques start with an initial
 guess,
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, and refine
 it iteratively with
@@ -126,20 +126,19 @@ matrix form, the update takes the form
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
-where $\mathbf{T}$ is formed with $\mathbf{Q}_k$ and $\mathbf{N}_k$, and
+where $\mathbf{T}$, the error covariance matrix, is built from diagonal blocks of $\mathbf{Q}_k$ and $\mathbf{N}_k$, and
 $\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
-\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}})$ is the error of the current
+\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}})$ is the error evaluated at the current
 estimate $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
 
-At convergence of the algorithm, the quantity
+At convergence of the algorithm to the estimate 
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, the quantity
 $\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H}$ is the \emph{Fisher Information Matrix}
-(FIM) and the inverse covariance matrix
-$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ of
-our estimate
-$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
+(FIM) and the inverse of the estimate covariance matrix,
+$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
 
 If we let $\mathbf{T}^{-1}=\mathbf{L}^T\mathbf{L}$ be the Cholesky
-decomposition of the precision matrix, \eqref{eqn:dx_update} can be rewritten as
+decomposition of the error covariance matrix, \eqref{eqn:dx_update} can be rewritten as
 \begin{equation}\label{eqn:dx_update_normal}
   \begin{aligned}
   (\mathbf{L}\mathbf{H})^T(\mathbf{L}\mathbf{H})
@@ -163,12 +162,16 @@ system
   \end{aligned}
 \end{equation}
 
-\noindent Thus, instead of directly solving \eqref{eqn:dx_update} which requires
-a significant amount of computation and introduces numerical errors, we can take
-advantage of matrix decompositions.
+\noindent Thus, instead of solving \eqref{eqn:dx_update}, we can take
+advantage of matrix decompositions to solve
+\eqref{eqn:dx_update_standard} directly. Not only can this be more
+computationally efficient, the use of a {\em rank-revealing}
+decomposition allows the estimation of the numerical rank of the
+FIM, and consequently (as described below) provides information about the numerical 
+observability of the parameters for a given batch of data.
 
 Let $\mathbf{L}\mathbf{H}$ be of size $m\times n$ with the following thin
-Singular Value Decomposition (\emph{SVD}) decomposition~\cite{golub96matrix}
+Singular Value Decomposition (\emph{SVD}) decomposition~\cite{golub96matrix},
 
 \begin{equation}\label{eqn:svd_decomposition}
   \begin{aligned}
@@ -177,7 +180,7 @@ Singular Value Decomposition (\emph{SVD}) decomposition~\cite{golub96matrix}
 \end{equation}
 
 \noindent where $\mathbf{U}_n$ is an $m\times n$ matrix with orthogonal columns,
-$\mathbf{S}_n=\diag(\sigma_1, \cdots,\sigma_n)$, $\mathbf{V}_n$ an $n\times n$
+$\mathbf{S}_n=\diag(\sigma_1, \cdots,\sigma_n)$, $\mathbf{V}_n$ is an $n\times n$
 matrix with orthogonal columns, and $\sigma_i$ are the
 singular values of $\mathbf{L}\mathbf{H}$. From \eqref{eqn:svd_decomposition}
 and using the orthogonality of $\mathbf{U}_n$ and $\mathbf{V}_n$, we can solve
@@ -197,7 +200,7 @@ and using the orthogonality of $\mathbf{U}_n$ and $\mathbf{V}_n$, we can solve
 Although useful for illustrating the concepts of our approach, the SVD
 decomposition can be computationally demanding for large matrices. In practice,
 we therefore use the thin \emph{QR} decomposition~\cite{golub96matrix} of
-$\mathbf{L}\mathbf{H}$
+$\mathbf{L}\mathbf{H}$,
 
 \begin{equation}\label{eqn:qr_decomposition}
   \begin{aligned}
@@ -227,26 +230,26 @@ the identity matrix, otherwise it reflects column pivoting. From
 solved by \emph{back substitution}.
 
 The $\mathbf{R}_n$ matrix can also be used to compute the FIM and its
-inverse, the covariance estimate
+inverse, the estimate covariance,
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$. If we
 drop the permutation matrix for clarity, the FIM becomes
 $\mathbf{R}_n^T\mathbf{R}_n$. Let $\sigma_{ij}$ denote the elements of
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and
 $r_{ij}$ the elements of $\mathbf{R}_n$, there exists an
 efficient algorithm~\cite{kaess09covariance} for recovering any elements of the
-covariance estimate without inverting the whole FIM
+covariance estimate without inverting the whole FIM,
 
 \begin{equation}\label{eqn:covariance_QR}
   \begin{aligned}
   \sigma_{ll} &= \frac{1}{r_{ll}}(\frac{1}{r_{ll}} -
-    \sum_{j = l + 1, r_{lj}\neq 0}^n r_{lj}\sigma_{jl})\\
+    \sum_{j = l + 1, r_{lj}\neq 0}^n r_{lj}\sigma_{jl}),\\
   \sigma_{il} &= \frac{1}{r_{ii}}
     (-\sum_{j = i + 1, r_{ij}\neq 0}^l r_{ij}\sigma_{jl} -
     \sum_{j = l + 1, r_{ij}\neq 0}^n r_{ij}\sigma_{lj}),
   \end{aligned}
 \end{equation}
 
-\noindent for $l=n,\cdots,1$, $i=l-1,\cdots,1$ and the lower part is given by
+\noindent for $l=n,\cdots,1$, $i=l-1,\cdots,1$; the lower part is given by
 symmetry.
 
 At the convergence of the Gauss-Newton optimization, we are thus left with the
@@ -256,7 +259,7 @@ the normal distribution $p(\boldsymbol{\Theta}, \mathcal{X},\mathcal{L}
 \mid\mathcal{U},\mathcal{Z})$. In order to solve \eqref{eqn:post_calib}, we can
 employ the marginalization property of normal
 distributions~\cite{bishop06pattern}. If we express the estimates in the
-partitioned form
+partitioned form,
 
 \begin{equation}\label{eqn:partitioned_estimates}
   \begin{aligned}
@@ -265,7 +268,7 @@ partitioned form
     \hat{\boldsymbol{\mu}}_{\mathcal{X}}\\
     \hat{\boldsymbol{\mu}}_{\mathcal{L}}\\
     \hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}
-    \end{pmatrix},
+    \end{pmatrix},\qquad
   \hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
     \begin{pmatrix}
     \hat{\boldsymbol{\Sigma}}_{\mathcal{X}\mathcal{X}}&
@@ -287,18 +290,31 @@ partitioned form
 thus extract $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ from
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ very
 efficiently, and by placing $\boldsymbol{\Theta}$ to the right of the Jacobian
-matrix $\mathbf{H}$ and using \eqref{eqn:covariance_QR},
+matrix $\mathbf{H}$. Using \eqref{eqn:covariance_QR},
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
 computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
 
 \subsection{Truncated SVD and QR Solutions}\label{sec:tsvd}
 
-There exists a solution to \eqref{eqn:dx_update}
-iff the FIM is invertible, i.e., it is \emph{full rank}. The rank of a
-matrix is the maximum number of linearly independent column or row vectors. A
-matrix with $m$ rows and $n$ columns has full rank when its rank is equal to
-$\min(m,n)$. In real-world scenarios, where data is contaminated by noise, the
-FIM might appear to be theoretically full rank although it is actually
+There exists a solution to \eqref{eqn:dx_update} iff the FIM is
+invertible, i.e., it is \emph{full rank}\footnote{The rank of a matrix is the
+maximum number of linearly independent column or row vectors. A matrix
+with $m$ rows and $n$ columns has full rank when its rank is equal to
+$\min(m,n)$.}.
+Jauffret \cite{jauffret07observability} clearly articulates the link
+between the rank of the FIM and observability of the parameters being
+estimated.  In the context of calibration, a singular FIM corresponds
+to some unobservable directions in the parameter space given the
+current set of observations. Classical observabilitiy analysis, for
+example the widely used method of Hermann and Krener
+\cite{hermann1977nonlinear} (c.f. \cite{kelly2011visual} or
+\cite{mirzaei2008kalman}), proves what we will call {\em structural
+  observability}---that there exists
+some dataset for which the parameters are observable---it does not
+guarantee that the parameters are observable for any dataset.
+
+In real-world scenarios, where data is contaminated by noise, the
+FIM might appear to be full rank although it is actually
 \emph{rank-deficient}. We can illustrate this with the matrix
 
 \begin{equation}\label{eqn:rank_deficient_matrix}
@@ -314,11 +330,7 @@ FIM might appear to be theoretically full rank although it is actually
 
 \noindent Although $\mathbf{A}$ is technically full rank, it was constructed
 from a structurally rank-deficient matrix (the second row is a linear
-combination of the first and the last row) with added Gaussian noise. In the
-following, we call $\mathbf{A}$ a \emph{numerically rank-deficient} matrix. The
-issue of rank deficiency often appears in robotics state estimation and is
-related to the problem of \emph{observability} in control
-theory~\cite{jauffret07observability}.
+combination of the first and the last row) with added Gaussian noise. 
 
 Using SVD decomposition, we can identify a numerically rank-deficient matrix by
 analyzing its singular values \cite{hansen98rank}. The \emph{numerical rank}
@@ -335,10 +347,10 @@ For example, the singular values of $\mathbf{A}$ are approximately 16.8, 1.1,
 and 0.0001. From \eqref{eqn:dx_svd_solve}, we can see that if some of the
 $\sigma_i$ are close to zero, i.e. $r<n$, the update vector
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
-{(SVD)}$ will be large and eventually lead to a divergence of the solution. In
+{(SVD)}$ will be large (scaled by $1/\sigma_i$) and eventually lead to a divergence of the solution. In
 order to cope with this issue, we can approximate $\mathbf{L}\mathbf{H}$ with a
 lower rank matrix yielding the \emph{Truncated} SVD
-(TSVD)~\cite{varah73numerical} solution
+(TSVD)~\cite{varah73numerical} solution,
 
 \begin{equation}\label{eqn:dx_tsvd_solve}
   \begin{aligned}
@@ -363,13 +375,13 @@ well-determined numerical rank, i.e., a clearly defined jump in the singular
 values spectrum.
 
 A similar approach can be derived using \emph{rank-revealing} QR
-decomposition~\cite{hong92rank} yielding to the Truncated QR (TQR)
+decomposition~\cite{hong92rank} yielding the Truncated QR (TQR)
 method~\cite{kitagawa01regularization}. The strategy is to apply QR
 factorization with column pivoting in order to reveal the rank and to apply a
-cutoff on the diagonal of the $\mathbf{R}$ matrix. It can further be noted that
-the $\mathbf{Q}$ matrix need not be explicitly constructed, but instead returned
-in the form of \emph{Householder} reflections that can be applied on the
-right-hand side of the linear system.
+cutoff on the diagonal of the $\mathbf{R}$ matrix. 
+
+% PTF: if this information never gets used, we can leave it out.
+%It can further be noted that the $\mathbf{Q}$ matrix need not be explicitly constructed, but instead returned in the form of \emph{Householder} reflections that can be applied on the right-hand side of the linear system.
 
 According to the discussion in~\cite{golub96matrix}, \emph{column scaling} may
 improve the conditioning of the system, i.e. the ratio between the largest and
@@ -380,13 +392,13 @@ applicable. We define the scaling matrix as
 
 \begin{equation}\label{eqn:scaling_matrix}
   \begin{aligned}
-  \mathbf{G} &= \diag(\frac{1}{||\mathbf{L}\mathbf{H}(:,1)||},\cdots,
-    \frac{1}{||\mathbf{L}\mathbf{H}(:,n)||}),
+  \mathbf{G} &= \diag\left\{\frac{1}{||\mathbf{L}\mathbf{H}(:,1)||},\cdots,
+    \frac{1}{||\mathbf{L}\mathbf{H}(:,n)||}\right\},
   \end{aligned}
 \end{equation}
 
 \noindent where $||\cdot||$ denotes the column vector norm, and compute a
-solution to the scaled system
+solution to the scaled system,
 
 \begin{equation}\label{eqn:scaled_system}
   \begin{aligned}
@@ -438,8 +450,8 @@ normal distribution $p(\mathbf{\Theta}_1,\mathcal{D}_2)$ with parameters
     \begin{pmatrix}
     \boldsymbol{\mu}_{\boldsymbol{\Theta}_1}\\
     \boldsymbol{\mu}_{\mathcal{D}_2}\\
-    \end{pmatrix},
-  \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2} &=
+    \end{pmatrix},\;
+  \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2} =
     \begin{pmatrix}
     \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\boldsymbol{\Theta}_1}&
     \boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mathcal{D}_2}\\
@@ -565,3 +577,12 @@ Jacobian matrix $\mathbf{H}$ will be sparsely populated. Therefore, in order to
 obtain a tractable and scalable method, we adopt sparse matrices algorithms and
 data structures. The memory and computational costs are then
 $\mathcal{O}(\card(\mathcal{X})\times\card(\mathcal{L}))$.
+
+Our method has been fully implemented in MATLAB and we have used the
+SuiteSparseQR~\cite{davis11algorithm} package for performing sparse matrices
+operations.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End: 
