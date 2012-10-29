@@ -50,12 +50,3 @@ x0 = [1; 1; pi / 4];
 
 % calibration parameters guess
 Theta_hat = Theta + 0.05 .* randn(3, 1);
-
-% maximum number of optimization iterations
-maxIter = 100;
-
-% tolerance for optimization
-optTol = 1e-6;
-
-% tolerance for TQR
-rankTol = 10;

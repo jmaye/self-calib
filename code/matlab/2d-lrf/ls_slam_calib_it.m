@@ -374,6 +374,17 @@ for i = 1:timesteps
       norms = colNorm(H); % could be included in the above loop for speedup
       G = spdiags(1 ./ norms, 0, cols(H), cols(H));
 
+      if s == 1 || s == 2
+        [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
+          'econ', cols(H)));
+        sortR1 = sort(abs(diag(full(R1))), 1, 'descend');
+        sortR1(end - 10:end)
+        rankTol
+        cols(H)
+        R1 = P1 * R1 * P1';
+        abs(diag(full(R1(end - 2:end, end - 2:end))))
+      end
+
       % convergence check
       res = norm(e);
       if oldRes == 0
@@ -409,6 +420,9 @@ for i = 1:timesteps
       end
     end
 
+    s
+    res
+
     % compute covariance
     Sigma = computeCov(H, e, numCalib);
 
@@ -439,6 +453,7 @@ for i = 1:timesteps
         numBatches = numBatches - 1;
       end
     end
+    Theta_est
   end
 end
 
