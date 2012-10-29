@@ -88,9 +88,9 @@ timestep $k$, $T$ the sampling period, $\mathbf{u}_k=[v_k\;w_k]^T$ the measured
 translational and rotational speeds, $\mathbf{z}_{k_i}=[r_k^i\;\phi_k^i]^T$ the
 range and bearing observation of landmark $i$ with pose
 $\boldsymbol{\ell}_i=[x_i\;y_i]^T$, $\mathbf{w}_k\sim\mathcal{N}(\mathbf{0},
-\mathbf{Q}_k)$ with $\mathbf{Q}_k=\diag(\sigma^2_v,\sigma^2_w)$,
-$\mathbf{n}_k\sim\mathcal{N}(\mathbf{0}, \mathbf{R}_k)$ with
-$\mathbf{R}_k=\diag(\sigma^2_r,\sigma^2_\phi)$, and
+\mathbf{W}_k)$ with $\mathbf{W}_k=\diag(\sigma^2_v,\sigma^2_w)$,
+$\mathbf{n}_k\sim\mathcal{N}(\mathbf{0}, \mathbf{N}_k)$ with
+$\mathbf{N}_k=\diag(\sigma^2_r,\sigma^2_\phi)$, and
 $\mathbf{\Theta}=[\delta_x\;\delta_y\;\psi]^T$ the range sensor's calibration
 parameters.
 
@@ -131,8 +131,8 @@ path as shown in Fig.~\ref{fig:straight-path}. Intuitively, the problem is
 structurally unobservable. Indeed, it has 5 unobservable parameters, 3
 corresponding to the global pose of the map and trajectory (as no global
 measurements or prior are included) and 2 for the calibration offset variables
-$\delta_x$ and $\delta_y$. If we set the noise matrices $\mathbf{Q}_k$ and
-$\mathbf{R}_k$ to $\mathbf{0}$ and examine the singular values of the Jacobian
+$\delta_x$ and $\delta_y$. If we set the noise matrices $\mathbf{W}_k$ and
+$\mathbf{N}_k$ to $\mathbf{0}$ and examine the singular values of the Jacobian
 matrix, 5 values are $0$ up to machine precision, i.e., a structural rank
 deficiency. By adding noise to the system, only 2 singular values remain at $0$
 for the same problem. From the integrated odometry path in
@@ -214,7 +214,7 @@ We have repeated the experiments 100 times with the same initial conditions.
 \subsection{Real-world Data}
 
 In order to validate our method on real-world data, we have used the ``Lost in
-the Woods Dataset'' provided with the courtesy of Tim Barfoot \cite{tong_crv12}.
+the Woods Dataset'' provided with the courtesy of Tim Barfoot \cite{tong12gaussian}.
 This dataset contains approximately $20$ minutes of a robot driving amongst a
 forest of tubes which serve as landmarks. The ground truth comes from a motion
 capture system that tracks robot motion and tube locations. For the calibration

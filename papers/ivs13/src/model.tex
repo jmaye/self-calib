@@ -66,7 +66,7 @@ we first derive a Maximum a Posteriori (MAP) estimator for the mean,
 \mathcal{L})$ to a uniform distribution, \eqref{eqn:map_estimator} becomes a
 Maximum Likelihood (ML) estimator.
 
-We shall further refine our problem by defining  \emph{motion} and
+We shall further refine our problem by defining \emph{motion} and
 \emph{observation} models,
 
 \begin{equation}\label{eqn:process_model}
@@ -81,13 +81,13 @@ We shall further refine our problem by defining  \emph{motion} and
 
 \begin{equation}\label{eqn:noise_model}
   \begin{aligned}
-  \mathbf{w}_k &\sim \mathcal{N}(\mathbf{0},\mathbf{Q}_k),\text{ and}\\
-  \mathbf{n}_k &\sim \mathcal{N}(\mathbf{0},\mathbf{R}_k)
+  \mathbf{w}_k &\sim \mathcal{N}(\mathbf{0},\mathbf{W}_k),\text{ and}\\
+  \mathbf{n}_k &\sim \mathcal{N}(\mathbf{0},\mathbf{N}_k)
   \end{aligned}
 \end{equation}
 
 \noindent are normally distributed process and observation noise variables,
-with known covariance $\mathbf{Q}_k$ and $\mathbf{R}_k$. Although, the
+with known covariance $\mathbf{W}_k$ and $\mathbf{N}_k$. Although, the
 functions $\mathbf{h}(\cdot)$ and $\mathbf{g}(\cdot)$ might be nonlinear in
 their parameters, we can approximate
 $p(\mathbf{x}_k\mid\mathbf{x}_{k - 1},\mathbf{u}_k)$ and
@@ -127,7 +127,7 @@ matrix form, the update takes the form
   \end{aligned}
 \end{equation}
 where $\mathbf{T}$, the error covariance matrix, is built from diagonal blocks
-of $\mathbf{Q}_k$ and $\mathbf{N}_k$, and
+of $\mathbf{W}_k$ and $\mathbf{N}_k$, and
 $\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}
 \mathcal{L}}})$ is the error evaluated at the current estimate
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
@@ -307,13 +307,13 @@ with $m$ rows and $n$ columns has full rank when its rank is equal to
 $\min(m,n)$.}.
 Jauffret \cite{jauffret07observability} clearly articulates the link
 between the rank of the FIM and observability of the parameters being
-estimated.  In the context of calibration, a singular FIM corresponds
+estimated. In the context of calibration, a singular FIM corresponds
 to some unobservable directions in the parameter space given the
 current set of observations. Classical observabilitiy analysis, for
 example the widely used method of Hermann and Krener
-\cite{hermann1977nonlinear} (c.f. \cite{kelly2011visual} or
-\cite{mirzaei2008kalman}), proves what we will call {\em structural
-  observability}---that there exists
+\cite{hermann77nonlinear} (c.f. \cite{kelly11visual} or
+\cite{mirzaei08kalman}), proves what we will call {\em structural
+observability}---that there exists
 some dataset for which the parameters are observable---it does not
 guarantee that the parameters are observable for any dataset.
 
@@ -406,7 +406,7 @@ solution to the scaled system,
 
 \begin{equation}\label{eqn:scaled_system}
   \begin{aligned}
-  \mathbf{G}\mathbf{L}\mathbf{H}
+  \mathbf{L}\mathbf{H}\mathbf{G}
   \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^{(s)}
   &=
   -\mathbf{L}\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
