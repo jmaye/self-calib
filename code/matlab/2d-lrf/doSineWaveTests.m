@@ -42,7 +42,7 @@ Theta_hat_rep = zeros(rep, 3);
 l_rep = zeros(nl, 2, rep);
 Theta_tqr_mi = zeros(rep, 3);
 Sigma_tqr_mi = zeros(3, 3, rep);
-batchSize = zeros(rep, 1);
+K = zeros(rep, 1);
 Theta_ls = zeros(rep, 3);
 Sigma_ls = zeros(3, 3, rep);
 Theta_ekf = zeros(rep, 3);
@@ -86,7 +86,7 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
     Sigma_tqr_mi(:, :, i) = Sigma;
     Theta_est
     Sigma
-    batchSize(i) = length(batchIdx);
+    K(i) = length(batchIdx);
 
     % Non-linear least squares without regularization
     disp('LS');
@@ -110,10 +110,11 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
   % save results for this amplitude
   ampRes(ampIdx).amplitude = amplitude;
   ampRes(ampIdx).rep = rep;
+  ampRes(ampIdx).l_rep = l_rep;
   ampRes(ampIdx).Theta_hat_rep = Theta_hat_rep;
   ampRes(ampIdx).Theta_tqr_mi = Theta_tqr_mi;
   ampRes(ampIdx).Sigma_tqr_mi = Sigma_tqr_mi;
-  ampRes(ampIdx).batchSize = batchSize;
+  ampRes(ampIdx).K = K;
   ampRes(ampIdx).Theta_ls = Theta_ls;
   ampRes(ampIdx).Sigma_ls = Sigma_ls;
   ampRes(ampIdx).Theta_ekf = Theta_ekf;
