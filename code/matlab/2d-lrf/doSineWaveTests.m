@@ -47,6 +47,8 @@ Theta_ls = zeros(rep, 3);
 Sigma_ls = zeros(3, 3, rep);
 Theta_ekf = zeros(rep, 3);
 Sigma_ekf = zeros(3, 3, rep);
+R1_rep = zeros(rep, 100);
+R2_rep = zeros(rep, 100);
 
 % amplitude index
 ampIdx = 1;
@@ -90,10 +92,12 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
 
     % Non-linear least squares without regularization
     disp('LS');
-    [x_est l_est Theta_est Sigma] = ls_slam_calib_prior(x_odom, l_hat, ...
+    [x_est l_est Theta_est Sigma R1 R2] = ls_slam_calib_prior(x_odom, l_hat, ...
       Theta_hat, u, r, b, t, Q, R, maxIter, optTol, x0, diag([1e-6;1e-6;1e-6]));
     Theta_ls(i, :) = Theta_est';
     Sigma_ls(:, :, i) = Sigma;
+    R1_rep(i, :) = R1;
+    R2_rep(i, :) = R2;
     Theta_est
     Sigma
 
@@ -112,6 +116,8 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
   ampRes(ampIdx).rep = rep;
   ampRes(ampIdx).l_rep = l_rep;
   ampRes(ampIdx).Theta_hat_rep = Theta_hat_rep;
+  ampRes(ampIdx).R1_rep = R1_rep;
+  ampRes(ampIdx).R2_rep = R2_rep;
   ampRes(ampIdx).Theta_tqr_mi = Theta_tqr_mi;
   ampRes(ampIdx).Sigma_tqr_mi = Sigma_tqr_mi;
   ampRes(ampIdx).K = K;
