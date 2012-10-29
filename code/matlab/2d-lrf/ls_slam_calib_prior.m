@@ -61,11 +61,9 @@ else
 end
 if nargin >= 13
   nzmax = nzmax + 3;
-  disp('pose prior');
 end
 if nargin == 15
   nzmax = nzmax + numCalib;
-  disp('calib prior');
 end
 
 % Jacobian initialization

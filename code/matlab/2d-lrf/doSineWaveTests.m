@@ -34,8 +34,8 @@ maxY = 25;
 
 % amplitude parameters
 minAmplitude = 0;
-maxAmplitude = 2;
-amplitudeStep = 1.0;
+maxAmplitude = 10;
+amplitudeStep = 0.1;
 
 % output for each repetition with a given amplitude
 Theta_hat_rep = zeros(rep, 3);
@@ -80,15 +80,15 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
     Theta_hat
 
     % TQR-MI optimization
-    disp('TQR-MI');
-    [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, l_hat, ...
-      Theta_hat, u, r, b, t, Q, R, maxIter, optTol, batchSize, miThreshold, ...
-      rankTol);
-    Theta_tqr_mi(i, :) = Theta_est';
-    Sigma_tqr_mi(:, :, i) = Sigma;
-    Theta_est
-    Sigma
-    K(i) = length(batchIdx);
+%    disp('TQR-MI');
+%    [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, l_hat, ...
+%      Theta_hat, u, r, b, t, Q, R, maxIter, optTol, batchSize, miThreshold, ...
+%      rankTol);
+%    Theta_tqr_mi(i, :) = Theta_est';
+%    Sigma_tqr_mi(:, :, i) = Sigma;
+%    Theta_est
+%    Sigma
+%    K(i) = length(batchIdx);
 
     % Non-linear least squares without regularization
     disp('LS');
@@ -96,8 +96,8 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
       Theta_hat, u, r, b, t, Q, R, maxIter, optTol, x0, diag([1e-6;1e-6;1e-6]));
     Theta_ls(i, :) = Theta_est';
     Sigma_ls(:, :, i) = Sigma;
-    R1_rep(i, :) = R1;
-    R2_rep(i, :) = R2;
+    R1_rep(i, :) = R1(end - 99:end);
+    R2_rep(i, :) = R2(end - 99:end);
     Theta_est
     Sigma
 
