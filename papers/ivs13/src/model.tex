@@ -126,23 +126,27 @@ matrix form, the update takes the form
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
   \end{aligned}
 \end{equation}
-where $\mathbf{T}$, the error covariance matrix, is built from diagonal blocks of $\mathbf{Q}_k$ and $\mathbf{N}_k$, and
-$\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
-\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}})$ is the error evaluated at the current
-estimate $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
+where $\mathbf{T}$, the error covariance matrix, is built from diagonal blocks
+of $\mathbf{Q}_k$ and $\mathbf{N}_k$, and
+$\mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}
+\mathcal{L}}})$ is the error evaluated at the current estimate
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
 
 At convergence of the algorithm to the estimate 
-$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, the quantity
-$\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H}$ is the \emph{Fisher Information Matrix}
-(FIM) and the inverse of the estimate covariance matrix,
-$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$.
+$\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, the
+quantity $\mathbf{H}^T\mathbf{T}^{-1}\mathbf{H}$ is the
+\emph{Fisher Information Matrix} (FIM) and the inverse of the estimate
+covariance matrix, $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}
+\mathcal{X}\mathcal{L}}$.
 
 If we let $\mathbf{T}^{-1}=\mathbf{L}^T\mathbf{L}$ be the Cholesky
-decomposition of the error covariance matrix, \eqref{eqn:dx_update} can be rewritten as
+decomposition of the error covariance matrix, \eqref{eqn:dx_update} can be
+rewritten as
+
 \begin{equation}\label{eqn:dx_update_normal}
   \begin{aligned}
   (\mathbf{L}\mathbf{H})^T(\mathbf{L}\mathbf{H})
-    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &= 
+    \delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}} &=
     -(\mathbf{L}\mathbf{H})^T\mathbf{L}
     \mathbf{e}(\mathbf{\hat{\boldsymbol{\mu}}_{
     \boldsymbol{\Theta}\mathcal{X}\mathcal{L}}}),
@@ -167,8 +171,8 @@ advantage of matrix decompositions to solve
 \eqref{eqn:dx_update_standard} directly. Not only can this be more
 computationally efficient, the use of a {\em rank-revealing}
 decomposition allows the estimation of the numerical rank of the
-FIM, and consequently (as described below) provides information about the numerical 
-observability of the parameters for a given batch of data.
+FIM, and consequently (as described below) provides information about the
+numerical observability of the parameters for a given batch of data.
 
 Let $\mathbf{L}\mathbf{H}$ be of size $m\times n$ with the following thin
 Singular Value Decomposition (\emph{SVD}) decomposition~\cite{golub96matrix},
@@ -180,8 +184,8 @@ Singular Value Decomposition (\emph{SVD}) decomposition~\cite{golub96matrix},
 \end{equation}
 
 \noindent where $\mathbf{U}_n$ is an $m\times n$ matrix with orthogonal columns,
-$\mathbf{S}_n=\diag(\sigma_1, \cdots,\sigma_n)$, $\mathbf{V}_n$ is an $n\times n$
-matrix with orthogonal columns, and $\sigma_i$ are the
+$\mathbf{S}_n=\diag(\sigma_1, \cdots,\sigma_n)$, $\mathbf{V}_n$ is an
+$n\times n$ matrix with orthogonal columns, and $\sigma_i$ are the
 singular values of $\mathbf{L}\mathbf{H}$. From \eqref{eqn:svd_decomposition}
 and using the orthogonality of $\mathbf{U}_n$ and $\mathbf{V}_n$, we can solve
 \eqref{eqn:dx_update} as
@@ -347,10 +351,10 @@ For example, the singular values of $\mathbf{A}$ are approximately 16.8, 1.1,
 and 0.0001. From \eqref{eqn:dx_svd_solve}, we can see that if some of the
 $\sigma_i$ are close to zero, i.e. $r<n$, the update vector
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
-{(SVD)}$ will be large (scaled by $1/\sigma_i$) and eventually lead to a divergence of the solution. In
-order to cope with this issue, we can approximate $\mathbf{L}\mathbf{H}$ with a
-lower rank matrix yielding the \emph{Truncated} SVD
-(TSVD)~\cite{varah73numerical} solution,
+{(SVD)}$ will be large (scaled by $1/\sigma_i$) and eventually lead to a
+divergence of the solution. In order to cope with this issue, we can
+approximate $\mathbf{L}\mathbf{H}$ with a lower rank matrix yielding the
+\emph{Truncated} SVD (TSVD)~\cite{varah73numerical} solution,
 
 \begin{equation}\label{eqn:dx_tsvd_solve}
   \begin{aligned}
@@ -581,8 +585,3 @@ $\mathcal{O}(\card(\mathcal{X})\times\card(\mathcal{L}))$.
 Our method has been fully implemented in MATLAB and we have used the
 SuiteSparseQR~\cite{davis11algorithm} package for performing sparse matrices
 operations.
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../main"
-%%% End: 

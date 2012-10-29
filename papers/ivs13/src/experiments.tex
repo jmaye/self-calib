@@ -6,7 +6,6 @@ methods.
 
 \subsection{Experimental Setup}
 
-
 Although our eventual goal is full, self-supervised calibration for an
 autonomous vehicle system with multiple heterogeneous sensors, the
 experiments in this paper are based on a realistic, but somewhat
@@ -16,11 +15,11 @@ algorithm.
 
 Fig.~\ref{fig:exp_setup} depicts our experimental setup. The platform
 is a differential drive mobile robot equipped with a range sensor
-delivering range and bearing measurements.  The calibration parameters
+delivering range and bearing measurements. The calibration parameters
 of the range sensor consist in the transformation of its coordinate
 system to the robot's coordinate system. The platform is further
 endowed with wheel odometers outputting translational and rotational
-speeds.  While navigating on the plane, the robot observes a known
+speeds. While navigating on the plane, the robot observes a known
 number of landmarks through its range sensor. Both the range sensor 
 and the odometry produce data at 10 Hz.
 %Despite the apparent
@@ -108,10 +107,11 @@ should be inferred from the dynamics of the system. While a large $k$
 induces storage of uninformative measurements, a small $k$ leads to useless
 runs of optimization and makes it difficult to discover informative sequences 
 of measurements. In this
-setup, we have used a batch size of $k=100$ (ten seconds of data). Concerning the MI threshold, a
-small $\lambda$ will keep most of the measurements and a large $\lambda$ will
-ignore them all. We have set this value to $\lambda=0.5$ [bits] in our
-experiments. The $\epsilon$ parameter shall be discussed below.
+setup, we have used a batch size of $k=100$ (ten seconds of data). Concerning
+the MI threshold, a small $\lambda$ will keep most of the measurements and a
+large $\lambda$ will ignore them all. We have set this value to
+$\lambda=0.5$ [bits] in our experiments. The $\epsilon$ parameter shall be
+discussed below.
 
 \subsection{Simulated Data}
 
@@ -128,7 +128,9 @@ and $\psi=\pi/4$ [rad].
 In a first effort, we want to support the claims of Sec.~\ref{sec:tsvd} with
 a representative example. We simulated the robot driving along a straight
 path as shown in Fig.~\ref{fig:straight-path}. Intuitively, the problem is
-structurally unobservable. Indeed, it has 5 unobservable parameters, 3 corresponding to the global pose of the map and trajectory (as no global measurements or prior are included) and 2 for the calibration offset variables
+structurally unobservable. Indeed, it has 5 unobservable parameters, 3
+corresponding to the global pose of the map and trajectory (as no global
+measurements or prior are included) and 2 for the calibration offset variables
 $\delta_x$ and $\delta_y$. If we set the noise matrices $\mathbf{Q}_k$ and
 $\mathbf{R}_k$ to $\mathbf{0}$ and examine the singular values of the Jacobian
 matrix, 5 values are $0$ up to machine precision, i.e., a structural rank
@@ -212,16 +214,16 @@ We have repeated the experiments 100 times with the same initial conditions.
 \subsection{Real-world Data}
 
 In order to validate our method on real-world data, we have used the ``Lost in
-the Woods Dataset'' provided with the courtesy of Tim Barfoot \cite{tong_crv12}. This dataset
-contains approximately $20$ minutes of a robot driving amongst a forest of
-tubes which serve as landmarks. The ground truth comes from a motion capture
-system that tracks robot motion and tube locations. For the calibration
+the Woods Dataset'' provided with the courtesy of Tim Barfoot \cite{tong_crv12}.
+This dataset contains approximately $20$ minutes of a robot driving amongst a
+forest of tubes which serve as landmarks. The ground truth comes from a motion
+capture system that tracks robot motion and tube locations. For the calibration
 parameters, we have only access to $\delta_x=0.219$ [m] that was roughly
 measured with a tape. We assume the others are implicitly set to $0$
 ($\delta_y=0$ [m] and $\psi=0$ [rad]).
 Fig.~\ref{fig:dataset2-path-result} displays the qualitative result of our
 algorithm. Using only $10\%$ of the measurements, we could recover accurate
-landmark positions, robot poses, and calibration parameters. For visualization, 
+landmark positions, robot poses, and calibration parameters. For visualization,
 estimated landmarks and poses have
 been aligned to the ground truth using the algorithm
 from~\cite{fiore01efficient}.
@@ -275,8 +277,3 @@ $K$ & $12609$ & $1209$\\
 \hline
 \end{tabular}
 \end{table}
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../main"
-%%% End: 

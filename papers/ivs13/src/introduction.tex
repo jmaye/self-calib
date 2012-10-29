@@ -38,8 +38,8 @@ operation may not render all directions in parameters space observable. In this
 example, when two cameras do not share an overlapping field of view, planar
 motion renders the calibration problem
 degenerate\footnote{See~\cite{lebraly10calibration} for a handy table of
-degenerate cases or \cite{kim06absolute} for a more theoretical analysis.}; the transformation between cameras only becomes observable under
-general 3D motion.
+degenerate cases or \cite{kim06absolute} for a more theoretical analysis.}; the
+transformation between cameras only becomes observable under general 3D motion.
 
 {\bf 4) Unobservable directions in parameter space may appear observable in the
 presence of noise}---even if our hypothetical car is piloted only on a plane (a
@@ -71,18 +71,18 @@ difficulties. Our approach exploits the algebraic links between the Gauss-Newton
 algorithm, the Fisher Information Matrix, and non-linear observability analysis
 to automatically detect directions in parameter space that are numerically
 unobservable and avoid updating our parameters in these directions; at any given
-time, directions in the parameter space that are observable will be updated based on
-the latest information, while unobservable directions will remain at their initial
-guess. Novel sets of measurements are detected using a mutual information test,
-and added to a working set that is used to estimate the parameters. The result
-is an algorithm that listens to an incoming stream of data, automatically
-accumulating a batch of data that may be used to calibrate a full robot system.
-The only requirements are that (i) the parameters are theoretically observable given
-some ideal set of data, (ii) it is possible to implement a batch Gauss-Newton
-estimator for the system state and calibration parameters based on a set of
-measurements, and (iii) we have some reasonable initial guess for the calibration
-parameters (e.g. from factory calibration). Fig.~\ref{fig:calib_demo} shows a typical
-calibration run of our algorithm.
+time, directions in the parameter space that are observable will be updated
+based on the latest information, while unobservable directions will remain at
+their initial guess. Novel sets of measurements are detected using a mutual
+information test, and added to a working set that is used to estimate the
+parameters. The result is an algorithm that listens to an incoming stream of
+data, automatically accumulating a batch of data that may be used to calibrate a
+full robot system. The only requirements are that (i) the parameters are
+theoretically observable given some ideal set of data, (ii) it is possible to
+implement a batch Gauss-Newton estimator for the system state and calibration
+parameters based on a set of measurements, and (iii) we have some reasonable
+initial guess for the calibration parameters (e.g. from factory calibration).
+Fig.~\ref{fig:calib_demo} shows a typical calibration run of our algorithm.
 
 The remainder of the paper is structured as follows. Section~\ref{sec:rel}
 will give a brief overview over related approaches. Section~\ref{sec:model} is
@@ -90,8 +90,3 @@ dedicated to the mathematical grounding of our method.
 Section~\ref{sec:exp} demonstrates the validity of our approach through
 extensive experiments and evaluation. Section~\ref{sec:conc} will conclude the
 paper.
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: "../main"
-%%% End: 
