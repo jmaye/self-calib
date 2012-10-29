@@ -382,10 +382,10 @@ A similar approach can be derived using \emph{rank-revealing} QR
 decomposition~\cite{hong92rank} yielding the Truncated QR (TQR)
 method~\cite{kitagawa01regularization}. The strategy is to apply QR
 factorization with column pivoting in order to reveal the rank and to apply a
-cutoff on the diagonal of the $\mathbf{R}$ matrix. 
-
-% PTF: if this information never gets used, we can leave it out.
-%It can further be noted that the $\mathbf{Q}$ matrix need not be explicitly constructed, but instead returned in the form of \emph{Householder} reflections that can be applied on the right-hand side of the linear system.
+cutoff on the diagonal of the $\mathbf{R}$ matrix. It can further be noted that
+the $\mathbf{Q}$ matrix need not be explicitly constructed, but instead returned
+in the form of \emph{Householder} reflections that can be applied on the
+right-hand side of the linear system.
 
 According to the discussion in~\cite{golub96matrix}, \emph{column scaling} may
 improve the conditioning of the system, i.e. the ratio between the largest and
@@ -508,7 +508,10 @@ $\mathbf{\Theta}_1$ and $\mathcal{D}_2$ can then be computed as
   \end{aligned}
 \end{equation}
 
-\noindent where $|\cdot|$ denotes the matrix determinant.
+\noindent where $|\cdot|$ denotes the matrix determinant and
+$\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2}$ is the covariance
+estimate of $\boldsymbol{\Theta}$ using $\mathcal{D}_1$ and $\mathcal{D}_2$,
+which is computed by Gauss-Newton optimization.
 
 Thus, using \eqref{eqn:mi_normal}, we can measure the amount of information
 $\mathcal{D}_2$ conveys to our current estimate
@@ -581,7 +584,3 @@ Jacobian matrix $\mathbf{H}$ will be sparsely populated. Therefore, in order to
 obtain a tractable and scalable method, we adopt sparse matrices algorithms and
 data structures. The memory and computational costs are then
 $\mathcal{O}(\card(\mathcal{X})\times\card(\mathcal{L}))$.
-
-Our method has been fully implemented in MATLAB and we have used the
-SuiteSparseQR~\cite{davis11algorithm} package for performing sparse matrices
-operations.
