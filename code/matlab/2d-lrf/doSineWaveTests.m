@@ -80,15 +80,15 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
     Theta_hat
 
     % TQR-MI optimization
-%    disp('TQR-MI');
-%    [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, l_hat, ...
-%      Theta_hat, u, r, b, t, Q, R, maxIter, optTol, batchSize, miThreshold, ...
-%      rankTol);
-%    Theta_tqr_mi(i, :) = Theta_est';
-%    Sigma_tqr_mi(:, :, i) = Sigma;
-%    Theta_est
-%    Sigma
-%    K(i) = length(batchIdx);
+    disp('TQR-MI');
+    [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, l_hat, ...
+      Theta_hat, u, r, b, t, Q, R, maxIter, optTol, batchSize, miThreshold, ...
+      rankTol);
+    Theta_tqr_mi(i, :) = Theta_est';
+    Sigma_tqr_mi(:, :, i) = Sigma;
+    Theta_est
+    Sigma
+    K(i) = length(batchIdx);
 
     % Non-linear least squares without regularization
     disp('LS');
