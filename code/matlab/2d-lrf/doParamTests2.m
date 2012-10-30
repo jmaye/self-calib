@@ -43,15 +43,16 @@ maxAmplitude = 3;
 amplitudeStep = 0.5;
 
 % rank tolerance parameters
-minRankTol = 0;
+minRankTol = 0.0;
 maxRankTol = 0.025;
 rankTolStep = 0.001;
 
 % output for each repetition with a given amplitude
-Theta_tqr = zeros(rep, 3);
-Sigma_tqr = zeros(3, 3, rep);
+Theta_tqr_mi = zeros(rep, 3);
+Sigma_tqr_mi = zeros(3, 3, rep);
+batchSize_rep = zeros(rep, 1);
 
-%% amplitude index
+% amplitude index
 ampIdx = 1;
 
 % optimization parameters
@@ -60,6 +61,10 @@ maxIter = 15;
 
 % initial guess for Theta
 Theta_hat = [0.22; 0.12; 0.8];
+
+% TQR-MI parameters
+batchSize = 100;
+miThreshold = 0.5;
 
 warning off all;
 
@@ -83,24 +88,27 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
       l_hat = initLandmarks(x_odom, Theta_hat, r, b);
 
       % TQR optimization
-      disp('TQR');
-      [x_est l_est Theta_est Sigma] = ls_slam_calib(x_odom, l_hat, ...
-         Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, rankTol);
-      Theta_tqr(i, :) = Theta_est';
-      Sigma_tqr(:, :, i) = Sigma;
+      disp('TQR-MI');
+      [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, ...
+        l_hat, Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, ...
+        batchSize, miThreshold, rankTol);
+      Theta_tqr_mi(i, :) = Theta_est';
+      Sigma_tqr_mi(:, :, i) = Sigma;
+      batchSize_rep(i) = length(batchSize);
       Theta_est
       Sigma
     end
 
     % save results for this amplitude and parameter
-    paramRes(ampIdx).amplitude = amplitude;
-    paramRes(ampIdx).rankTol = rankTol;
-    paramRes(ampIdx).rep = rep;
-    paramRes(ampIdx).Theta_tqr = Theta_tqr;
-    paramRes(ampIdx).Sigma_tqr = Sigma_tqr;
+    paramResTQRMI(ampIdx).amplitude = amplitude;
+    paramResTQRMI(ampIdx).rankTol = rankTol;
+    paramResTQRMI(ampIdx).rep = rep;
+    paramResTQRMI(ampIdx).Theta_tqr_mi = Theta_tqr_mi;
+    paramResTQRMI(ampIdx).Sigma_tqr_mi = Sigma_tqr_mi;
+    paramResTQRMI(ampIdx).batchSize_rep = batchSize_rep;
 
     % save file to disk
-    save('paramRes.mat', 'paramRes');
+    save('paramResTQRMI.mat', 'paramResTQRMI');
 
     % increment amplitude index
     ampIdx = ampIdx + 1;
