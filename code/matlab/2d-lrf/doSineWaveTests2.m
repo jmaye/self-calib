@@ -38,13 +38,14 @@ minY = 0;
 maxY = 15;
 
 % amplitude parameters
-minAmplitude = 0;
+minAmplitude = 3;
 maxAmplitude = 3;
 amplitudeStep = 0.5;
 
 % output for each repetition with a given amplitude
-Theta_tqr = zeros(rep, 3);
-Sigma_tqr = zeros(3, 3, rep);
+Theta_tqr_mi = zeros(rep, 3);
+Sigma_tqr_mi = zeros(3, 3, rep);
+batchSize_rep = zeros(rep, 1);
 Theta_ls = zeros(rep, 3);
 Sigma_ls = zeros(3, 3, rep);
 Theta_ekf = zeros(rep, 3);
@@ -59,6 +60,8 @@ ampIdx = 1;
 optTol = 1e-6;
 maxIter = 15;
 rankTol = 0.016;
+batchSize = 100;
+miThreshold = 0.5;
 
 % initial guess for Theta
 Theta_hat = [0.22; 0.12; 0.8];
@@ -103,12 +106,14 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
     x_odom = odomInt([x_true(1), y_true(1), th_true(1)], [v, om], t);
     l_hat = initLandmarks(x_odom, Theta_hat, r, b);
 
-    % TQR optimization
-    disp('TQR');
-    [x_est l_est Theta_est Sigma] = ls_slam_calib(x_odom, l_hat, ...
-       Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, rankTol);
-    Theta_tqr(i, :) = Theta_est';
-    Sigma_tqr(:, :, i) = Sigma;
+    % TQR-MI optimization
+    disp('TQR-MI');
+    [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, l_hat, ...
+       Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, batchSize, ...
+       miThreshold, rankTol);
+    Theta_tqr_mi(i, :) = Theta_est';
+    Sigma_tqr_mi(:, :, i) = Sigma;
+    batchSize_rep(i) = length(batchIdx);
     Theta_est
     Sigma
 
@@ -135,19 +140,20 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
   end
 
   % save results for this amplitude
-  ampRes(ampIdx).amplitude = amplitude;
-  ampRes(ampIdx).rep = rep;
-  ampRes(ampIdx).R1_rep = R1_rep;
-  ampRes(ampIdx).R2_rep = R2_rep;
-  ampRes(ampIdx).Theta_tqr = Theta_tqr;
-  ampRes(ampIdx).Sigma_tqr = Sigma_tqr;
-  ampRes(ampIdx).Theta_ls = Theta_ls;
-  ampRes(ampIdx).Sigma_ls = Sigma_ls;
-  ampRes(ampIdx).Theta_ekf = Theta_ekf;
-  ampRes(ampIdx).Sigma_ekf = Sigma_ekf;
+  ampResTQRMI(ampIdx).amplitude = amplitude;
+  ampResTQRMI(ampIdx).rep = rep;
+  ampResTQRMI(ampIdx).R1_rep = R1_rep;
+  ampResTQRMI(ampIdx).R2_rep = R2_rep;
+  ampResTQRMI(ampIdx).Theta_tqr_mi = Theta_tqr_mi;
+  ampResTQRMI(ampIdx).Sigma_tqr_mi = Sigma_tqr_mi;
+  ampResTQRMI(ampIdx).batchSize_rep = batchSize_rep;
+  ampResTQRMI(ampIdx).Theta_ls = Theta_ls;
+  ampResTQRMI(ampIdx).Sigma_ls = Sigma_ls;
+  ampResTQRMI(ampIdx).Theta_ekf = Theta_ekf;
+  ampResTQRMI(ampIdx).Sigma_ekf = Sigma_ekf;
 
   % save file to disk
-  save('ampRes.mat', 'ampRes');
+  save('ampResTQRMI.mat', 'ampResTQRMI');
 
   % increment amplitude index
   ampIdx = ampIdx + 1;

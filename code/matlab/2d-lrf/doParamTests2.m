@@ -87,14 +87,14 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
       x_odom = odomInt([x_true(1), y_true(1), th_true(1)], [v, om], t);
       l_hat = initLandmarks(x_odom, Theta_hat, r, b);
 
-      % TQR optimization
+      % TQR-MI optimization
       disp('TQR-MI');
       [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, ...
         l_hat, Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, ...
         batchSize, miThreshold, rankTol);
       Theta_tqr_mi(i, :) = Theta_est';
       Sigma_tqr_mi(:, :, i) = Sigma;
-      batchSize_rep(i) = length(batchSize);
+      batchSize_rep(i) = length(batchIdx);
       Theta_est
       Sigma
     end
