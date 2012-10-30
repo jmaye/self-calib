@@ -50,33 +50,36 @@ P(rr, rr, 1) = P_0;
 % init landmarks
 Fx = zeros(2, 3);
 Fy = zeros(2, 2);
+x(2, 1) = x(1, 1) + 0.1 * cos(x(1, 3)) * u(2, 1);
+x(2, 2) = x(1, 2) + 0.1 * sin(x(1, 3)) * u(2, 1);
+x(2, 3) = anglemod(x(1, 3) + 0.1 * u(2, 2));
 for i = 1:nl
   Fx(1, 1) = 1;
   Fx(2, 2) = 1;
   if numCalib < 3
-    x(1, 4 + (i - 1) * 2) = x(1, 1) + Theta(1) * cos(x(1, 3)) + r(2, i) *...
-      cos(b(2, i) + x(1, 3));
-    x(1, 4 + (i - 1) * 2 + 1) = x(1, 2) + Theta(1) * sin(x(1, 3)) + r(2, i) *...
-      sin(b(2, i) + x(1, 3));
-    Fx(1, 3) = -Theta(1) * sin(x(1, 3)) - r(2, i) * sin(x(1, 3) + b(2, i));
-    Fx(2, 3) = Theta(1) * cos(x(1, 3)) + r(2, i) * cos(x(1, 3) + b(2, i));
-    Fy(1, 1) = cos(x(1, 3) + b(2, i));
-    Fy(1, 2) = -r(2, i) * sin(b(2, i) + x(1, 3));
-    Fy(2, 1) = sin(b(2, i) + x(1, 3));
-    Fy(2, 2) = -r(2, i) * cos(b(2, i) + x(1, 3));
+    x(1, 4 + (i - 1) * 2) = x(2, 1) + Theta(1) * cos(x(2, 3)) + r(2, i) *...
+      cos(b(2, i) + x(2, 3));
+    x(1, 4 + (i - 1) * 2 + 1) = x(2, 2) + Theta(1) * sin(x(2, 3)) + r(2, i) *...
+      sin(b(2, i) + x(2, 3));
+    Fx(1, 3) = -Theta(1) * sin(x(2, 3)) - r(2, i) * sin(x(2, 3) + b(2, i));
+    Fx(2, 3) = Theta(1) * cos(x(2, 3)) + r(2, i) * cos(x(2, 3) + b(2, i));
+    Fy(1, 1) = cos(x(2, 3) + b(2, i));
+    Fy(1, 2) = -r(2, i) * sin(b(2, i) + x(2, 3));
+    Fy(2, 1) = sin(b(2, i) + x(2, 3));
+    Fy(2, 2) = -r(2, i) * cos(b(2, i) + x(2, 3));
   else
-    x(1, 4 + (i - 1) * 2)  = x(1, 1) + Theta(1) * cos(x(1, 3)) - Theta(2) *...
-      sin(x(1, 3)) + r(2, i) * cos(b(2, i) + Theta(3) + x(1, 3));
-    x(1, 4 + (i - 1) * 2 + 1) = x(1, 2) + Theta(1) * sin(x(1, 3)) +...
-      Theta(2) * cos(x(1, 3)) + r(2, i) * sin(b(2, i) + Theta(3) + x(1, 3));
-    Fx(1, 3) = -Theta(1) * sin(x(1, 3)) - Theta(2) * cos(x(1, 3)) -...
-      r(2, i) * sin(x(1, 3) + b(2, i) + Theta(3));
-    Fx(2, 3) = Theta(1) * cos(x(1, 3)) - Theta(2) * sin(x(1, 3)) +...
-      r(2, i) * cos(x(1, 3) + b(2, i) + Theta(3));
-    Fy(1, 1) = cos(x(1, 3) + b(2, i) + Theta(3));
-    Fy(1, 2) = -r(2, i) * sin(b(2, i) + x(1, 3) + Theta(3));
-    Fy(2, 1) = sin(b(2, i) + x(1, 3) + Theta(3));
-    Fy(2, 2) = -r(2, i) * cos(b(2, i) + x(1, 3) + Theta(3));
+    x(1, 4 + (i - 1) * 2)  = x(2, 1) + Theta(1) * cos(x(2, 3)) - Theta(2) *...
+      sin(x(2, 3)) + r(2, i) * cos(b(2, i) + Theta(3) + x(2, 3));
+    x(1, 4 + (i - 1) * 2 + 1) = x(2, 2) + Theta(1) * sin(x(2, 3)) +...
+      Theta(2) * cos(x(2, 3)) + r(2, i) * sin(b(2, i) + Theta(3) + x(2, 3));
+    Fx(1, 3) = -Theta(1) * sin(x(2, 3)) - Theta(2) * cos(x(2, 3)) -...
+      r(2, i) * sin(x(2, 3) + b(2, i) + Theta(3));
+    Fx(2, 3) = Theta(1) * cos(x(2, 3)) - Theta(2) * sin(x(2, 3)) +...
+      r(2, i) * cos(x(2, 3) + b(2, i) + Theta(3));
+    Fy(1, 1) = cos(x(2, 3) + b(2, i) + Theta(3));
+    Fy(1, 2) = -r(2, i) * sin(b(2, i) + x(2, 3) + Theta(3));
+    Fy(2, 1) = sin(b(2, i) + x(2, 3) + Theta(3));
+    Fy(2, 2) = -r(2, i) * cos(b(2, i) + x(2, 3) + Theta(3));
   end
   P(4 + (i - 1) * 2:4 + (i - 1) * 2 + 1, ...
     4 + (i - 1) * 2:4 + (i - 1) * 2 + 1, 1) =...

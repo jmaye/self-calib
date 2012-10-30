@@ -19,8 +19,13 @@
 % This script performs systematic evaluation on the sine wave path with
 % varying amplitudes.
 
+clear all;
+
+% simulation parameters
+params;
+
 % number of repetitions for each amplitude
-rep = 1;
+rep = 50;
 
 % sine wave frequency
 frequency = 0.01;
@@ -28,21 +33,19 @@ frequency = 0.01;
 % landmarks parameters
 nl = 17;
 minX = 0;
-maxX = 25;
+maxX = 15;
 minY = 0;
-maxY = 25;
+maxY = 15;
 
 % amplitude parameters
 minAmplitude = 0;
-maxAmplitude = 10;
-amplitudeStep = 0.1;
+maxAmplitude = 3;
+amplitudeStep = 0.5;
 
 % output for each repetition with a given amplitude
-Theta_hat_rep = zeros(rep, 3);
 l_rep = zeros(nl, 2, rep);
-Theta_tqr_mi = zeros(rep, 3);
-Sigma_tqr_mi = zeros(3, 3, rep);
-K = zeros(rep, 1);
+Theta_tqr = zeros(rep, 3);
+Sigma_tqr = zeros(3, 3, rep);
 Theta_ls = zeros(rep, 3);
 Sigma_ls = zeros(3, 3, rep);
 Theta_ekf = zeros(rep, 3);
@@ -54,20 +57,33 @@ R2_rep = zeros(rep, 100);
 ampIdx = 1;
 
 % optimization parameters
-optTol = 1e-9;
+optTol = 1e-6;
 maxIter = 20;
-batchSize = 100;
-miThreshold = 0.5;
-rankTol = 0.018;
+rankTol = 0.02;
+
+% initial guess for Theta
+Theta_hat = [0.22; 0.12; 0.8];
+
+warning off all;
 
 % perform evaluation
 for amplitude = minAmplitude:amplitudeStep:maxAmplitude
   amplitude
+
+  if amplitude < 1
+    rankTol = 0.028;
+  end
+  if amplitude >= 1 && amplitude < 3
+    rankTol = 0.021;
+  end
+  if amplitude >= 3
+    rankTol = 0.013;
+  end
+
   for i = 1:rep
     i
 
     % setting up the scene
-    params;
     u = genSinPath(steps, amplitude, frequency, T);
     l = genLandmarks(nl, [minX maxX], [minY maxY]);
     [x_true y_true th_true r b v om t] = simulate(u, x0, l, Q, R, Theta, T);
@@ -75,20 +91,16 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
     % initial guess
     x_odom = odomInt([x_true(1), y_true(1), th_true(1)], [v, om], t);
     l_hat = initLandmarks(x_odom, Theta_hat, r, b);
-    Theta_hat_rep(i, :) = Theta_hat';
     l_rep(:, :, i) = l;
-    Theta_hat
 
-    % TQR-MI optimization
-    disp('TQR-MI');
-    [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it(x_odom, l_hat, ...
-      Theta_hat, u, r, b, t, Q, R, maxIter, optTol, batchSize, miThreshold, ...
-      rankTol);
-    Theta_tqr_mi(i, :) = Theta_est';
-    Sigma_tqr_mi(:, :, i) = Sigma;
+    % TQR optimization
+    disp('TQR');
+    [x_est l_est Theta_est Sigma] = ls_slam_calib(x_odom, l_hat, ...
+       Theta_hat, u, r, b, t, Q, R, maxIter, optTol, rankTol);
+    Theta_tqr(i, :) = Theta_est';
+    Sigma_tqr(:, :, i) = Sigma;
     Theta_est
     Sigma
-    K(i) = length(batchIdx);
 
     % Non-linear least squares without regularization
     disp('LS');
@@ -104,7 +116,7 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
     % EKF
     disp('EKF');
     [x_est, P] = ekf_slam_calib(x0, diag([1e-6; 1e-6; 1e-6]), Theta_hat, ...
-      diag([1e-3; 1e-3; 1e-3]), u, r, b, t, Q, R);
+      diag([1e-1; 1e-1; 1e-1]), u, r, b, t, Q, R);
     Theta_ekf(i, :) = x_est(end, end - 2:end);
     Sigma_ekf(:, :, i) = P(end - 2:end, end - 2:end, end);
     x_est(end, end - 2:end)
@@ -115,17 +127,19 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
   ampRes(ampIdx).amplitude = amplitude;
   ampRes(ampIdx).rep = rep;
   ampRes(ampIdx).l_rep = l_rep;
-  ampRes(ampIdx).Theta_hat_rep = Theta_hat_rep;
   ampRes(ampIdx).R1_rep = R1_rep;
   ampRes(ampIdx).R2_rep = R2_rep;
-  ampRes(ampIdx).Theta_tqr_mi = Theta_tqr_mi;
-  ampRes(ampIdx).Sigma_tqr_mi = Sigma_tqr_mi;
-  ampRes(ampIdx).K = K;
+  ampRes(ampIdx).Theta_tqr = Theta_tqr;
+  ampRes(ampIdx).Sigma_tqr = Sigma_tqr;
   ampRes(ampIdx).Theta_ls = Theta_ls;
   ampRes(ampIdx).Sigma_ls = Sigma_ls;
   ampRes(ampIdx).Theta_ekf = Theta_ekf;
   ampRes(ampIdx).Sigma_ekf = Sigma_ekf;
 
+  save('ampRes.mat', 'ampRes');
+
   % increment amplitude index
   ampIdx = ampIdx + 1;
 end
+
+warning on all;

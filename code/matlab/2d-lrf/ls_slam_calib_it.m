@@ -378,11 +378,11 @@ for i = 1:timesteps
         [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
           'econ', cols(H)));
         sortR1 = sort(abs(diag(full(R1))), 1, 'descend');
-        sortR1(end - 10:end)
-        rankTol
-        cols(H)
+%        sortR1(end - 10:end)
+%        rankTol
+%        cols(H)
         R1 = P1 * R1 * P1';
-        abs(diag(full(R1(end - 2:end, end - 2:end))))
+%        abs(diag(full(R1(end - 2:end, end - 2:end))))
       end
 
       % convergence check
@@ -422,6 +422,7 @@ for i = 1:timesteps
 
     s
     res
+    Theta_est_temp
 
     % compute covariance
     Sigma = computeCov(H, e, numCalib);
@@ -441,7 +442,7 @@ for i = 1:timesteps
       mi = 0.5 * log2(sigmaDetRecord / sigmaDet);
 
       % add batch if needed
-      if mi > miTol
+      if mi > miTol && s < 15
         x_est = x_est_temp;
         l_est = l_est_temp;
         Theta_est = Theta_est_temp;
