@@ -26,10 +26,6 @@ endowed with wheel odometers outputting translational and rotational
 speeds. While navigating on the plane, the robot observes a known
 number of landmarks through its range sensor. Both the range sensor 
 and the odometry produce data at 10 Hz.
-%Despite the apparent
-%simplicity of the setup, our algorithm is flexible enough to cope with
-%more complex scenarios, e.g., multiple heterogeneous sensors or 3D
-%motion.
 
 \begin{figure}[t]
 \centering
@@ -218,13 +214,13 @@ We have repeated the experiments 100 times with the same initial conditions.
 \subsection{Real-world Data}
 
 In order to validate our method on real-world data, we have used the ``Lost in
-the Woods Dataset'' provided with the courtesy of Tim Barfoot \cite{tong12gaussian}.
-This dataset contains approximately $20$ minutes of a robot driving amongst a
-forest of tubes which serve as landmarks. The ground truth comes from a motion
-capture system that tracks robot motion and tube locations. For the calibration
-parameters, we have only access to $\delta_x=0.219$ [m] that was roughly
-measured with a tape. We assume the others are implicitly set to $0$
-($\delta_y=0$ [m] and $\psi=0$ [rad]).
+the Woods Dataset'' provided with the courtesy of Tim
+Barfoot~\cite{tong12gaussian}. This dataset contains approximately $20$ minutes
+of a robot driving amongst a forest of tubes which serve as landmarks. The
+ground truth comes from a motion capture system that tracks robot motion and
+tube locations. For the calibration parameters, we have only access to
+$\delta_x=0.219$ [m] that was roughly measured with a tape. We assume the others
+are implicitly set to $0$ ($\delta_y=0$ [m] and $\psi=0$ [rad]).
 Fig.~\ref{fig:dataset2-path-result} displays the qualitative result of our
 algorithm. Using only $10\%$ of the measurements, we could recover accurate
 landmark positions, robot poses, and calibration parameters. For visualization,
@@ -247,14 +243,14 @@ from~\cite{fiore01efficient}.
 
 Since the ground truth calibration parameters are inaccurate,
 Tab.~\ref{tab:dataset2-comp} compares our method against a standard
-least-squares estimator that exploits all the measurements. Our TQR-MI algorithm
-performs the optimization with $K=1209$ out of $12609$ timesteps. Although the
-calibration parameters are the same magnitude, the higher variances stem
-from the fewer number of considered measurements.
+least squares (LS) estimator that exploits all the measurements. Our TQR-MI
+algorithm performs the optimization with $K=1209$ out of $12609$ timesteps.
+Although the calibration parameters are the same magnitude, the higher variances
+stem from the fewer number of considered measurements.
 
 \begin{table}[!t]
 \renewcommand{\arraystretch}{1.3}
-\caption{Comparison of a standard least-squares estimator and our
+\caption{Comparison of a standard least squares estimator and our
   method on the ``Lost in the Woods dataset''.}
 \label{tab:dataset2-comp}
 \centering

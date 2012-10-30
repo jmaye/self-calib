@@ -294,7 +294,7 @@ partitioned form,
 thus extract $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ from
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ very
 efficiently, and by placing $\boldsymbol{\Theta}$ to the right of the Jacobian
-matrix $\mathbf{H}$. Using \eqref{eqn:covariance_QR},
+matrix $\mathbf{H}$ and using \eqref{eqn:covariance_QR},
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
 computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
 
@@ -309,7 +309,7 @@ Jauffret \cite{jauffret07observability} clearly articulates the link
 between the rank of the FIM and observability of the parameters being
 estimated. In the context of calibration, a singular FIM corresponds
 to some unobservable directions in the parameter space given the
-current set of observations. Classical observabilitiy analysis, for
+current set of observations. Classical observability analysis, for
 example the widely used method of Hermann and Krener
 \cite{hermann77nonlinear} (c.f. \cite{kelly11visual} or
 \cite{mirzaei08kalman}), proves what we will call {\em structural
@@ -384,7 +384,7 @@ method~\cite{kitagawa01regularization}. The strategy is to apply QR
 factorization with column pivoting in order to reveal the rank and to apply a
 cutoff on the diagonal of the $\mathbf{R}$ matrix. It can further be noted that
 the $\mathbf{Q}$ matrix need not be explicitly constructed, but instead returned
-in the form of \emph{Householder} reflections that can be applied on the
+in the form of \emph{Householder} reflections that can be applied to the
 right-hand side of the linear system.
 
 According to the discussion in~\cite{golub96matrix}, \emph{column scaling} may
@@ -511,9 +511,8 @@ $\mathbf{\Theta}_1$ and $\mathcal{D}_2$ can then be computed as
 \noindent where $|\cdot|$ denotes the matrix determinant and
 $\boldsymbol{\Sigma}_{\boldsymbol{\Theta}_1\mid\mathcal{D}_2}$ is the covariance
 estimate of $\boldsymbol{\Theta}$ using $\mathcal{D}_1$ and $\mathcal{D}_2$,
-which is computed by Gauss-Newton optimization.
-
-Thus, using \eqref{eqn:mi_normal}, we can measure the amount of information
+which is computed by Gauss-Newton optimization. Thus, using
+\eqref{eqn:mi_normal}, we can measure the amount of information
 $\mathcal{D}_2$ conveys to our current estimate
 $\boldsymbol{\Theta}\mid\mathcal{D}_1$.
 
