@@ -38,7 +38,7 @@ minY = 0;
 maxY = 15;
 
 % amplitude parameters
-minAmplitude = 3;
+minAmplitude = 0;
 maxAmplitude = 3;
 amplitudeStep = 0.5;
 
