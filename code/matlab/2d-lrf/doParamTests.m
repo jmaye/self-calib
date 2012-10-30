@@ -25,7 +25,7 @@ clear all;
 params;
 
 % number of repetitions for each amplitude and parameter
-rep = 10;
+rep = 15;
 
 % sine wave frequency
 frequency = 0.01;
@@ -40,11 +40,11 @@ maxY = 15;
 % amplitude parameters
 minAmplitude = 0;
 maxAmplitude = 3;
-amplitudeStep = 1.0;
+amplitudeStep = 0.5;
 
 % rank tolerance parameters
 minRankTol = 0;
-maxRankTol = 0.02;
+maxRankTol = 0.025;
 rankTolStep = 0.001;
 
 % output for each repetition with a given amplitude
@@ -84,8 +84,9 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
 
       % TQR optimization
       disp('TQR');
+      tic;
       [x_est l_est Theta_est Sigma] = ls_slam_calib(x_odom, l_hat, ...
-         Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, rankTol);
+         Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, rankTol);toc;
       Theta_tqr(i, :) = Theta_est';
       Sigma_tqr(:, :, i) = Sigma;
       Theta_est
