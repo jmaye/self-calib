@@ -1,6 +1,6 @@
 In this section, we will first state our problem in a probabilistic manner and
 present the mathematical groundings of our method. A practical algorithmic
-sketch will conclude the presentation.\cite{huat06industrial}\cite{gibbs11advanced}
+sketch will conclude the presentation.
 
 \subsection{Problem Formulation\label{subsec:prob}}
 
@@ -337,9 +337,10 @@ from a structurally rank-deficient matrix (the second row is a linear
 combination of the first and the last row) with added Gaussian noise. 
 
 Using SVD decomposition, we can identify a numerically rank-deficient matrix by
-analyzing its singular values \cite{hansen98rank}. The \emph{numerical rank}
-$r$ of a matrix is defined as the index of its smallest singular value
-$\sigma_r$ larger than a user-defined tolerance $\epsilon$, i.e.,
+analyzing its singular values \cite{hansen98rank} and consequently the numerical
+observability of the system~\cite{gibbs11advanced}\cite{huat06industrial}. The
+\emph{numerical rank} $r$ of a matrix is defined as the index of its smallest
+singular value $\sigma_r$ larger than a user-defined tolerance $\epsilon$, i.e.,
 
 \begin{equation}\label{eqn:numerical_rank}
   \begin{aligned}
