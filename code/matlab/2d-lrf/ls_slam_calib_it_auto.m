@@ -20,8 +20,8 @@
 % with a laser range finder in an iterative fashion using mutual information.
 
 function [x_est l_est Theta_est Sigma batchIdx] =...
-  ls_slam_calib_it(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
-  optTol, batchSize, miTol, rankTol)
+  ls_slam_calib_it_auto(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
+  optTol, batchSize, miTol, rankGap)
 
 % default values
 if nargin < 10
@@ -36,6 +36,10 @@ end
 if nargin < 13
   miTol = 0.5;
 end
+if nargin < 14
+  rankGap = 0.015;
+end
+
 
 % number of calibration parameters
 numCalib = length(Theta_hat);
@@ -374,6 +378,21 @@ for i = 1:timesteps
       norms = colNorm(H); % could be included in the above loop for speedup
       G = spdiags(1 ./ norms, 0, cols(H), cols(H));
 
+      % rank inference
+      [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
+        'econ', cols(H)));
+      sortR1 = sort(abs(diag(R1)), 'ascend');
+      for rankIdx = 2:length(sortR1)
+        if sortR1(rankIdx) - sortR1(rankIdx - 1) > rankGap
+          if sortR1(rankIdx - 1) > 1e-16
+            rankTol = sortR1(rankIdx - 1);
+          else
+            rankTol = sortR1(rankIdx);
+          end
+          break;
+        end
+      end
+
       % convergence check
       res = norm(e);
       if oldRes == 0
@@ -387,11 +406,7 @@ for i = 1:timesteps
       end
 
       % update estimate
-      if nargin < 14
-        update = G * spqr_solve(H * G, -e);
-      else
-        update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
-      end
+      update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
       x_est_temp = x_est_temp + [update(1:3:ns * 3) update(2:3:ns * 3) ...
         update(3:3:ns * 3)];
       x_est_temp(:, 3) = anglemod(x_est_temp(:, 3));
@@ -430,7 +445,7 @@ for i = 1:timesteps
       mi = 0.5 * log2(sigmaDetRecord / sigmaDet);
 
       % add batch if needed
-      if mi > miTol && s < 15
+      if mi > miTol
         x_est = x_est_temp;
         l_est = l_est_temp;
         Theta_est = Theta_est_temp;

@@ -20,7 +20,8 @@
 % laser range finder using auto-selection of rank threshold.
 
 function [x_est l_est Theta_est Sigma R1 R2] =...
-  ls_slam_calib_auto(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, optTol)
+  ls_slam_calib_auto(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
+  optTol, rankGap)
 
 % default values
 if nargin < 10
@@ -28,6 +29,9 @@ if nargin < 10
 end
 if nargin < 11
   optTol = 1e-6;
+end
+if nargin < 12
+  rankGap = 0.015;
 end
 
 % timesteps to evaluate
@@ -317,11 +321,12 @@ for s = 1:maxIter
   norms = colNorm(H); % could be included in the above loop for speedup
   G = spdiags(1 ./ norms, 0, cols(H), cols(H));
 
+  % rank inference
   [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
     'econ', cols(H)));
   sortR1 = sort(abs(diag(R1)), 'ascend');
   for rankIdx = 2:length(sortR1)
-    if sortR1(rankIdx) - sortR1(rankIdx - 1) > 0.015
+    if sortR1(rankIdx) - sortR1(rankIdx - 1) > rankGap
       if sortR1(rankIdx - 1) > 1e-16
         rankTol = sortR1(rankIdx - 1)
       else
@@ -347,11 +352,7 @@ for s = 1:maxIter
   res
 
   % update estimate
-  if nargin < 12
-    update = G * spqr_solve(H * G, -e);
-  else
-    update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
-  end
+  update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
   x_est = x_est + [update(1:3:ns * 3) update(2:3:ns * 3) update(3:3:ns * 3)];
   x_est(:, 3) = anglemod(x_est(:, 3));
   l_est = l_est + [update(ns * 3 + 1:2:end - numCalib)...
