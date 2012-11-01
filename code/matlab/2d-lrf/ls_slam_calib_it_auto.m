@@ -25,19 +25,19 @@ function [x_est l_est Theta_est Sigma batchIdx] =...
 
 % default values
 if nargin < 10
-  maxIter = 100;
+  maxIter = 20;
 end
 if nargin < 11
   optTol = 1e-6;
 end
 if nargin < 12
-  batchSize = 100;
+  batchSize = 200;
 end
 if nargin < 13
-  miTol = 0.5;
+  miTol = 1.5;
 end
 if nargin < 14
-  rankGap = 0.015;
+  rankGap = 0.02;
 end
 
 
@@ -382,13 +382,10 @@ for i = 1:timesteps
       [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
         'econ', cols(H)));
       sortR1 = sort(abs(diag(R1)), 'ascend');
-      for rankIdx = 2:length(sortR1)
+      rankTol = 0;
+      for rankIdx = 2:min(length(sortR1), 10)
         if sortR1(rankIdx) - sortR1(rankIdx - 1) > rankGap
-          if sortR1(rankIdx - 1) > 1e-16
-            rankTol = sortR1(rankIdx - 1);
-          else
-            rankTol = sortR1(rankIdx);
-          end
+          rankTol = sortR1(rankIdx);
           break;
         end
       end
@@ -406,7 +403,11 @@ for i = 1:timesteps
       end
 
       % update estimate
-      update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
+      if rankTol == 0
+        break;
+      else
+        update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
+      end
       x_est_temp = x_est_temp + [update(1:3:ns * 3) update(2:3:ns * 3) ...
         update(3:3:ns * 3)];
       x_est_temp(:, 3) = anglemod(x_est_temp(:, 3));

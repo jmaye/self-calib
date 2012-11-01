@@ -325,13 +325,10 @@ for s = 1:maxIter
   [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
     'econ', cols(H)));
   sortR1 = sort(abs(diag(R1)), 'ascend');
-  for rankIdx = 2:length(sortR1)
+  rankTol = 0;
+  for rankIdx = 2:min(length(sortR1), 10)
     if sortR1(rankIdx) - sortR1(rankIdx - 1) > rankGap
-      if sortR1(rankIdx - 1) > 1e-16
-        rankTol = sortR1(rankIdx - 1)
-      else
-        rankTol = sortR1(rankIdx)
-      end
+      rankTol = sortR1(rankIdx)
       break;
     end
   end
@@ -352,7 +349,11 @@ for s = 1:maxIter
   res
 
   % update estimate
-  update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
+  if rankTol == 0
+    update = G * spqr_solve(H * G, -e);
+  else
+    update = G * spqr_solve(H * G, -e, struct('tol', rankTol));
+  end
   x_est = x_est + [update(1:3:ns * 3) update(2:3:ns * 3) update(3:3:ns * 3)];
   x_est(:, 3) = anglemod(x_est(:, 3));
   l_est = l_est + [update(ns * 3 + 1:2:end - numCalib)...

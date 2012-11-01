@@ -25,16 +25,16 @@ function [x_est l_est Theta_est Sigma batchIdx] =...
 
 % default values
 if nargin < 10
-  maxIter = 100;
+  maxIter = 20;
 end
 if nargin < 11
   optTol = 1e-6;
 end
 if nargin < 12
-  batchSize = 100;
+  batchSize = 200;
 end
 if nargin < 13
-  miTol = 0.5;
+  miTol = 1.5;
 end
 
 % number of calibration parameters
