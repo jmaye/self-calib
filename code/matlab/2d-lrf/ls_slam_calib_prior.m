@@ -20,7 +20,7 @@
 % laser range finder. A prior on the first pose and the calibration parameters
 % can be added.
 
-function [x_est l_est Theta_est Sigma R1 R2] =...
+function [x_est l_est Theta_est Sigma] =...
   ls_slam_calib_prior(x_hat, l_hat, Theta_hat, u, r, b, t, Q, R, maxIter, ...
   optTol, x0, P0, Theta0, Sigma0)
 
@@ -386,15 +386,6 @@ for s = 1:maxIter
   end
   norms = colNorm(H); % could be included in the above loop for speedup
   G = spdiags(1 ./ norms, 0, cols(H), cols(H));
-
-  if s == 1
-    [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
-      'econ', cols(H)));
-    R1 = diag(full(P1 * R1 * P1'));
-    [C2, R2, P2] = spqr(H, -e, struct('permutation', 'matrix', ...
-      'econ', cols(H)));
-    R2 = diag(full(P2 * R2 * P2'));
-  end
 
   % convergence check
   res = norm(e);
