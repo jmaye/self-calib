@@ -59,7 +59,7 @@ optTol = 1e-6;
 maxIter = 15;
 
 % initial guess for Theta
-Theta_hat = [0.22; 0.12; 0.8];
+Theta_hat = [0.23; 0.11; 0.8];
 
 warning off all;
 

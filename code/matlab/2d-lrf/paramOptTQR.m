@@ -45,7 +45,7 @@ optTol = 1e-6;
 maxIter = 20;
 
 % initial guess for Theta
-Theta_hat = [0.25; 0.15; 0.9];
+Theta_hat = [0.23; 0.11; 0.8];
 
 % steps for the path
 steps = 5000;
