@@ -84,8 +84,8 @@ for amplitude = minAmplitude:amplitudeStep:maxAmplitude
 
     % TQR optimization
     disp('TQR');
-    [x_est l_est Theta_est Sigma batchIdx] = ls_slam_calib_it_auto(x_odom, ...
-      l_hat, Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, rankGap);
+    [x_est l_est Theta_est Sigma] = ls_slam_calib_auto(x_odom, l_hat, ...
+      Theta_hat, [v, om], r, b, t, Q, R, maxIter, optTol, rankGap);
     Theta_tqr(i, :) = Theta_est';
     Sigma_tqr(:, :, i) = Sigma;
     Theta_est
