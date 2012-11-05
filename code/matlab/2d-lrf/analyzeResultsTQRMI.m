@@ -18,7 +18,7 @@
 
 % This script performs the analysis of the results
 
-function analyzeResults(filename)
+function analyzeResultsTQRMI(filename)
 
 load(filename);
 
