@@ -31,7 +31,7 @@ if nargin < 11
   optTol = 1e-6;
 end
 if nargin < 12
-  rankGap = 0.015;
+  rankGap = 0.1;
 end
 
 % timesteps to evaluate
@@ -326,7 +326,7 @@ for s = 1:maxIter
     'econ', cols(H)));
   for rankIdx = cols(H):-1:cols(H) - 10
     normR22 = norm(full(R1(rankIdx:end, rankIdx:end)));
-    if normR22 > 0.1
+    if normR22 > rankGap
       sortR1 = sort(abs(diag(R1)), 'descend');
       rankTol = sortR1(rankIdx + 1);
       break;
