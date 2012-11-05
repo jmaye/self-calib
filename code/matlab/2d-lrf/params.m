@@ -19,10 +19,10 @@
 % This file contains simulation and estimation parameters.
 
 % translational speed measurement noise
-v_var = 0.0044;
+v_var = 0.00044;
 
 % rotational speed measurement noise
-om_var = 0.0082;
+om_var = 0.00082;
 
 % odometry covariance matrix
 Q = diag([v_var; om_var]);

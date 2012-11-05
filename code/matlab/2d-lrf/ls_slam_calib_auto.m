@@ -324,11 +324,11 @@ for s = 1:maxIter
   % rank inference
   [C1, R1, P1] = spqr(H * G, -e, struct('permutation', 'matrix', ...
     'econ', cols(H)));
-  sortR1 = sort(abs(diag(R1)), 'ascend');
-  rankTol = 0;
-  for rankIdx = 2:min(length(sortR1), 10)
-    if sortR1(rankIdx) - sortR1(rankIdx - 1) > rankGap
-      rankTol = sortR1(rankIdx)
+  for rankIdx = cols(H):-1:cols(H) - 10
+    normR22 = norm(full(R1(rankIdx:end, rankIdx:end)));
+    if normR22 > 0.1
+      sortR1 = sort(abs(diag(R1)), 'descend');
+      rankTol = sortR1(rankIdx + 1);
       break;
     end
   end
