@@ -60,24 +60,31 @@ for i = 1:cols(ampResTQR)
 end
 
 subplot(3, 1, 1);
-boxplot(dx_box_data, 'labels', [0; 0; 0; 0.5; 0.5; 0.5]);
+boxplot(dx_box_data, 'plotstyle', 'compact');
+set(gca,'XTickLabel',{' '});
 x_range = xlim;
 line([x_range(1) x_range(2)], [0.219 0.219], 'LineStyle', '--');
-ylim([-0.8; 0.8]);
-xlabel('Amplitude [m]');
+ylim([0.15; 0.25]);
 ylabel('\delta_x [m]');
 subplot(3, 1, 2);
-boxplot(dy_box_data, 'labels', [0; 0; 0; 0.5; 0.5; 0.5]);
+boxplot(dy_box_data, 'plotstyle', 'compact');
+set(gca,'XTickLabel',{' '})
 x_range = xlim;
 line([x_range(1) x_range(2)], [0.1 0.1], 'LineStyle', '--');
-ylim([-0.8; 0.8]);
-xlabel('Amplitude [m]');
+ylim([0.05; 0.15]);
 ylabel('\delta_y [m]');
 subplot(3, 1, 3);
-boxplot(psi_box_data, 'labels', [0; 0; 0; 0.5; 0.5; 0.5]);
+boxplot(psi_box_data, 'labels', [{'0 - LS'}; {'0 - EKF'}; {'0 - TQR-MI'}; ...
+  {'0.5 - LS'}; {'0.5 - EKF'}; {'0.5 - TQR-MI'}; {'1.0 - LS'}; ...
+  {'1.0 - EKF'}; {'1.0 - TQR-MI'}; {'1.5 - LS'}; {'1.5 - EKF'}; ...
+  {'1.5 - TQR-MI'}; {'2.0 - LS'}; {'2.0 - EKF'}; {'2.0 - TQR-MI'}; ...
+  {'2.5 - LS'}; {'2.5 - EKF'}; {'2.5 - TQR-MI'}; {'3.0 - LS'}; ...
+  {'3.0 - EKF'}; {'3.0 - TQR-MI'}; {'3.5 - LS'}; {'3.5 - EKF'}; ...
+  {'3.5 - TQR-MI'}; {'4.0 - LS'}; {'4.0 - EKF'}; {'4.0 - TQR-MI'}], ...
+  'plotstyle', 'compact');
 x_range = xlim;
 line([x_range(1) x_range(2)], [pi / 4 pi / 4], 'LineStyle', '--');
-ylim([pi / 4 - 0.6; pi / 4 + 0.6]);
+ylim([pi / 4 - 0.1; pi / 4 + 0.1]);
 xlabel('Amplitude [m]');
 ylabel('\psi [rad]');
 
