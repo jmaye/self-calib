@@ -63,8 +63,8 @@ subplot(3, 1, 1);
 boxplot(dx_box_data, 'labels', [{''}; {'0'}; {''}; {''}; {'0.5'}; {''}; ...
   {''}; {'1.0'}; {''}; {''}; {'1.5'}; {''}; {''}; {'2.0'}; {''}; {''}; ...
   {'2.5'}; {''}; {''}; {'3.0'}; {''}; {''}; {'3.5'}; {''}; {''}; {'4.0'}; ...
-  {''}], 'plotstyle', 'compact', 'colors', 'rgb', 'labelOrientation', ...
-  'horizontal');
+  {''}; {''}; {'4.5'}; {''}], 'plotstyle', 'compact', 'colors', 'rgb', ...
+  'labelOrientation', 'horizontal');
 x_range = xlim;
 line([x_range(1) x_range(2)], [0.219 0.219], 'LineStyle', '--');
 line([3.5 3.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
@@ -75,15 +75,15 @@ line([15.5 15.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([18.5 18.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([21.5 21.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([24.5 24.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
+line([27.5 27.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
 ylim([0.219 - 0.1; 0.219 + 0.1]);
-%xlabel('Amplitude [m]');
 ylabel('\delta_x [m]');
 subplot(3, 1, 2);
 boxplot(dy_box_data, 'labels', [{''}; {'0'}; {''}; {''}; {'0.5'}; {''}; ...
   {''}; {'1.0'}; {''}; {''}; {'1.5'}; {''}; {''}; {'2.0'}; {''}; {''}; ...
   {'2.5'}; {''}; {''}; {'3.0'}; {''}; {''}; {'3.5'}; {''}; {''}; {'4.0'}; ...
-  {''}], 'plotstyle', 'compact', 'colors', 'rgb', 'labelOrientation', ...
-  'horizontal');
+  {''}; {''}; {'4.5'}; {''}], 'plotstyle', 'compact', 'colors', 'rgb', ...
+  'labelOrientation', 'horizontal');
 x_range = xlim;
 line([x_range(1) x_range(2)], [0.1 0.1], 'LineStyle', '--');
 line([3.5 3.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
@@ -94,15 +94,15 @@ line([15.5 15.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([18.5 18.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([21.5 21.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([24.5 24.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
+line([27.5 27.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
 ylim([0.1 - 0.1; 0.1 + 0.1]);
-%xlabel('Amplitude [m]');
 ylabel('\delta_y [m]');
 subplot(3, 1, 3);
 boxplot(psi_box_data, 'labels', [{''}; {'0'}; {''}; {''}; {'0.5'}; {''}; ...
   {''}; {'1.0'}; {''}; {''}; {'1.5'}; {''}; {''}; {'2.0'}; {''}; {''}; ...
   {'2.5'}; {''}; {''}; {'3.0'}; {''}; {''}; {'3.5'}; {''}; {''}; {'4.0'}; ...
-  {''}], 'plotstyle', 'compact', 'colors', 'rgb', 'labelOrientation', ...
-  'horizontal');
+  {''}; {''}; {'4.5'}; {''}], 'plotstyle', 'compact', 'colors', 'rgb', ...
+  'labelOrientation', 'horizontal');
 x_range = xlim;
 line([x_range(1) x_range(2)], [pi / 4 pi / 4], 'LineStyle', '--');
 line([3.5 3.5], [pi / 4 - 0.1; pi / 4 + 0.1], 'LineStyle', '--', 'Color', 'k');
@@ -118,44 +118,8 @@ line([21.5 21.5], [pi / 4 - 0.1; pi / 4 + 0.1], 'LineStyle', '--', ...
   'Color', 'k');
 line([24.5 24.5], [pi / 4 - 0.1; pi / 4 + 0.1], 'LineStyle', '--', ...
   'Color', 'k');
+line([27.5 27.5], [pi / 4 - 0.1; pi / 4 + 0.1], 'LineStyle', '--', ...
+  'Color', 'k');
 ylim([pi / 4 - 0.1; pi / 4 + 0.1]);
 xlabel('Amplitude [m]');
 ylabel('\psi [rad]');
-
-%save('dx_ls.mat', 'dx_ls');
-%save('dy_ls.mat', 'dy_ls');
-%save('psi_ls.mat', 'psi_ls');
-%save('dx_ekf.mat', 'dx_ekf');
-%save('dy_ekf.mat', 'dy_ekf');
-%save('psi_ekf.mat', 'psi_ekf');
-%save('dx_tqr.mat', 'dx_tqr');
-%save('dy_tqr.mat', 'dy_tqr');
-%save('psi_tqr.mat', 'psi_tqr');
-
-%boxplot(dx_ls, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'dx_ls.eps');
-%close;
-%boxplot(dy_ls, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'dy_ls.eps');
-%close;
-%boxplot(psi_ls, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'psi_ls.eps');
-%close;
-%boxplot(dx_ekf, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'dx_ekf.eps');
-%close;
-%boxplot(dy_ekf, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'dy_ekf.eps');
-%close;
-%boxplot(psi_ekf, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'psi_ekf.eps');
-%close;
-%boxplot(dx_tqr, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'dx_tqr.eps');
-%close;
-%boxplot(dy_tqr, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'dy_tqr.eps');
-%close;
-%boxplot(psi_tqr, 'labels', [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0]);
-%exportEPSFig(gcf, 'psi_tqr.eps');
-%close;
