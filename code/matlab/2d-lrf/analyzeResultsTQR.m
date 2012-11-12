@@ -59,12 +59,13 @@ for i = 1:cols(ampResTQR)
   boxIdx = boxIdx + 3;
 end
 
-subplot(3, 1, 1);
+dx_fig = figure;
 boxplot(dx_box_data, 'labels', [{''}; {'0'}; {''}; {''}; {'0.5'}; {''}; ...
   {''}; {'1.0'}; {''}; {''}; {'1.5'}; {''}; {''}; {'2.0'}; {''}; {''}; ...
   {'2.5'}; {''}; {''}; {'3.0'}; {''}; {''}; {'3.5'}; {''}; {''}; {'4.0'}; ...
   {''}; {''}; {'4.5'}; {''}; {''}; {'5.0'}; {''}], 'plotstyle', 'compact', ...
   'colors', 'rgb', 'labelOrientation', 'horizontal');
+set(gca,'XTickLabel',{' '})
 x_range = xlim;
 line([x_range(1) x_range(2)], [0.219 0.219], 'LineStyle', '--');
 line([3.5 3.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
@@ -79,12 +80,13 @@ line([27.5 27.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([30.5 30.5], [0.219 - 0.1; 0.219 + 0.1], 'LineStyle', '--', 'Color', 'k');
 ylim([0.219 - 0.1; 0.219 + 0.1]);
 ylabel('\delta_x [m]');
-subplot(3, 1, 2);
+dy_fig = figure;
 boxplot(dy_box_data, 'labels', [{''}; {'0'}; {''}; {''}; {'0.5'}; {''}; ...
   {''}; {'1.0'}; {''}; {''}; {'1.5'}; {''}; {''}; {'2.0'}; {''}; {''}; ...
   {'2.5'}; {''}; {''}; {'3.0'}; {''}; {''}; {'3.5'}; {''}; {''}; {'4.0'}; ...
   {''}; {''}; {'4.5'}; {''}; {''}; {'5.0'}; {''}], 'plotstyle', 'compact', ...
   'colors', 'rgb', 'labelOrientation', 'horizontal');
+set(gca,'XTickLabel',{' '})
 x_range = xlim;
 line([x_range(1) x_range(2)], [0.1 0.1], 'LineStyle', '--');
 line([3.5 3.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
@@ -99,7 +101,7 @@ line([27.5 27.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
 line([30.5 30.5], [0.1 - 0.1; 0.1 + 0.1], 'LineStyle', '--', 'Color', 'k');
 ylim([0.1 - 0.1; 0.1 + 0.1]);
 ylabel('\delta_y [m]');
-subplot(3, 1, 3);
+psi_fig = figure;
 boxplot(psi_box_data, 'labels', [{''}; {'0'}; {''}; {''}; {'0.5'}; {''}; ...
   {''}; {'1.0'}; {''}; {''}; {'1.5'}; {''}; {''}; {'2.0'}; {''}; {''}; ...
   {'2.5'}; {''}; {''}; {'3.0'}; {''}; {''}; {'3.5'}; {''}; {''}; {'4.0'}; ...
