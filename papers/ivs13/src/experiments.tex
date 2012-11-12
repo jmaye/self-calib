@@ -29,7 +29,7 @@ and the odometry produce data at 10 Hz.
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}[scale = 1.2]
+\begin{tikzpicture}[scale = 1.0]
   \input{src/setup.tex}
 \end{tikzpicture}
 \caption{Experimental setup. A 2D robot moving in a plane and observing
@@ -150,17 +150,16 @@ determined the threshold empirically from the scaled system
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/straight-path.eps}
-\caption{Straight path example (best viewed in color). The green line
-  represents the ground truth path, the red line the integrated odometry path,
-  the green crosses the ground truth landmark positions, and the red crosses the
-  guessed landmark positions from measurements.}
+\includegraphics[]{fig/straight-path.eps}
+\caption{Straight path example. The green line represents the ground truth path,
+  the red line the integrated odometry path, the green circles the ground truth
+  landmark positions, and the red circles the guessed landmark positions.}
 \label{fig:straight-path}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/straight-path-merged.eps}
+\includegraphics[]{fig/straight-path-merged.eps}
 \caption{Straight path example analysis. The first column shows the singular
   values and the diagonal elements of the $\mathbf{R}$ matrix from the QR
   decomposition in the noise-free case, and the second column in the noisy
@@ -169,40 +168,53 @@ determined the threshold empirically from the scaled system
 \label{fig:straight-path-analysis}
 \end{figure}
 
-For this first example, Fig.~\ref{fig:straight-path-time} shows the mean
-computation time for some dataset sizes over 100 repetitions for one iteration
-of the Gauss-Newton algorithm using SVD and sparse QR decomposition on a
-quad-core desktop machine. It usually takes less than 10 iterations for the
-optimization to converge. Nevertheless, the SVD method rapidly becomes
-prohibitive due to the polynomial computation time.
+%For this first example, Fig.~\ref{fig:straight-path-time} shows the mean
+%computation time for some dataset sizes over 100 repetitions for one iteration
+%of the Gauss-Newton algorithm using SVD and sparse QR decomposition on a
+%quad-core desktop machine. It usually takes less than 10 iterations for the
+%optimization to converge. Nevertheless, the SVD method rapidly becomes
+%prohibitive due to the polynomial computation time.
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig/straight-path-time.eps}
-\caption{Mean computation time over 100 repetitions for one step of
-  optimization using SVD (polynomial time) and sparse QR (linear time)
-  decomposition.}
-\label{fig:straight-path-time}
-\end{figure}
+%\begin{figure}[t]
+%\centering
+%\includegraphics[]{fig/straight-path-time.eps}
+%\caption{Mean computation time over 100 repetitions for one step of
+%  optimization using SVD (blue line, polynomial time) and sparse QR (red line,
+%  linear time) decomposition.}
+%\label{fig:straight-path-time}
+%\end{figure}
 
 To conclude this section on simulated data, we will analyze the performance of
 different algorithms, namely an Extended Kalman Filter (EKF) similar
-to~\cite{martinelli06automatic}, a standard batch nonlinear least squares
+to~\cite{martinelli06automatic}, a standard batch nonlinear least squares (LS)
 method without regularization~\cite{kuemmerle11simultaneous}, and our TQR-MI
 approach, on a sine wave path with varying amplitude such that the offset
 parameters range from unobservable (straight path or zero amplitude) to
 fully observable (higher amplitude). To get significant statistical results, we
 have repeated the experiment $100$ times with the same initial conditions
 ($\delta_x^{(0)}=0.23$ [m], $\delta_y^{(0)}=0.11$ [m], $\psi^{(0)}=0.8$ [rad])
-and amplitudes from $0$ [m] to $5$ [m] with steps of $0.5$ [m] over $3000$
-timesteps. Fig.~\ref{fig:sine-wave-analysis} displays the result of this
-experiment.
+and amplitudes from $0$ [m] to $5$ [m] with steps of $0.5$ [m] over $5000$
+timesteps ($500$ [s] of data). Fig.~\ref{fig:sine-wave-analysis} displays the
+result of this experiment. At amplitude $0$, we clearly witness that the LS and
+EKF estimators fail to yield reasonable offset parameters. With our TQR-MI
+method, these parameters remain at their initial guess until an amplitude of $1$
+and only the angle gets optimized. As the amplitude grows, our method becomes
+comparable to the LS estimator, while using fewer measurements. Although being
+fed by an initial prior, the EKF proves to be inferior to batch methods.
 
 \begin{figure*}[t]
-\centering
-\includegraphics[width=6.4in]{fig/sine-wave-analysis.eps}
-\caption{Sine wave results.}
+\begin{center}
+\includegraphics[]{fig/sine-wave-dx.eps}
+\includegraphics[]{fig/sine-wave-dy.eps}
+\includegraphics[]{fig/sine-wave-psi.eps}
+\caption{Comparison of a least squares (red), EKF (green), and our TQR-MI (blue)
+  estimator on a sine wave path of $5000$ timesteps with varying amplitudes
+  ($0$ to $5$ [m] with steps of $0.5$ [m]). For each amplitude and method, $100$
+  simulations are performed and the computed calibration parameters ($\delta_x$,
+  $\delta_y$, and $\psi$) are reported in boxplot form. The dashed blue lines
+  represent the ground truth calibration parameters.}
 \label{fig:sine-wave-analysis}
+\end{center}
 \end{figure*}
 
 \subsection{Real-world Data}
@@ -224,10 +236,9 @@ from~\cite{fiore01efficient}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{fig/dataset2-path-result.eps}
-\caption{Application of our algorithm on the ``Lost in the Woods dataset''
-  (best viewed in color). The
-  green line represents the ground truth path, the red line the integrated
+\includegraphics[]{fig/dataset2-path-result.eps}
+\caption{Application of our algorithm on the ``Lost in the Woods dataset''.
+  The green line represents the ground truth path, the red line the integrated
   odometry path, the green crosses the ground truth landmark positions, the blue
   points the estimated landmark positions, and the blue crosses the estimated
   robot poses. Our MI selection scheme picks only $10\%$ of the measurements
