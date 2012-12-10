@@ -20,6 +20,10 @@
 
 function analyzeResultsTQR(filename)
 
+dx_true = 0.219;
+dy_true = 0.1;
+psi_true = pi / 4;
+
 load(filename);
 
 dx_ls = zeros(ampResTQR(1).rep, cols(ampResTQR));
@@ -36,8 +40,19 @@ dx_box_data = zeros(ampResTQR(1).rep, cols(ampResTQR) * 3);
 dy_box_data = zeros(ampResTQR(1).rep, cols(ampResTQR) * 3);
 psi_box_data = zeros(ampResTQR(1).rep, cols(ampResTQR) * 3);
 
+dx_ls_rms = zeros(cols(ampResTQR), 1);
+dy_ls_rms = zeros(cols(ampResTQR), 1);
+psi_ls_rms = zeros(cols(ampResTQR), 1);
+dx_tqr_rms = zeros(cols(ampResTQR), 1);
+dy_tqr_rms = zeros(cols(ampResTQR), 1);
+psi_tqr_rms = zeros(cols(ampResTQR), 1);
+dx_ekf_rms = zeros(cols(ampResTQR), 1);
+dy_ekf_rms = zeros(cols(ampResTQR), 1);
+psi_ekf_rms = zeros(cols(ampResTQR), 1);
+
 boxIdx = 1;
 for i = 1:cols(ampResTQR)
+  % boxplot
   dx_ls(:, i) = ampResTQR(i).Theta_ls(:, 1);
   dy_ls(:, i) = ampResTQR(i).Theta_ls(:, 2);
   psi_ls(:, i) = ampResTQR(i).Theta_ls(:, 3);
@@ -57,6 +72,27 @@ for i = 1:cols(ampResTQR)
   psi_box_data(:, boxIdx + 1) = ampResTQR(i).Theta_ekf(:, 3);
   psi_box_data(:, boxIdx + 2) = ampResTQR(i).Theta_tqr(:, 3);
   boxIdx = boxIdx + 3;
+
+  % rms
+  dx_ls_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(dx_true - ampResTQR(i).Theta_ls(:, 1)).^2);
+  dy_ls_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(dy_true - ampResTQR(i).Theta_ls(:, 2)).^2);
+  psi_ls_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(psi_true - ampResTQR(i).Theta_ls(:, 3)).^2);
+  dx_tqr_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(dx_true - ampResTQR(i).Theta_tqr(:, 1)).^2);
+  dy_tqr_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(dy_true - ampResTQR(i).Theta_tqr(:, 2)).^2);
+  psi_tqr_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(psi_true - ampResTQR(i).Theta_tqr(:, 3)).^2);
+  dx_ekf_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(dx_true - ampResTQR(i).Theta_ekf(:, 1)).^2);
+  dy_ekf_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(dy_true - ampResTQR(i).Theta_ekf(:, 2)).^2);
+  psi_ekf_rms(i) = sqrt(1 / ampResTQR(1).rep * ...
+    sum(psi_true - ampResTQR(i).Theta_ekf(:, 3)).^2);
+
 end
 
 dx_fig = figure;
@@ -127,5 +163,29 @@ line([27.5 27.5], [pi / 4 - 0.1; pi / 4 + 0.1], 'LineStyle', '--', ...
 line([30.5 30.5], [pi / 4 - 0.1; pi / 4 + 0.1], 'LineStyle', '--', ...
   'Color', 'k');
 ylim([pi / 4 - 0.1; pi / 4 + 0.1]);
+xlabel('Amplitude [m]');
+ylabel('\psi [rad]');
+
+
+amplitudes = [0; 0.5; 1.0; 1.5; 2.0; 2.5; 3.0; 3.5; 4.0; 4.5; 5.0];
+rms_dx_fig = figure;
+plot(amplitudes, dx_ls_rms, 'r');
+hold on;
+plot(amplitudes, dx_tqr_rms, 'g');
+%plot(amplitudes, dx_ekf_rms, 'b');
+xlabel('Amplitude [m]');
+ylabel('\delta_x [m]');
+rms_dy_fig = figure;
+plot(amplitudes, dy_ls_rms, 'r');
+hold on;
+plot(amplitudes, dy_tqr_rms, 'g');
+%plot(amplitudes, dy_ekf_rms, 'b');
+xlabel('Amplitude [m]');
+ylabel('\delta_y [m]');
+rms_psi_fig = figure;
+plot(amplitudes, psi_ls_rms, 'r');
+hold on;
+plot(amplitudes, psi_tqr_rms, 'g');
+%plot(amplitudes, psi_ekf_rms, 'b');
 xlabel('Amplitude [m]');
 ylabel('\psi [rad]');
