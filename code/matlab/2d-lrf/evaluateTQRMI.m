@@ -58,8 +58,8 @@ ampIdx = 1;
 optTol = 1e-6;
 maxIter = 20;
 rankGap = 0.02;
-batchSize = 150;
-miThreshold = 1.5;
+batchSize = 200;
+miThreshold = 0.5;
 
 % initial guess for Theta
 Theta_hat = [0.23; 0.11; 0.8];
