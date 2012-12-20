@@ -164,7 +164,7 @@ determined the threshold empirically from the scaled system
   values and the diagonal elements of the $\mathbf{R}$ matrix from the QR
   decomposition in the noise-free case, and the second column in the noisy
   case. Only the 100 lower values from the scaled system
-  \eqref{eqn:scaled_system} are plotted for visualization purpose.}
+  \eqref{eqn:scaled_system} are plotted for visualization purpose.\vspace*{-0.1in}}
 \label{fig:straight-path-analysis}
 \end{figure}
 
@@ -204,15 +204,14 @@ fed by an initial prior, the EKF proves to be inferior to batch methods.
 
 \begin{figure*}[t]
 \begin{center}
-\includegraphics[]{fig/sine-wave-dx.eps}
-\includegraphics[]{fig/sine-wave-dy.eps}
-\includegraphics[]{fig/sine-wave-psi.eps}
-\caption{Comparison of a least squares (red), EKF (green), and our TQR-MI (blue)
+\includegraphics[]{fig/sine-wave-dx-rms.eps}\\
+\includegraphics[]{fig/sine-wave-dy-rms.eps}\\
+\hspace*{0.05in}\includegraphics[]{fig/sine-wave-psi-rms.eps}
+\caption{Comparison of a least squares (red), EKF (blue), and our TQR-MI (green)
   estimator on a sine wave path of $5000$ timesteps with varying amplitudes
   ($0$ to $5$ [m] with steps of $0.5$ [m]). For each amplitude and method, $100$
-  simulations are performed and the computed calibration parameters ($\delta_x$,
-  $\delta_y$, and $\psi$) are reported in boxplot form. The dashed blue lines
-  represent the ground truth calibration parameters.}
+  simulations are performed and the RMS errors of the computed calibration
+  parameters ($\delta_x$, $\delta_y$, and $\psi$) are reported.}
 \label{fig:sine-wave-analysis}
 \end{center}
 \end{figure*}
