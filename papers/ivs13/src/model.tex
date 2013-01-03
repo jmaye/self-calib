@@ -105,7 +105,7 @@ algorithm~\cite{aster11parameter} for this purpose.
 
 From \eqref{eqn:map_estimator} and the approximation that the densities involved
 are normal, we can turn the MAP problem into the minimization of a sum of
-quadratic functions. Nonlinear optimization techniques start with an initial
+squared error terms. Nonlinear optimization techniques start with an initial
 guess,
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$, and refine
 it iteratively with
@@ -352,9 +352,9 @@ For example, the singular values of $\mathbf{A}$ are approximately 16.8, 1.1,
 and 0.0001. From \eqref{eqn:dx_svd_solve}, we can see that if some of the
 $\sigma_i$ are close to zero, i.e. $r<n$, the update vector
 $\delta\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}^
-{(SVD)}$ will be large (scaled by $1/\sigma_i$) and eventually lead to a
+{(SVD)}$ will be large (scaled by $1/\sigma_i$) and sometimes lead to a
 divergence of the solution. In order to cope with this issue, we can
-approximate $\mathbf{L}\mathbf{H}$ with a lower rank matrix yielding the
+approximate $\mathbf{L}\mathbf{H}$ with a lower-rank matrix yielding the
 \emph{Truncated} SVD (TSVD)~\cite{varah73numerical} solution,
 
 \begin{equation}\label{eqn:dx_tsvd_solve}
@@ -402,7 +402,8 @@ applicable. We define the scaling matrix as
   \end{aligned}
 \end{equation}
 
-\noindent where $||\cdot||$ denotes the column vector norm, and compute a
+\noindent where $||\cdot||$ denotes the column vector norm and
+$\mathbf{H}(:,i)$ the $i$-th column of $\mathbf{H}$, and compute a
 solution to the scaled system,
 
 \begin{equation}\label{eqn:scaled_system}
@@ -427,7 +428,7 @@ $\mathcal{D}_1=\{\mathbf{u}_{1:i}, \mathbf{z}_{1_{1:N}:i_{1:N}}\}$ and
 $\mathcal{D}_2=\{\mathbf{u}_{i+1:K}, \mathbf{z}_{i+1_{1:N}:K_{1:N}}\}$ with
 $i<K$. Using information theory, we can quantify the information gain when
 estimating $\boldsymbol{\Theta}$ with $\mathcal{D}_1$ alone or with
-$\mathcal{D}_1$ and $\mathcal{D}_2$.
+$\mathcal{D}_1\cup\mathcal{D}_2$.
 
 The \emph{mutual information} (MI)~\cite{mackay05information} between two random
 variables $\mathbf{X}$ and $\mathbf{Y}$ is defined as

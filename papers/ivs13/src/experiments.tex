@@ -7,7 +7,7 @@ methods.
 \subsection{Experimental Setup}
 
 Our method has been fully implemented in MATLAB and we have used the
-SuiteSparseQR~\cite{davis11algorithm} package for performing sparse matrices
+SuiteSparseQR~\cite{davis11algorithm} package for performing sparse matrix
 operations.
 
 Although our eventual goal is full, self-supervised calibration for an
@@ -131,10 +131,9 @@ path as shown in Fig.~\ref{fig:straight-path}. Intuitively, the problem is
 structurally unobservable. Indeed, it has 5 unobservable parameters, 3
 corresponding to the global pose of the map and trajectory (as no global
 measurements or prior are included) and 2 for the calibration offset variables
-$\delta_x$ and $\delta_y$. If we set the noise matrices $\mathbf{W}_k$ and
-$\mathbf{N}_k$ to $\mathbf{0}$ and examine the singular values of the Jacobian
-matrix, 5 values are $0$ up to machine precision, i.e., a structural rank
-deficiency. By adding noise to the system, only 3 singular values remain at $0$
+$\delta_x$ and $\delta_y$. In the absence of noise, 5 of the singular values of
+the Jacobian matrix are zero up to machine precision, i.e., a structural rank
+deficiency. However, when noise is added, only 3 singular values remain at $0$
 for the same problem. From the integrated odometry path in
 Fig.~\ref{fig:straight-path}, the calibration parameters appear indeed as
 observable and a naive algorithm without regularization will thus wrongly
