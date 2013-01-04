@@ -174,8 +174,10 @@ decomposition allows the estimation of the numerical rank of the
 FIM, and consequently (as described below) provides information about the
 numerical observability of the parameters for a given batch of data.
 
-Let $\mathbf{L}\mathbf{H}$ be of size $m\times n$ with the following thin
-Singular Value Decomposition (\emph{SVD}) decomposition~\cite{golub96matrix},
+Let $\mathbf{L}\mathbf{H}$ be of size $m\times n$ with the following
+thin\footnote{Only the first $n$ out of $m$ columns of $\mathbf{U}$ are computed
+in a thin SVD decomposition.} Singular Value Decomposition (\emph{SVD})
+decomposition~\cite{golub96matrix},
 
 \begin{equation}\label{eqn:svd_decomposition}
   \begin{aligned}
@@ -236,25 +238,33 @@ solved by \emph{back substitution}.
 The $\mathbf{R}_n$ matrix can also be used to compute the FIM and its
 inverse, the estimate covariance,
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$. If we
-drop the permutation matrix for clarity, the FIM becomes
-$\mathbf{R}_n^T\mathbf{R}_n$. Let $\sigma_{ij}$ denote the elements of
-$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and
-$r_{ij}$ the elements of $\mathbf{R}_n$, there exists an
+drop the permutation matrix for clarity, the FIM simply becomes
+$\mathbf{R}_n^T\mathbf{R}_n$ and there exists an
 efficient algorithm~\cite{kaess09covariance} for recovering any elements of the
-covariance estimate without inverting the whole FIM,
+covariance estimate without inverting the whole FIM.
 
-\begin{equation}\label{eqn:covariance_QR}
-  \begin{aligned}
-  \sigma_{ll} &= \frac{1}{r_{ll}}(\frac{1}{r_{ll}} -
-    \sum_{j = l + 1, r_{lj}\neq 0}^n r_{lj}\sigma_{jl}),\\
-  \sigma_{il} &= \frac{1}{r_{ii}}
-    (-\sum_{j = i + 1, r_{ij}\neq 0}^l r_{ij}\sigma_{jl} -
-    \sum_{j = l + 1, r_{ij}\neq 0}^n r_{ij}\sigma_{lj}),
-  \end{aligned}
-\end{equation}
+%The $\mathbf{R}_n$ matrix can also be used to compute the FIM and its
+%inverse, the estimate covariance,
+%$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$. If we
+%drop the permutation matrix for clarity, the FIM becomes
+%$\mathbf{R}_n^T\mathbf{R}_n$. Let $\sigma_{ij}$ denote the elements of
+%$\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ and
+%$r_{ij}$ the elements of $\mathbf{R}_n$, there exists an
+%efficient algorithm~\cite{kaess09covariance} for recovering any elements of the
+%covariance estimate without inverting the whole FIM,
 
-\noindent for $l=n,\cdots,1$, $i=l-1,\cdots,1$; the lower part is given by
-symmetry.
+%\begin{equation}\label{eqn:covariance_QR}
+%  \begin{aligned}
+%  \sigma_{ll} &= \frac{1}{r_{ll}}(\frac{1}{r_{ll}} -
+%    \sum_{j = l + 1, r_{lj}\neq 0}^n r_{lj}\sigma_{jl}),\\
+%  \sigma_{il} &= \frac{1}{r_{ii}}
+%    (-\sum_{j = i + 1, r_{ij}\neq 0}^l r_{ij}\sigma_{jl} -
+%    \sum_{j = l + 1, r_{ij}\neq 0}^n r_{ij}\sigma_{lj}),
+%  \end{aligned}
+%\end{equation}
+
+%\noindent for $l=n,\cdots,1$, $i=l-1,\cdots,1$; the lower part is given by
+%symmetry.
 
 At the convergence of the Gauss-Newton optimization, we are thus left with the
 estimates $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$
@@ -294,7 +304,7 @@ partitioned form,
 thus extract $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}}$ from
 $\hat{\boldsymbol{\mu}}_{\boldsymbol{\Theta}\mathcal{X}\mathcal{L}}$ very
 efficiently, and by placing $\boldsymbol{\Theta}$ to the right of the Jacobian
-matrix $\mathbf{H}$ and using \eqref{eqn:covariance_QR},
+matrix $\mathbf{H}$ and using~\cite{kaess09covariance},
 $\hat{\boldsymbol{\Sigma}}_{\boldsymbol{\Theta}\boldsymbol{\Theta}}$ can be
 computed in $\mathcal{O}(l)$, where $l=\card(\boldsymbol{\Theta})$.
 

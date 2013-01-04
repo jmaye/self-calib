@@ -18,17 +18,18 @@ will have no access to special calibration hardware or expert data analysis.
 In such a scenario, the vehicle must be capable of self-supervised
 recalibration. This problem is inherently difficult for a number of reasons that
 we will briefly discuss here.
+
 \begin{figure}[t]
 \centering
 \includegraphics[]{fig/sin-path-result.eps}
 \caption{Exemplary output of our calibration algorithm. The ground
   truth trajectory and landmark positions are shown in green, their
   respective estimates in blue, and the integrated odometry path in
-  red.  An information theoretic measure is used to automatically
+  red. An information theoretic measure is used to automatically
   identify and store novel measurement sequences (shown in blue),
   discarding redundant information and building a sparse but complete
   calibration dataset from data collected at different
-  times.\vspace{-4.5pt}}
+  times.}
 \label{fig:calib_demo}
 \end{figure}
 
@@ -86,7 +87,7 @@ parameters based on a set of measurements, and (iii) we have some reasonable
 initial guess for the calibration parameters (e.g. from factory calibration).
 Fig.~\ref{fig:calib_demo} shows a typical calibration run of our algorithm.
 
-%The remainder of the paper is structured as follows.
+The remainder of the paper is structured as follows.
 Section~\ref{sec:rel}
 will give a brief overview over related approaches. Section~\ref{sec:model} is
 dedicated to the mathematical grounding of our method.

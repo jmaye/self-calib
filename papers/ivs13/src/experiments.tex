@@ -24,7 +24,7 @@ of the range sensor consist in the transformation of its coordinate
 system to the robot's coordinate system. The platform is further
 endowed with wheel odometers outputting translational and rotational
 speeds. While navigating on the plane, the robot observes a known
-number of landmarks through its range sensor. Both the range sensor 
+number of landmarks through its range sensor. Both the range sensor
 and the odometry produce data at 10 Hz.
 
 \begin{figure}[t]
@@ -198,8 +198,10 @@ result of this experiment. At amplitude $0$, we clearly witness that the LS and
 EKF estimators fail to yield reasonable offset parameters. With our TQR-MI
 method, these parameters remain at their initial guess until an amplitude of $1$
 and only the angle gets optimized. As the amplitude grows, our method becomes
-comparable to the LS estimator, while using fewer measurements. Although being
-fed by an initial prior, the EKF proves to be inferior to batch methods.
+comparable to the LS estimator, while using fewer measurements. In these
+experiments, the EKF is fed by a vague initial prior and exhibits instability
+in case of unobservability. A more concentrated prior would improve the results
+at the cost of introducing potential bias.
 
 \begin{figure*}[t]
 \begin{center}
@@ -210,7 +212,8 @@ fed by an initial prior, the EKF proves to be inferior to batch methods.
   estimator on a sine wave path of $5000$ timesteps with varying amplitudes
   ($0$ to $5$ [m] with steps of $0.5$ [m]). For each amplitude and method, $100$
   simulations are performed and the RMS errors of the computed calibration
-  parameters ($\delta_x$, $\delta_y$, and $\psi$) are reported.}
+  parameters ($\delta_x$, $\delta_y$, and $\psi$) are reported. The plots are
+  scaled to show the behavior of the algorithms near RMS = 0.}
 \label{fig:sine-wave-analysis}
 \end{center}
 \end{figure*}

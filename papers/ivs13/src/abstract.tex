@@ -1,22 +1,3 @@
-% In this paper, we address the problem of sensors calibration for mobile robots.
-% In particular, we are aiming towards an automated system ready to be deployed
-% for long-term and online operation in the hands of non-experts. To this end, we
-% augment the classical SLAM formulation with calibration parameters and derive
-% an MAP estimator that is computed using a Gauss-Newton algorithm. Degenerate
-% dimensions in sensor data are identified by means of QR decomposition and
-% automatically discarded from the optimization via a truncated method, such that
-% only observable parts are exploited. Finally, incoming sensor data is processed
-% in batch and selected using an information theoretic measure. Through an
-% extensive set of simulated and real-world experiments, we demonstrate that our
-% method outperforms state-of-the-art algorithms in terms of applicability,
-% accuracy, and speed.
-
-%Every robotic system has some set of calibration parameters that must
-%be accurately known for safe operation and accurate state estimation,
-%planning, and control. Despite best efforts, some
-%parameters will change over the robot's lifetime due to normal wear
-%and tear. 
-
 We present a generic algorithm for self calibration of robotic systems
 that utilizes two key innovations. First, it uses information
 theoretic measures to automatically identify and store novel
