@@ -9,5 +9,39 @@
 \date{\today}
 \begin{document}
   \maketitle
-  \section{Model}\label{sec:model}
+
+  \section{Variables Definitions}\label{sec:model}
+    \begin{itemize}
+      \item Swiss Grid reference frame: $\mathbf{I}_w$
+      \item Vehicle reference frame: $\mathbf{I}_v$
+      \item Odometry reference frame: $\mathbf{I}_o$
+      \item Camera $i$ reference frame: $\mathbf{I}_{c_i}$
+      \item LRV representing rigid transformation between Swiss Grid reference
+        and vehicle reference frames at time $k$: $\mathbf{I}_{w,v}^{(k)}$
+      \item LRV representing rigid transformation between vehicle reference and
+        odometry reference frames: $\mathbf{I}_{v,o}$
+      \item LRV representing rigid transformation between vehicle reference and
+        camera $i$ reference frames: $\mathbf{I}_{v,c_i}$
+      \item ORV representing an Applanix measurement at time $k$:
+        $\mathbf{x}^{(k)}$
+      \item Covariance matrix of Applanix measurement at time $k$:
+        $\mathbf{Q}^{(k)}$
+      \item ORV representing odometry measurement at time $k$:
+        $\mathbf{u}^{(k)}$
+      \item Covariance matrix of odometry measurement:
+        $\mathbf{R}$
+      \item Camera stuff TBD by Paul Furgale
+    \end{itemize}
+
+  \section{Error Terms Definitions}\label{sec:errors}
+    \subsection{Applanix Measurement}
+      $\mathbf{x}^{(k)}\sim\mathcal{N}(\mathbf{I}_{w,v}^{(k)},
+        \mathbf{Q}^{(k)})$
+
+    \subsection{Odometry Measurement}
+      $\mathbf{u}^{(k)}\sim\mathcal{N}(\frac{1}{T}(\mathbf{I}_{w,v}^{(k-1)}
+      \mathbf{I}_{v,o}(\mathbf{I}_{w,v}^{(k)}- \mathbf{I}_{w,v}^{(k-1)}),
+      \mathbf{R})$
+      TODO: express this better!
+
 \end{document}
