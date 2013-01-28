@@ -13,14 +13,14 @@
   \section{Variables Definitions}\label{sec:model}
     \begin{itemize}
       \item Swiss Grid reference frame: $\mathbf{I}_w$
-      \item Vehicle reference frame: $\mathbf{I}_v$
+      \item Vehicle reference frame (Applanix): $\mathbf{I}_v$
       \item Odometry reference frame: $\mathbf{I}_o$
-      \item LRV representing the velocity of the vehicle reference frame at time
-        $k$ in the Swiss Grid reference frame:
-        $(\mathbf{v}_{v,w}^{(k)},\boldsymbol{\omega}_{v,w}^{(k)})$
       \item LRV representing rigid transformation between Swiss Grid reference
         and vehicle reference frames at time $k$ (vehicle to Swiss Grid):
         $\mathbf{T}_{v,w}^{(k)}=(\mathbf{R}_{v,w}^{(k)},\mathbf{t}_{v,w}^{(k)})$
+      \item LRV representing the velocity of the vehicle reference frame at time
+        $k$ in the Swiss Grid reference frame:
+        $(\mathbf{v}_{v,w}^{(k)},\boldsymbol{\omega}_{v,w}^{(k)})$
       \item LRV representing rigid transformation between vehicle reference and
         odometry reference frames (odometry to vehicle):
         $\mathbf{T}_{o,v}=(\mathbf{R}_{o,v},\mathbf{t}_{o,v})$
@@ -37,7 +37,7 @@
         $e$ (half car width)
       \item LRV representing wheel speed factors: $\kappa_{rr},\kappa_{rl},
         \kappa_{fr},\kappa_{fl}$
-      \item LRV representing steering wheel transmission: $a_0,a_1,a_2$
+      \item LRV representing steering wheel transmission: $a_0,a_1,a_2,a_3$
     \end{itemize}
 
   \section{Error Terms Definitions}\label{sec:errors}
@@ -45,29 +45,28 @@
       $\mathbf{x}^{(k)}\sim\mathcal{N}(\mathbf{T}_{v,w}^{(k)},
         \mathbf{Q}^{(k)})$
 
+      \noindent TBD: change the formulation here according to Paul\\
       \noindent TBD: speed measurement could be included here as well
 
     \subsection{Odometry Measurement}
       \begin{itemize}
-        \item Virtual wheel steering angle at time $k$:
+        \item Virtual front middle wheel steering angle at time $k$:
           $\psi^{(k)}$
         \item Steering wheel transmission at time $k$:
-          $\theta^{(k)} = a_0 + a_1\psi^{(k)} + a_2\psi^{2(k)}$
+          $\theta^{(k)} = a_0 + a_1\psi^{(k)} + a_2\psi^{(k)2} + a_3\psi^{(k)3}$
+        \item Translational velocity in vehicle reference frame at time $k$:
+          $\mathbf{v}_{v,v}^{(k)}=\mathbf{R}_{v,w}^{(k)T}\mathbf{v}_{v,w}^{(k)}$
+        \item Rotational velocity in vehicle reference frame at time $k$:
+          $\boldsymbol{\omega}_{v,v}^{(k)}=\mathbf{R}_{v,w}^{(k)T}
+          \boldsymbol{\omega}_{v,w}^{(k)}$
         \item Translational velocity in odometry reference frame at time $k$:
-          $\mathbf{v}_{o,o}^{(k)}=[v_x^{(k)},0,0]^T$
+          $\mathbf{v}_{o,o}^{(k)}=\mathbf{R}_{o,v}^T(\mathbf{v}_{v,v}^{(k)} -
+          \boldsymbol{\omega}_{v,v}^{(k)}\times\mathbf{t}_{o,v})=
+          [v_x^{(k)},v_y^{(k)},v_z^{(k)}]^T$
         \item Rotational velocity in odometry reference frame at time $k$:
-          $\boldsymbol{\omega}_{o,o}^{(k)}=[0,0,\omega_z^{(k)}]^T$
-        \item Translational velocity of odometry reference frame in vehicle
-          reference frame at time $k$:
-          $\mathbf{v}_{o,v}^{(k)}=\mathbf{R}_{o,v}\mathbf{v}_{o,o}^{(k)}$
-        \item Rotational velocity of odometry reference frame in vehicle
-          reference frame at time $k$:
-          $\boldsymbol{\omega}_{o,v}^{(k)}=
-          \mathbf{R}_{o,v}\boldsymbol{\omega}_{o,o}^{(k)}$
-         \item $\mathbf{v}_{v,w}^{(k)}=\mathbf{R}_{v,w}^{(k)}
-           \mathbf{v}_{o,v}^{(k)}$,
-           $\boldsymbol{\omega}_{v,w}^{(k)}=\mathbf{R}_{v,w}^{(k)}
-           \boldsymbol{\omega}_{o,v}^{(k)}$
+          $\boldsymbol{\omega}_{o,o}^{(k)}=\mathbf{R}_{o,v}^T
+          \boldsymbol{\omega}_{v,v}^{(k)}=
+          [\omega_x^{(k)},\omega_y^{(k)},\omega_z^{(k)}]^T$
          \item $\tan\psi_L^{(k)}=
            \frac{\tan(\psi^{(k)} L)}{L - e\tan(\psi^{(k)})}$,
            $\tan\psi_R^{(k)}=\frac{\tan(\psi^{(k)} L)}{L + e\tan(\psi^{(k)})}$
