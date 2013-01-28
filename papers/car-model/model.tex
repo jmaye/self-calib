@@ -15,33 +15,69 @@
       \item Swiss Grid reference frame: $\mathbf{I}_w$
       \item Vehicle reference frame: $\mathbf{I}_v$
       \item Odometry reference frame: $\mathbf{I}_o$
-      \item Camera $i$ reference frame: $\mathbf{I}_{c_i}$
+      \item LRV representing the velocity of the vehicle reference frame at time
+        $k$ in the Swiss Grid reference frame:
+        $(\mathbf{v}_{v,w}^{(k)},\boldsymbol{\omega}_{v,w}^{(k)})$
       \item LRV representing rigid transformation between Swiss Grid reference
-        and vehicle reference frames at time $k$: $\mathbf{I}_{w,v}^{(k)}$
+        and vehicle reference frames at time $k$ (vehicle to Swiss Grid):
+        $\mathbf{T}_{v,w}^{(k)}=(\mathbf{R}_{v,w}^{(k)},\mathbf{t}_{v,w}^{(k)})$
       \item LRV representing rigid transformation between vehicle reference and
-        odometry reference frames: $\mathbf{I}_{v,o}$
-      \item LRV representing rigid transformation between vehicle reference and
-        camera $i$ reference frames: $\mathbf{I}_{v,c_i}$
-      \item ORV representing an Applanix measurement at time $k$:
-        $\mathbf{x}^{(k)}$
+        odometry reference frames (odometry to vehicle):
+        $\mathbf{T}_{o,v}=(\mathbf{R}_{o,v},\mathbf{t}_{o,v})$
+      \item ORV representing Applanix measurement at time $k$
+        (pose): $\mathbf{x}^{(k)}$
       \item Covariance matrix of Applanix measurement at time $k$:
         $\mathbf{Q}^{(k)}$
       \item ORV representing odometry measurement at time $k$:
-        $\mathbf{u}^{(k)}$
-      \item Covariance matrix of odometry measurement:
-        $\mathbf{R}$
-      \item Camera stuff TBD by Paul Furgale
+        $\mathbf{u}^{(k)}=[v_{rr}^{(k)},v_{rl}^{(k)},v_{fr}^{(k)},v_{fl}^{(k)},
+        \theta^{(k)}]^T$
+      \item Covariance matrix of odometry measurement at time $k$:
+        $\mathbf{R}^{(k)}$
+      \item LRV representing vehicle geometry: $L$ (rear-front axle distance),
+        $e$ (half car width)
+      \item LRV representing wheel speed factors: $\kappa_{rr},\kappa_{rl},
+        \kappa_{fr},\kappa_{fl}$
+      \item LRV representing steering wheel transmission: $a_0,a_1,a_2$
     \end{itemize}
 
   \section{Error Terms Definitions}\label{sec:errors}
     \subsection{Applanix Measurement}
-      $\mathbf{x}^{(k)}\sim\mathcal{N}(\mathbf{I}_{w,v}^{(k)},
+      $\mathbf{x}^{(k)}\sim\mathcal{N}(\mathbf{T}_{v,w}^{(k)},
         \mathbf{Q}^{(k)})$
 
+      \noindent TBD: speed measurement could be included here as well
+
     \subsection{Odometry Measurement}
-      $\mathbf{u}^{(k)}\sim\mathcal{N}(\frac{1}{T}(\mathbf{I}_{w,v}^{(k-1)}
-      \mathbf{I}_{v,o}(\mathbf{I}_{w,v}^{(k)}- \mathbf{I}_{w,v}^{(k-1)}),
-      \mathbf{R})$
-      TODO: express this better!
+      \begin{itemize}
+        \item Virtual wheel steering angle at time $k$:
+          $\psi^{(k)}$
+        \item Steering wheel transmission at time $k$:
+          $\theta^{(k)} = a_0 + a_1\psi^{(k)} + a_2\psi^{2(k)}$
+        \item Translational velocity in odometry reference frame at time $k$:
+          $\mathbf{v}_{o,o}^{(k)}=[v_x^{(k)},0,0]^T$
+        \item Rotational velocity in odometry reference frame at time $k$:
+          $\boldsymbol{\omega}_{o,o}^{(k)}=[0,0,\omega_z^{(k)}]^T$
+        \item Translational velocity of odometry reference frame in vehicle
+          reference frame at time $k$:
+          $\mathbf{v}_{o,v}^{(k)}=\mathbf{R}_{o,v}\mathbf{v}_{o,o}^{(k)}$
+        \item Rotational velocity of odometry reference frame in vehicle
+          reference frame at time $k$:
+          $\boldsymbol{\omega}_{o,v}^{(k)}=
+          \mathbf{R}_{o,v}\boldsymbol{\omega}_{o,o}^{(k)}$
+         \item $\mathbf{v}_{v,w}^{(k)}=\mathbf{R}_{v,w}^{(k)}
+           \mathbf{v}_{o,v}^{(k)}$,
+           $\boldsymbol{\omega}_{v,w}^{(k)}=\mathbf{R}_{v,w}^{(k)}
+           \boldsymbol{\omega}_{o,v}^{(k)}$
+         \item $\tan\psi_L^{(k)}=
+           \frac{\tan(\psi^{(k)} L)}{L - e\tan(\psi^{(k)})}$,
+           $\tan\psi_R^{(k)}=\frac{\tan(\psi^{(k)} L)}{L + e\tan(\psi^{(k)})}$
+         \item $\tan(\psi^{(k)})=L\frac{\omega_z^{(k)}}{v_x^{(k)}}$
+         \item $\kappa_{rl}v_{rl}^{(k)}=v_x^{(k)}-e\omega_z^{(k)}$
+         \item $\kappa_{rr}v_{rr}^{(k)}=v_x^{(k)}+e\omega_z^{(k)}$
+         \item $\kappa_{fl}v_{fl}^{(k)}\cos(\psi_L^{(k)})=
+           v_x^{(k)}-e\omega_z^{(k)}$
+         \item $\kappa_{fr}v_{fr}^{(k)}\cos(\psi_R^{(k)})=
+           v_x^{(k)}+e\omega_z^{(k)}$
+      \end{itemize}
 
 \end{document}
