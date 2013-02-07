@@ -79,4 +79,92 @@
            v_x^{(k)}+e\omega_z^{(k)}$
       \end{itemize}
 
+      \subsubsection{Jacobians 1}
+        \begin{itemize}
+          \item $e_0(.) = \theta - (a_0 + a_1\arctan(L\frac{\omega_z}{v_x}) +
+            a_2\arctan^2(L\frac{\omega_z}{v_x}) +
+            a_3\arctan^3(L\frac{\omega_z}{v_x}))$
+          \item $\frac{\partial e_0(.)}{\partial L} =
+            \frac{\omega_z v_x (a_1 + 2 a_2\arctan(L\frac{\omega_z}{v_x}) +
+            3 a_3\arctan(L\frac{\omega_z}{v_x}))}{v_x^2 + (L\omega_z)^2}$
+          \item $\frac{\partial e_0(.)}{\partial a_0} = 1$
+          \item $\frac{\partial e_0(.)}{\partial a_1} =
+            \arctan(L\frac{\omega_z}{v_x})$
+          \item $\frac{\partial e_0(.)}{\partial a_2} =
+            \arctan^2(L\frac{\omega_z}{v_x})$
+          \item $\frac{\partial e_0(.)}{\partial a_3} =
+            \arctan^3(L\frac{\omega_z}{v_x})$
+          \item $\frac{\partial e_0(.)}{\partial v_x} =
+            \frac{-L\omega_z(a_1 + 2 a_2\arctan(L\frac{\omega_z}{v_x}) +
+            3 a_3\arctan(L\frac{\omega_z}{v_x}))}{v_x^2 + (L\omega_z)^2}$
+          \item $\frac{\partial e_0(.)}{\partial \omega_z} =
+            \frac{L v_x(a_1 + 2 a_2\arctan(L\frac{\omega_z}{v_x}) +
+            3 a_3\arctan(L\frac{\omega_z}{v_x}))}{v_x^2 + (L\omega_z)^2}$
+
+          \item $e_1(.) = v_{rl} - \frac{(v_x - e\omega_z)}{\kappa_{rl}}$
+          \item $\frac{\partial e_1(.)}{\partial e} =
+            -\frac{\omega_z}{\kappa_{rl}}$
+          \item $\frac{\partial e_1(.)}{\partial \kappa_{rl}} =
+            -\frac{(v_x - e\omega_z)}{\kappa_{rl}^2}$
+          \item $\frac{\partial e_1(.)}{\partial v_x} = \frac{1}{\kappa_{rl}}$
+          \item $\frac{\partial e_1(.)}{\partial \omega_z} =
+            -\frac{e}{\kappa_{rl}}$
+
+          \item $e_2(.) = v_{rr} - \frac{(v_x + e\omega_z)}{\kappa_{rr}}$
+          \item $\frac{\partial e_2(.)}{\partial e} =
+            \frac{\omega_z}{\kappa_{rr}}$
+          \item $\frac{\partial e_2(.)}{\partial \kappa_{rr}} =
+            -\frac{(v_x + e\omega_z)}{\kappa_{rr}^2}$
+          \item $\frac{\partial e_2(.)}{\partial v_x} = \frac{1}{\kappa_{rr}}$
+          \item $\frac{\partial e_2(.)}{\partial \omega_z} =
+            \frac{e}{\kappa_{rr}}$
+
+          \item $e_3(.) = v_{fl} - \frac{v_x - e\omega_z}{\kappa_{fl}
+            \cos(\arctan(\frac{L\omega_z}{v_x - e\omega_z}))}$
+          \item $\frac{\partial e_3(.)}{\partial L} =
+            \frac{L\omega_z^2(v_x - e\omega_z)}{\kappa_{fl}\cos(\arctan(
+            \frac{L\omega_z}{v_x - e\omega_z}))((v_x - e\omega_z)^2 +
+            (L\omega_z)^2)}$
+          \item $\frac{\partial e_3(.)}{\partial e} =
+            \frac{-\omega_z(v_x - e\omega_z)^2}{\kappa_{fl}\cos(\arctan(
+            \frac{L\omega_z}{v_x - e\omega_z}))((v_x - e\omega_z)^2 +
+            (L\omega_z)^2)}$
+          \item $\frac{\partial e_3(.)}{\partial \kappa_{fl}} =
+            -\frac{v_x - e\omega_z}{\kappa_{fl}^2
+            \cos(\arctan(\frac{L\omega_z}{v_x - e\omega_z}))}$
+          \item $\frac{\partial e_3(.)}{\partial v_x} =
+            \frac{(v_x - e\omega_z)^2}{\kappa_{fl}\cos(\arctan(
+            \frac{L\omega_z}{v_x - e\omega_z}))((v_x - e\omega_z)^2 +
+            (L\omega_z)^2)}$
+          \item $\frac{\partial e_3(.)}{\partial \omega_z} =
+            \frac{L^2 v_x \omega_z -e ((v_x - e\omega_z)^2 + L^2\omega_z^2)}
+              {\kappa_{fl}\cos(\arctan(
+              \frac{L\omega_z}{v_x - e\omega_z}))((v_x - e\omega_z)^2 +
+              (L\omega_z)^2)}$
+
+          \item $e_4(.) = v_{fr} - \frac{v_x + e\omega_z}{\kappa_{fr}
+            \cos(\arctan(\frac{L\omega_z}{v_x + e\omega_z}))}$
+          \item $\frac{\partial e_4(.)}{\partial L} =
+            \frac{L\omega_z^2(v_x + e\omega_z)}{\kappa_{fr}\cos(\arctan(
+            \frac{L\omega_z}{v_x + e\omega_z}))((v_x + e\omega_z)^2 +
+            (L\omega_z)^2)}$
+          \item $\frac{\partial e_4(.)}{\partial e} =
+            \frac{\omega_z(v_x + e\omega_z)^2}{\kappa_{fr}\cos(\arctan(
+            \frac{L\omega_z}{v_x + e\omega_z}))((v_x + e\omega_z)^2 +
+            (L\omega_z)^2)}$
+          \item $\frac{\partial e_4(.)}{\partial \kappa_{fr}} =
+            -\frac{v_x + e\omega_z}{\kappa_{fr}^2
+            \cos(\arctan(\frac{L\omega_z}{v_x + e\omega_z}))}$
+          \item $\frac{\partial e_4(.)}{\partial v_x} =
+            \frac{(v_x + e\omega_z)^2}{\kappa_{fr}\cos(\arctan(
+            \frac{L\omega_z}{v_x + e\omega_z}))((v_x + e\omega_z)^2 +
+            (L\omega_z)^2)}$
+          \item $\frac{\partial e_4(.)}{\partial \omega_z} =
+            \frac{L^2 v_x \omega_z + e ((v_x + e\omega_z)^2 + L^2\omega_z^2)}
+              {\kappa_{fr}\cos(\arctan(
+              \frac{L\omega_z}{v_x + e\omega_z}))((v_x + e\omega_z)^2 +
+              (L\omega_z)^2)}$
+
+        \end{itemize}
+
 \end{document}
