@@ -39,23 +39,22 @@ r_FR = 0.280002; % [m]
 % front left wheel radius
 r_FL = 0.280002; % [m]
 
-% translation from odometry to vehicle
-t_ov = [-0.0939582; -0.0220428; -1.36]; % [m]
+% translation from odometry to IMU
+t_io = [0.261236; -0.0220428; -1.33797]; % [m]
 
-% rotation from odometry to vehicle
-R_ov_roll = deg2rad(-10.6197); % [rad]
-R_ov_pitch = deg2rad(-3.47954); % [rad]
-R_ov_yaw = deg2rad(-45.7612); % [rad]
-R_ov_x = [1 0 0;
-          0 cos(R_ov_roll) -sin(R_ov_roll);
-          0 sin(R_ov_roll) cos(R_ov_roll)];
-R_ov_y = [cos(R_ov_pitch) 0 sin(R_ov_pitch);
-          0 1 0;
-          -sin(R_ov_pitch) 0 cos(R_ov_pitch)];
-R_ov_z = [cos(R_ov_yaw) -sin(R_ov_yaw) 0;
-          sin(R_ov_yaw) cos(R_ov_yaw) 0;
-          0 0 1];
-R_ov = R_ov_z * R_ov_y * R_ov_x;
+% rotation from odometry to IMU
+C_io_roll = deg2rad(7.26519); % [rad]
+C_io_pitch = deg2rad(-21.1075); % [rad]
+C_io_yaw = deg2rad(-45.4123); % [rad]
+cx = cos(C_io_roll);
+sx = sin(C_io_roll);
+cy = cos(C_io_pitch);
+sy = sin(C_io_pitch);
+cz = cos(C_io_yaw);
+sz = sin(C_io_yaw);
+C_io = [cz * cy, -sz * cx + cz * sy * sx, sz * sx + cz * sy * cx;
+        sz * cy, cz * cx + sz * sy * sx, -cz * sx + sz * sy * cx;
+        -sy, cy * sx, cy * cx];
 
 v_fl = zeros(rows(data), 1);
 v_fr = zeros(rows(data), 1);
@@ -70,29 +69,46 @@ phi_pred = zeros(rows(data), 1);
 
 % process data sequentially
 for i = 1:rows(data)
-  % translation from vehicle to world
-  t_vw = [data(i, 2); data(i, 3); data(i, 4)];
+  % translation from IMU to world
+  t_wi = [data(i, 2); data(i, 3); data(i, 4)];
 
-  % rotation from vehicle to world
-  R_vw_roll = deg2rad(data(i, 5));
-  R_vw_pitch = deg2rad(data(i, 6));
-  R_vw_yaw = deg2rad(data(i, 7));
-  R_vw_x = [1 0 0;
-            0 cos(R_vw_roll) -sin(R_vw_roll);
-            0 sin(R_vw_roll) cos(R_vw_roll)];
-  R_vw_y = [cos(R_vw_pitch) 0 sin(R_vw_pitch);
-            0 1 0;
-            -sin(R_vw_pitch) 0 cos(R_vw_pitch)];
-  R_vw_z = [cos(R_vw_yaw) -sin(R_vw_yaw) 0;
-            sin(R_vw_yaw) cos(R_vw_yaw) 0;
-            0 0 1];
-  R_vw = R_vw_z * R_vw_y * R_vw_x;
+  % rotation from IMU to world
+  C_wi_roll = deg2rad(data(i, 5));
+  C_wi_pitch = deg2rad(data(i, 6));
+  C_wi_yaw = deg2rad(data(i, 7));
+  cx = cos(C_wi_roll);
+  sx = sin(C_wi_roll);
+  cy = cos(C_wi_pitch);
+  sy = sin(C_wi_pitch);
+  cz = cos(C_wi_yaw);
+  sz = sin(C_wi_yaw);
+  C_wi = [cz * cy, -sz * cx + cz * sy * sx, sz * sx + cz * sy * cx;
+          sz * cy, cz * cx + sz * sy * sx, -cz * sx + sz * sy * cx;
+          -sy, cy * sx, cy * cx];
 
-  % translational velocity of vehicle in world reference frame
-  v_vw = [data(i, 8); data(i, 9); data(i, 10)];
+  % translational velocity of IMU in world reference frame
+  v_iw = [data(i, 8); data(i, 9); data(i, 10)];
 
-  % rotational velocity of vehicle in world reference frame
-  om_vw = [deg2rad(data(i, 11)); deg2rad(data(i, 12)); deg2rad(data(i, 13))];
+  % rotational velocity of IMU in world reference frame
+  om_iw = [deg2rad(data(i, 11)); deg2rad(data(i, 12)); deg2rad(data(i, 13))];
+
+  % translational velocity in IMU reference frame
+  v_ii = C_wi' * v_iw;
+
+  % rotational velocity in IMU reference frame
+  om_ii = C_wi' * om_iw;
+
+  % translational velocity in odometry reference frame
+  v_oo = C_io' * (v_ii + cross(om_ii, t_io));
+
+  % rotational velocity in odometry reference frame
+  om_oo = C_io' * om_ii;
+
+  % predicted translational speed measurable by odometry
+  v_x = v_oo(1);
+
+  % predicted rotational speed measurable by odometry
+  om_z = om_oo(3);
 
   % velocity of the front left wheel
   v_fl(i) = r_FL * deg2rad(data(i, 14));
@@ -108,24 +124,6 @@ for i = 1:rows(data)
 
   % steering wheel angle
   phi(i) = deg2rad(data(i, 18));
-
-  % translational velocity in vehicle reference frame
-  v_vv = R_vw' * v_vw;
-
-  % rotational velocity in vehicle reference frame
-  om_vv = R_vw' * om_vw;
-
-  % translational velocity in odometry reference frame
-  v_oo = R_ov' * (v_vv + cross(om_vv, t_ov));
-
-  % rotational velocity in odometry reference frame
-  om_oo = R_ov' * om_vv;
-
-  % predicted translational speed measurable by odometry
-  v_x = v_oo(1);
-
-  % predicted rotational speed measurable by odometry
-  om_z = om_oo(3);
 
   % predicted steering angle of the virtual middle front wheel
   if v_x == 0
