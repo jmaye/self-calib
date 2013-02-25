@@ -105,10 +105,10 @@ for i = 1:rows(data)
   om_oo = C_io' * om_ii;
 
   % predicted translational speed measurable by odometry
-  v_x = v_oo(1);
+  v_oo_x = v_oo(1);
 
   % predicted rotational speed measurable by odometry
-  om_z = om_oo(3);
+  om_oo_z = om_oo(3);
 
   % velocity of the front left wheel
   v_fl(i) = r_FL * deg2rad(data(i, 14));
@@ -126,7 +126,7 @@ for i = 1:rows(data)
   phi(i) = deg2rad(data(i, 18));
 
   % predicted steering angle of the virtual middle front wheel
-  if v_x == 0
+  if v_oo_x == 0
     phi_pred(i) = phi(i);
     v_rl_pred(i) = v_rl(i);
     v_rr_pred(i) = v_rr(i);
@@ -135,26 +135,25 @@ for i = 1:rows(data)
     continue;
   end
 
-  tan_phi_pred = L * om_z / v_x;
-  phi_pred(i) = atan(tan_phi_pred);
+  phi_pred(i) = atan2(L * om_oo_z, v_oo_x);
 
   % predicted steering angle of the front left wheel
-  phi_L_pred = atan(L * om_z / v_x / (1 - e_F * om_z / v_x));
+  phi_L_pred =  atan2(L * om_oo_z, v_oo_x - e_F * om_oo_z);
 
   % predicted steering angle of the front right wheel
-  phi_R_pred = atan(L * om_z / v_x / (1 + e_F * om_z / v_x));
+  phi_R_pred = atan2(L * om_oo_z, v_oo_x + e_F * om_oo_z);
 
   % predicted velocity of the rear left wheel
-  v_rl_pred(i) = v_x - e_R * om_z;
+  v_rl_pred(i) = v_oo_x - e_R * om_oo_z;
 
   % predicted velocity of the rear right wheel
-  v_rr_pred(i) = v_x + e_R * om_z;
+  v_rr_pred(i) = v_oo_x + e_R * om_oo_z;
 
   % predicted velocity of the front left wheel
-  v_fl_pred(i) = (v_x - e_F * om_z) / cos(phi_L_pred);
+  v_fl_pred(i) = (v_oo_x - e_F * om_oo_z) / cos(phi_L_pred);
 
   % predicted velocity of the front right wheel
-  v_fr_pred(i) = (v_x + e_F * om_z) / cos(phi_R_pred);
+  v_fr_pred(i) = (v_oo_x + e_F * om_oo_z) / cos(phi_R_pred);
 
 end
 
@@ -162,3 +161,25 @@ norm(v_rl - v_rl_pred) / rows(data)
 norm(v_rr - v_rr_pred) / rows(data)
 norm(v_fl - v_fl_pred) / rows(data)
 norm(v_fr - v_fr_pred) / rows(data)
+anglemod = @(x) atan2(sin(x), cos(x));
+norm(anglemod(phi - phi_pred)) / rows(data)
+
+plot(v_rl, 'g');
+hold on;
+plot(v_rl_pred, 'r');
+figure;
+plot(v_rr, 'g');
+hold on;
+plot(v_rr_pred, 'r');
+figure
+plot(v_fl, 'g');
+hold on;
+plot(v_fl_pred, 'r');
+figure;
+plot(v_fr, 'g');
+hold on;
+plot(v_fr_pred, 'r');
+figure;
+plot(phi, 'g');
+hold on;
+plot(phi_pred, 'r');
