@@ -18,27 +18,6 @@
 
 % this script processes a morsel log file
 
-% rear-front axle distance
-L = 1.810069084; % [m]
-
-% half-width rear axle
-e_R = 1.315000057 / 2; % [m]
-
-% half-width front axle
-e_F = 1.284999967 / 2; % [m]
-
-% rear right wheel radius
-r_RR = 0.285004228; % [m]
-
-% rear left wheel radius
-r_RL = 0.285004228; % [m]
-
-% front right wheel radius
-r_FR = 0.280002475; % [m]
-
-% front left wheel radius
-r_FL = 0.280002475; % [m]
-
 % translation from odometry to IMU
 t_io = [0.261235952; -0.022042794; -1.337972522]; % [m]
 
@@ -56,19 +35,8 @@ C_io = [cz * cy, -sz * cx + cz * sy * sx, sz * sx + cz * sy * cx;
         sz * cy, cz * cx + sz * sy * sx, -cz * sx + sz * sy * cx;
         -sy, cy * sx, cy * cx];
 
-v_fl = zeros(rows(data), 1);
-v_fr = zeros(rows(data), 1);
-v_rl = zeros(rows(data), 1);
-v_rr = zeros(rows(data), 1);
-phi = zeros(rows(data), 1);
-v_fl_pred = zeros(rows(data), 1);
-v_fr_pred = zeros(rows(data), 1);
-v_rl_pred = zeros(rows(data), 1);
-v_rr_pred = zeros(rows(data), 1);
-phi_pred = zeros(rows(data), 1);
-
 % process data sequentially
-for i = 1:rows(data)
+for i = 450:rows(data)
   % translation from IMU to world
   t_wi = [data(i, 2); data(i, 3); data(i, 4)];
 
@@ -104,82 +72,38 @@ for i = 1:rows(data)
   % rotational velocity in odometry reference frame
   om_oo = C_io' * om_ii;
 
-  % predicted translational speed measurable by odometry
-  v_oo_x = v_oo(1);
+  % translation from odometry to world
+  t_wo = [data(i, 19); data(i, 20); data(i, 21)];
 
-  % predicted rotational speed measurable by odometry
-  om_oo_z = om_oo(3);
+  % rotation from odometry to world
+  C_wo_roll = deg2rad(data(i, 22));
+  C_wo_pitch = deg2rad(data(i, 23));
+  C_wo_yaw = deg2rad(data(i, 24));
+  cx = cos(C_wo_roll);
+  sx = sin(C_wo_roll);
+  cy = cos(C_wo_pitch);
+  sy = sin(C_wo_pitch);
+  cz = cos(C_wo_yaw);
+  sz = sin(C_wo_yaw);
+  C_wo = [cz * cy, -sz * cx + cz * sy * sx, sz * sx + cz * sy * cx;
+          sz * cy, cz * cx + sz * sy * sx, -cz * sx + sz * sy * cx;
+          -sy, cy * sx, cy * cx];
 
-  % velocity of the front left wheel
-  v_fl(i) = r_FL * deg2rad(data(i, 14));
+  % translational velocity of odometry in world reference frame
+  v_ow = [data(i, 25); data(i, 26); data(i, 27)];
 
-  % velocity of the front right wheel
-  v_fr(i) = r_FR * deg2rad(data(i, 15));
+  % rotational velocity of odometry in world reference frame
+  om_ow = [deg2rad(data(i, 28)); deg2rad(data(i, 29)); deg2rad(data(i, 30))];
 
-  % velocity of the rear left wheel
-  v_rl(i) = r_RL * deg2rad(data(i, 16));
+  % translational velocity in odometry reference frame
+  v_oo_2 = C_wo' * v_ow;
 
-  % velocity of the rear right wheel
-  v_rr(i) = r_RR * deg2rad(data(i, 17));
+  % rotational velocity in odometry reference frame
+  om_oo_2 = C_wo' * om_ow;
 
-  % steering wheel angle
-  phi(i) = deg2rad(data(i, 18));
-
-  % predicted steering angle of the virtual middle front wheel
-  if v_oo_x == 0
-    phi_pred(i) = phi(i);
-    v_rl_pred(i) = v_rl(i);
-    v_rr_pred(i) = v_rr(i);
-    v_fl_pred(i) = v_fl(i);
-    v_fr_pred(i) = v_fr(i);
-    continue;
-  end
-
-  phi_pred(i) = atan2(L * om_oo_z, v_oo_x);
-
-  % predicted steering angle of the front left wheel
-  phi_L_pred =  atan2(L * om_oo_z, v_oo_x - e_F * om_oo_z);
-
-  % predicted steering angle of the front right wheel
-  phi_R_pred = atan2(L * om_oo_z, v_oo_x + e_F * om_oo_z);
-
-  % predicted velocity of the rear left wheel
-  v_rl_pred(i) = v_oo_x - e_R * om_oo_z;
-
-  % predicted velocity of the rear right wheel
-  v_rr_pred(i) = v_oo_x + e_R * om_oo_z;
-
-  % predicted velocity of the front left wheel
-  v_fl_pred(i) = (v_oo_x - e_F * om_oo_z) / cos(phi_L_pred);
-
-  % predicted velocity of the front right wheel
-  v_fr_pred(i) = (v_oo_x + e_F * om_oo_z) / cos(phi_R_pred);
+  t_wi_2 = [data(i,31) data(i,32) data(i,33)];
+  C_wi_2 = [data(i,34) data(i,35) data(i,36);data(i,37) data(i,38) data(i,39); data(i,40) data(i,41) data(i,42)];
+  t_wo_2 = [data(i,43) data(i,44) data(i,45)];
+  C_wo_2 = [data(i,46) data(i,47) data(i,48);data(i,49) data(i,50) data(i,51); data(i,52) data(i,53) data(i,54)];
 
 end
-
-norm(v_rl - v_rl_pred) / rows(data)
-norm(v_rr - v_rr_pred) / rows(data)
-norm(v_fl - v_fl_pred) / rows(data)
-norm(v_fr - v_fr_pred) / rows(data)
-anglemod = @(x) atan2(sin(x), cos(x));
-norm(anglemod(phi - phi_pred)) / rows(data)
-
-plot(v_rl, 'g');
-hold on;
-plot(v_rl_pred, 'r');
-figure;
-plot(v_rr, 'g');
-hold on;
-plot(v_rr_pred, 'r');
-figure
-plot(v_fl, 'g');
-hold on;
-plot(v_fl_pred, 'r');
-figure;
-plot(v_fr, 'g');
-hold on;
-plot(v_fr_pred, 'r');
-figure;
-plot(phi, 'g');
-hold on;
-plot(phi_pred, 'r');
