@@ -135,13 +135,13 @@ for i = 1:rows(data)
     continue;
   end
 
-  phi_pred(i) = atan2(L * om_oo_z, v_oo_x);
+  phi_pred(i) = atan(L * om_oo_z / v_oo_x);
 
   % predicted steering angle of the front left wheel
-  phi_L_pred =  atan2(L * om_oo_z, v_oo_x - e_F * om_oo_z);
+  phi_L_pred =  atan(L * om_oo_z / (v_oo_x - e_F * om_oo_z));
 
   % predicted steering angle of the front right wheel
-  phi_R_pred = atan2(L * om_oo_z, v_oo_x + e_F * om_oo_z);
+  phi_R_pred = atan(L * om_oo_z / (v_oo_x + e_F * om_oo_z));
 
   % predicted velocity of the rear left wheel
   v_rl_pred(i) = v_oo_x - e_R * om_oo_z;
