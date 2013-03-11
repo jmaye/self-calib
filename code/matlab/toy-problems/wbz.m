@@ -18,6 +18,6 @@
 
 % This function computes the weight function for Blake-Zisserman
 
-function w = wbz(x, sigma2, epsilon)
+function w = wbz(mahalanobis2, epsilon)
 
-w = exp(-x.^2 / 2 / sigma2) ./ (exp(-x.^2 / 2 / sigma2) + epsilon) / sigma2;
+w = exp(-mahalanobis2) ./ (exp(-mahalanobis2) + epsilon);

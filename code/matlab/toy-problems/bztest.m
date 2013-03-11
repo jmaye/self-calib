@@ -19,10 +19,12 @@
 % This script test Blake-Zisserman M-Estimator
 
 % covariance matrix of the error
-R = zeros(3, 3);
 R(1, 1) = 1e-3;
 R(2, 2) = 1e-3;
 R(3, 3) = 1e-3;
+R(4, 4) = 1e-3;
+R(5, 5) = 1e-3;
+R(6, 6) = 1e-3;
 
 % number of error terms to generate
 numErrors = 1000;
@@ -33,8 +35,8 @@ outliersRatio = 0.1;
 % errors
 errors = zeros(numErrors, cols(R));
 
-% cumulative errors
-errorsCum = zeros(numErrors, 1);
+% squared mahalanobis distance
+mahalanobis2 = zeros(numErrors, 1);
 
 % weights for each errors
 errorWeights = zeros(numErrors, cols(R));
@@ -46,8 +48,8 @@ for i = 1:numErrors
   else
     errors(i, :) = mvnrnd(zeros(1, cols(R)), R); % inlier
   end
-  errorsCum(i) = errors(i, :) * (diag(1 ./ diag(R))) * errors(i, :)';
+  mahalanobis2(i) = errors(i, :) * inv(R) * errors(i, :)';
   for j = 1:cols(R)
-    errorWeights(i, j) = wbz(errors(i, j), R(j, j), 1e-3);
+    errorWeights(i, j) = wbz(mahalanobis2(i), (1 - 0.1) / 0.1 * exp(-22.46));
   end
 end
