@@ -29,17 +29,17 @@
     \begin{equation}\label{eqn:model1dreal}
       \begin{aligned}
         \epsilon_i \sim p(\boldsymbol{\Theta}), i = 1\cdots n\\
-        y_i = f(x_i) + \epsilon_i, i=1\cdots n,
+        y_i = f(\mathbf{x}_i) + \epsilon_i, i=1\cdots n,
       \end{aligned}
     \end{equation}
 
-    \noindent where $\{x_i\}_{i=1}^n$ are realizations of $\mathbf{X}$.
+    \noindent where $\{\mathbf{x}_i\}_{i=1}^n$ are realizations of $\mathbf{X}$.
 
     We can define the \emph{residuals} as
 
     \begin{equation}\label{eqn:model1dres}
       \begin{aligned}
-      e_i = y_i - f(x_i),
+      e_i = y_i - f(\mathbf{x}_i),
       \end{aligned}
     \end{equation}
 
@@ -118,7 +118,7 @@
           \argmin_{\mathbf{X}}\frac{n}{2}\ln(2\pi\sigma^2) +
           \frac{1}{2\sigma^2}\sum_i^n e_i^2 \\&=
         \argmin_{\mathbf{X}}\sum_i^n e_i^2 \\&=
-        \argmin_{\mathbf{X}}\sum_i^n (y_i-f(x_i))^2,
+        \argmin_{\mathbf{X}}\sum_i^n (y_i-f(\mathbf{x}_i))^2,
         \end{aligned}
       \end{equation}
 
@@ -142,7 +142,8 @@
       \begin{equation}\label{eqn:model1dminllnorm2}
         \begin{aligned}
         \mathbf{\hat{X}} &=
-          \argmin_{\mathbf{X}}\sum_i^n \frac{1}{\sigma_i^2}(y_i-f(x_i))^2,
+          \argmin_{\mathbf{X}}\sum_i^n \frac{1}{\sigma_i^2}
+          (y_i-f(\mathbf{x}_i))^2,
         \end{aligned}
       \end{equation}
 
@@ -242,6 +243,72 @@
         samples of a zero-centered normal distribution lie within the interval
         $[-3\sigma,3\sigma]$. Therefore, we would like to tailor $\varepsilon$
         such that these samples receive a similar weight as with the standard
-        least-squares cost function.
+        least-squares cost function. We can easily solve for $\varepsilon$ for
+        a given value of $e_i$ and $n=w(e_i)\sigma^2$
+
+        \begin{equation}\label{eqn:model1dwbz2}
+          \begin{aligned}
+            \varepsilon = \frac{1-n}{n\sqrt{2\pi\sigma^2}}
+              \exp(-\frac{e_i^2}{2\sigma^2})
+          \end{aligned}
+        \end{equation}
+
+  \section{Multivariate Case}
+
+    Let us now derive the general multivariate case, i.e.,
+    $\mathbf{Y}\in\mathbb{R}^k$. The maximum likelihood solution under normally
+    distributed residuals becomes
+
+    \begin{equation}\label{eqn:modelmdminllnorm}
+      \begin{aligned}
+        \mathbf{\hat{X}} &=
+          \argmin_{\mathbf{X}}\frac{n k}{2}\ln(2\pi)+
+            \frac{n}{2}\ln(|\boldsymbol{\Sigma}|)+\frac{1}{2}
+            \sum_{i=1}^n\mathbf{e}_i^T\boldsymbol{\Sigma}^{-1}\mathbf{e}_i
+            \\&=\argmin_{\mathbf{X}}
+            \sum_{i=1}^n\mathbf{e}_i^T\boldsymbol{\Sigma}^{-1}\mathbf{e}_i
+            \\&=\argmin_{\mathbf{X}}
+            \sum_{i=1}^n d_i^2,
+      \end{aligned}
+    \end{equation}
+
+    \noindent where $\boldsymbol{\Sigma}$ is the covariance matrix of the
+    residuals, $\mathbf{e}_i=\mathbf{y}_i-f(\mathbf{x}_i)$, and $d_i$ the
+    Mahalanobis distance for error term $\mathbf{e}_i$.
+
+    \subsection{Modified Blake-Zisserman M-Estimator}
+    The cost function for the modified Blake-Zisserman M-Estimator has the form
+
+    \begin{equation}\label{eqn:bzcmv}
+      \begin{aligned}
+        \rho(\mathbf{e}_i) = -\log(\exp(-d_i^2) + \varepsilon),
+      \end{aligned}
+    \end{equation}
+
+    \noindent the \emph{influence function}
+
+    \begin{equation}\label{eqn:bzimv}
+      \begin{aligned}
+        \psi(\mathbf{e}_i) = \frac{\partial \rho(\mathbf{e}_i)}
+        {\partial \mathbf{e}_i},
+      \end{aligned}
+    \end{equation}
+
+    \noindent the weight function
+
+    \begin{equation}\label{eqn:bzimv}
+      \begin{aligned}
+      w(\mathbf{e}_i) = \frac{\psi(\mathbf{e}_i)}{\mathbf{e}_i},
+      \end{aligned}
+    \end{equation}
+
+    \noindent and the optimization problem is turned into
+
+    \begin{equation}\label{eqn:bzmin}
+      \begin{aligned}
+        \mathbf{\hat{X}} &=
+          \argmin_{\mathbf{X}}\sum_{i=1}^n \rho(\mathbf{e}_i).
+      \end{aligned}
+    \end{equation}
 
 \end{document}
