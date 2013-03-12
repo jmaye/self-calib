@@ -5,310 +5,235 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\rank}{rank}
-\title{Least-Squares Estimation}
+\title{Regression Analysis}
 \author{J\'{e}r\^{o}me Maye}
 \date{\today}
 \begin{document}
   \maketitle
 
-  \section{1D Case}
-    Let us define a set of $n$ realizations $\{y_i\}_{i=1}^n\in\mathbb{R}$ of an
-    observable random variable $Y$ such that
+  \section{Maximum Likelihood Formulation}
 
-    \begin{equation}\label{eqn:model1d}
-      \begin{aligned}
-        Y \sim p(f(X),\boldsymbol{\Theta}),
-      \end{aligned}
-    \end{equation}
+  Let us define a set of $n$ realizations
+  $\{\mathbf{y}_i\}_{i=1}^n\in\mathbb{R}^d$ of an
+  observable random variable $\mathbf{Y}$ such that
 
-    \noindent where $X\in\mathbb{R}^d$ is a latent random variable, $f(\cdot)$
-    an arbitrary function of $\mathbf{X}$, $p(\cdot)$ a probability density
-    function, and $\boldsymbol{\Theta}$ its known parameters. In other words, we
-    can state that
+  \begin{equation}\label{eqn:gencondmodel}
+    \begin{aligned}
+      \boldsymbol{\epsilon}_i \sim f_{\boldsymbol{\Theta}}, i = 1\cdots n\\
+      \mathbf{y}_i = g(\mathbf{X}) + \boldsymbol{\epsilon}_i, i=1\cdots n,
+    \end{aligned}
+  \end{equation}
 
-    \begin{equation}\label{eqn:model1dreal}
-      \begin{aligned}
-        \epsilon_i \sim p(\boldsymbol{\Theta}), i = 1\cdots n\\
-        y_i = f(\mathbf{x}_i) + \epsilon_i, i=1\cdots n,
-      \end{aligned}
-    \end{equation}
+  \noindent where $\mathbf{X}\in\mathbb{R}^k$ is a latent random variable,
+  $g(\cdot)$ an arbitrary function of $\mathbf{X}$,
+  $\{\boldsymbol{\epsilon}_i\}_{i=1}^n\in\mathbb{R}^d$ are i.i.d. random
+  variates generated according to a parametric family of distributions
+  characterized by the \emph{probability density function} (pdf)
+  $f_{\boldsymbol{\Theta}}$.
 
-    \noindent where $\{\mathbf{x}_i\}_{i=1}^n$ are realizations of $\mathbf{X}$.
+  We can define the \emph{residuals} as
 
-    We can define the \emph{residuals} as
+  \begin{equation}\label{eqn:residuals}
+    \begin{aligned}
+      \mathbf{e}_i = \mathbf{y}_i - g(\mathbf{X}),
+    \end{aligned}
+  \end{equation}
 
-    \begin{equation}\label{eqn:model1dres}
-      \begin{aligned}
-      e_i = y_i - f(\mathbf{x}_i),
-      \end{aligned}
-    \end{equation}
+  \noindent which are therefore distributed according to 
+  $f_{\boldsymbol{\Theta}}$.
 
-    \noindent which are distributed according to
+  In order to estimate $\mathbf{X}$, one can use Maximum Likelihood Estimation
+  (MLE) and derive the likelihood function of the residuals
 
-    \begin{equation}\label{eqn:model1dresdist}
-      \begin{aligned}
-      E \sim p(\boldsymbol{\Theta}),
-      \end{aligned}
-    \end{equation}
+  \begin{equation}\label{eqn:likelihoodfun}
+    \begin{aligned}
+      \mathcal{L}(\mathbf{X}\mid \mathbf{y}_1,\cdots,\mathbf{y}_n)
+        \stackrel{\mathrm{i.i.d.}}{=}
+        \prod_i^n f_{\boldsymbol{\Theta}}(\mathbf{e}_i;\mathbf{X}).
+    \end{aligned}
+  \end{equation}
 
-    \noindent where $E$ is a random variable whose realizations are $e_i$.
+  \noindent The sought estimate for $\mathbf{X}$ is then found by maximizing
+  \eqref{eqn:likelihoodfun}
 
-    In order to estimate $\mathbf{X}$, one can use Maximum Likelihood Estimation
-    (MLE) and derive the likelihood of the residuals
+  \begin{equation}\label{eqn:maxlikelihood}
+    \begin{aligned}
+      \mathbf{\hat{X}} = \argmax_{\mathbf{X}}\mathcal{L}(\mathbf{X}
+        \mid \mathbf{y}_1,\cdots,\mathbf{y}_n),
+    \end{aligned}
+  \end{equation}
 
-    \begin{equation}\label{eqn:model1dlikelihood}
-      \begin{aligned}
-      p(e_{1\cdots n}\mid\mathbf{X},\boldsymbol{\Theta}) =
-        \prod_i^n p(e_i\mid\mathbf{X},\boldsymbol{\Theta}).
-      \end{aligned}
-    \end{equation}
+  \noindent which, for the sake of simplicity, is turned into
 
-    The likelihood function is
-
-    \begin{equation}\label{eqn:model1dlikelihoodfunction}
-      \begin{aligned}
-      \mathcal{L}(\mathbf{X}) = p(e_{1\cdots n};\mathbf{X},\boldsymbol{\Theta}) =
-        \prod_i^n p(e_i;\mathbf{X},\boldsymbol{\Theta}).
-      \end{aligned}
-    \end{equation}
-
-
-    The sought estimate for $\mathbf{X}$ is then found by maximizing
-    \eqref{eqn:model1dlikelihoodfunction}
-
-    \begin{equation}\label{eqn:model1dmaxl}
-      \begin{aligned}
-      \mathbf{\hat{X}} = \argmax_{\mathbf{X}}\mathcal{L}(\mathbf{X}),
-      \end{aligned}
-    \end{equation}
-
-    which is turned into
-
-    \begin{equation}\label{eqn:model1dminll}
-      \begin{aligned}
+  \begin{equation}\label{eqn:minllikelihood}
+    \begin{aligned}
       \mathbf{\hat{X}} =
-      \argmin_{\mathbf{X}}\sum_i^n -\ln(p(e_i;\mathbf{X},\boldsymbol{\Theta})).
-      \end{aligned}
-    \end{equation}
+        \argmin_{\mathbf{X}}-\ln\mathcal{L}(\mathbf{X}\mid
+        \mathbf{y}_1,\cdots,\mathbf{y}_n)=
+        \sum_i^n -\ln(f_{\boldsymbol{\Theta}}(\mathbf{e}_i;\mathbf{X})).
+    \end{aligned}
+  \end{equation}
 
-    \subsection{Normally Distributed Residuals with Equal Variances}
+  \section{Normally Distributed Residuals}
 
-      Let us consider the case
+  If we assume that
+  $f_{\boldsymbol{\Theta}}=\mathcal{N}(\mathbf{0},\boldsymbol{\Sigma})$,
+  where $\boldsymbol{\Sigma}$ is the covariance matrix of the residuals,
+  \eqref{eqn:minllikelihood} becomes
 
-      \begin{equation}\label{eqn:model1dnormresidualssim}
+  \begin{equation}\label{eqn:minllikelihoodnorm}
+    \begin{aligned}
+      \mathbf{\hat{X}} &=
+        \argmin_{\mathbf{X}}\frac{n k}{2}\ln(2\pi)+
+          \frac{n}{2}\ln(|\boldsymbol{\Sigma}|)+\frac{1}{2}
+          \sum_{i=1}^n\mathbf{e}_i^T\boldsymbol{\Sigma}^{-1}\mathbf{e}_i
+          \\&=\argmin_{\mathbf{X}}
+          \sum_{i=1}^n\mathbf{e}_i^T\boldsymbol{\Sigma}^{-1}\mathbf{e}_i
+          \\&=\argmin_{\mathbf{X}}
+          \sum_{i=1}^n d_i^2,
+    \end{aligned}
+  \end{equation}
+
+  \noindent where $d_i$ the Mahalanobis distance for error term $\mathbf{e}_i$.
+  From \eqref{eqn:minllikelihoodnorm}, we can recognize the formulation of a
+  \emph{least-squares} problem and therefore borrow its methods for solving it.
+  We can also derive the different variants of least-squares problem from
+  \eqref{eqn:minllikelihoodnorm}:
+
+  \begin{itemize}
+    \item \emph{Ordinary Least-Squares} (OLS): $d=1$ and
+      $\boldsymbol{\Sigma}=\sigma^2\mathbf{1}$
+    \item \emph{Weighted Least-Squares} (WLS):
+      $\boldsymbol{\Sigma}=\diag([\sigma_1^2,\cdots,\sigma_d^2]^T)$
+    \item \emph{Generalized Least-Squares} (GLS): full problem
+  \end{itemize}
+
+  \section{Robust Regression}
+
+  The field of robust regression deals with outliers in the residuals
+  distribution. A way to solve this issue is to use
+  \emph{M-Estimators}. The principle is to define a residuals distribution that
+  has heavier tails. The outliers will thus be more likely than with the normal
+  distribution.
+
+  An M-Estimator is defined using a so-called $\rho$-function or
+  \emph{cost function} such that the pdf of the residuals is
+
+  \begin{equation}\label{eqn:mestimatorpdf}
+    \begin{aligned}
+      f_{\boldsymbol{\Theta}}(\mathbf{e}_i) = \exp(-\rho(d_i)).
+    \end{aligned}
+  \end{equation}
+
+  \noindent Therefore, \eqref{eqn:minllikelihood} becomes
+
+  \begin{equation}\label{eqn:minllikelihoodmest}
+    \begin{aligned}
+      \mathbf{\hat{X}} &=
+        \argmin_{\mathbf{X}}\sum_{i=1}^n \rho(d_i).
+    \end{aligned}
+  \end{equation}
+
+  \noindent Additionally, the \emph{influence function}, denoted $\psi$, is
+  defined as
+
+  \begin{equation}\label{eqn:influence}
+    \begin{aligned}
+      \psi(x) \stackrel{\mathrm{def}}{=} \frac{\partial \rho}{\partial x} (x)
+    \end{aligned}
+  \end{equation}
+
+  \noindent And finally, the \emph{weight function} $w$, also known as the
+  attenuation function, is defined as
+
+  \begin{equation}\label{eqn:weight}
+    \begin{aligned}
+      w(x) \stackrel{\mathrm{def}}{=} \frac{\psi(x)}{x}.
+    \end{aligned}
+  \end{equation}
+
+  It can be demonstrated, through the chain rule of derivation, that
+  \eqref{eqn:minllikelihoodmest} can be expressed as
+
+  \begin{equation}\label{eqn:minllikelihoodmest2}
+    \begin{aligned}
+      \mathbf{\hat{X}} &=
+        \argmin_{\mathbf{X}}\sum_{i=1}^n w(d_i)d_i^2,
+    \end{aligned}
+  \end{equation}
+
+  \noindent which can be interpreted as an
+  \emph{Iteratively Reweighted Least-Squares} (IRLS) problem. Furthermore, if
+  $\rho(x)=x^2$, this corresponds to the standard least-squares problem.
+
+  \subsection{Modified Blake-Zisserman M-Estimator}
+
+     The modified Blake-Zisserman M-Estimator defines the $\rho$-function as
+
+      \begin{equation}\label{eqn:bzrho}
         \begin{aligned}
-        e_i \sim \mathcal{N}(0, \sigma^2),
+          \rho(d_i) = -\ln(\exp(-d_i^2) + \varepsilon),
         \end{aligned}
       \end{equation}
 
-      \noindent where $\sigma^2$ is the variance of the residuals and therefore
+      \noindent where $\varepsilon$ is a parameter. Note that underlying pdf
+      is not a proper since it does not integrate to $1$. The cost function in
+      \eqref{eqn:bzrho} approximates the standard
+      least-squares cost function for inliers while it asymptotically tends
+      to $-\log(\varepsilon)$ for outliers. The weight function is computed as
 
-      \begin{equation}\label{eqn:model1dnormresidualspdf}
+      \begin{equation}\label{eqn:bzw}
         \begin{aligned}
-        p(e_i\mid\mathbf{X},\boldsymbol{\Theta}) = \frac{1}{\sqrt{2\pi\sigma^2}}
-          \exp(-\frac{e_i^2}{2\sigma^2}).
+          w(d_i) = \frac{\exp(-d_i^2)}{\exp(-d_i^2) + \varepsilon}.
         \end{aligned}
       \end{equation}
 
-      Therefore, \eqref{eqn:model1dminll} becomes
+      Our goal is to tailor $\varepsilon$ in such way that residuals considered
+      as inliers receive a weight close to $1$ and outliers a weight close to
+      $0$. We can first state the distribution of the squared Mahalanobis
+      distances
 
-      \begin{equation}\label{eqn:model1dminllnorm}
+      \begin{equation}\label{eqn:mddist}
         \begin{aligned}
-        \mathbf{\hat{X}} &=
-          \argmin_{\mathbf{X}}\frac{n}{2}\ln(2\pi\sigma^2) +
-          \frac{1}{2\sigma^2}\sum_i^n e_i^2 \\&=
-        \argmin_{\mathbf{X}}\sum_i^n e_i^2 \\&=
-        \argmin_{\mathbf{X}}\sum_i^n (y_i-f(\mathbf{x}_i))^2,
+          d_i^2 \sim \mathcal{X}^2_d,
         \end{aligned}
       \end{equation}
 
-      \noindent which is the standard formulation of a \emph{least-squares}
-      problem.
+      \noindent which follows from the fact that the chi-squared distribution
+      with $k$ degrees of freedom is the distribution of a sum of the squares of
+      $k$ independent standard normal random variables. The cumulative
+      distribution function (cdf) $F$ gives us the probability that a random
+      variable takes a value less than or equal to another value. On the other
+      hand, the inverse cdf (icdf) tells us this value for a given probability.
+      This means that we can choose a probability threshold $p_t$ and query the
+      squared Mahalanobis distance for which the samples have probability $p_t$
+      of being less than or equal. Furthermore, we can set the weight $w_t$ that
+      we want to assign at this threshold and solve \eqref{eqn:bzw} for
+      $\varepsilon$
 
-    \subsection{Normally Distributed Residuals with Unequal Variances}
-
-      Let us consider the case
-
-      \begin{equation}\label{eqn:model1dnormresidualssim2}
+      \begin{equation}\label{eqn:epsilon}
         \begin{aligned}
-        e_i \sim \mathcal{N}(0, \sigma_i^2),
+          \varepsilon = \frac{1 - w_t}{w_t}\exp(-F^{-1}_d(p_t)).
         \end{aligned}
       \end{equation}
 
-      \noindent where $\sigma_i^2$ is the variance of residual $e_i$.
+      Fig.~\ref{fig:bz3d} and \ref{fig:bz6d} illustrate these derivations for
+      $d=3$ and $d=6$, $p_t=0.999$, and $w_t=0.1$.
 
-      In that case, the formulation becomes
+      \begin{figure}[t]
+        \centering
+        \includegraphics[scale = 0.3]{bz3d}
+        \caption{Normalized histogram of 3D squared Mahalanobis distances and
+          their corresponding weights with $p_t=0.999$ and $w_t=0.1$}
+        \label{fig:bz3d}
+      \end{figure}
 
-      \begin{equation}\label{eqn:model1dminllnorm2}
-        \begin{aligned}
-        \mathbf{\hat{X}} &=
-          \argmin_{\mathbf{X}}\sum_i^n \frac{1}{\sigma_i^2}
-          (y_i-f(\mathbf{x}_i))^2,
-        \end{aligned}
-      \end{equation}
-
-      \noindent which corresponds to a \emph{weighted least-squares} problem.
-
-    \subsection{Normally Distributed Residuals with Outliers}
-
-      For this problem, we can define residual distributions that have heavier
-      tails. The outliers will thus be more likely than with the normal
-      distribution.
-
-      A typical method for these kind of problems are \emph{M-Estimators}. The
-      least-squares problem is formulated as
-
-      \begin{equation}\label{eqn:model1dMEstimator}
-        \begin{aligned}
-        \mathbf{\hat{X}} &=
-          \argmin_{\mathbf{X}}\sum_i^n w(e_i)e_i^2,
-        \end{aligned}
-      \end{equation}
-
-      \noindent where $w(e_i)$ is a weight function. In the trivial case where
-      we consider normally distributed residuals, the weight function is
-      not dependent on the value of $e_i$, i.e., $w(e_i)=\frac{1}{\sigma^2}$ or
-      $w(e_i)=\frac{1}{\sigma_i^2}$ in case of unequal variances. In the other
-      cases, it can be considered as an
-      \emph{iteratively reweighted least-squares} problem.
-
-      \subsubsection{Modified Blake-Zisserman M-Estimator}
-
-        The modified Blake-Zisserman M-Estimator defines
-
-        \begin{equation}\label{eqn:model1dnormresidualspdfbz}
-          \begin{aligned}
-          p(e_i\mid\mathbf{X},\boldsymbol{\Theta}) =
-            \frac{1}{\sqrt{2\pi\sigma^2}}
-            \exp(-\frac{e_i^2}{2\sigma^2}) + \varepsilon,
-          \end{aligned}
-        \end{equation}
-
-        \noindent where $\varepsilon$ is a parameter. Note that
-        \eqref{eqn:model1dnormresidualspdfbz} is not a proper probability
-        density function. The cost function associated with
-        \eqref{eqn:model1dnormresidualspdfbz} approximates the standard
-        least-squares cost function for inliers while it asymptotically tends
-        to $-\log(\varepsilon)$ for outliers.
-
-        The weight function is defined as
-
-        \begin{equation}\label{eqn:model1dwbz}
-          \begin{aligned}
-          w(e_i) = \frac{\frac{1}{\sqrt{2\pi\sigma^2}}
-            \exp(-\frac{e_i^2}{2\sigma^2})}
-            {(\frac{1}{\sqrt{2\pi\sigma^2}}\exp(-\frac{e_i^2}{2\sigma^2}) +
-            \varepsilon)\sigma^2}.
-          \end{aligned}
-        \end{equation}
-
-        We can analyze the behavior of this estimator on a simple example.
-        $1000$ residuals are generated according to
-        $e_i\sim\mathcal{N}(0,1e^{-3})$. Fig.~\ref{fig:bz1} shows the residuals
-        and their respective weights for different values of $\varepsilon$.
-        As $\varepsilon$ tends to zero, the weights become constant and thus
-        this corresponds to the standard least-squares problem.
-
-        \begin{figure}[t]
-          \centering
-          \includegraphics[scale=0.7]{bz.pdf}
-          \caption{Normally distributed residuals and their weights with
-            different values of
-            $\varepsilon$. The red crosses corresponds to $\varepsilon=1e^{-6}$,
-            the blue to $\varepsilon=1e^{-3}$, and the green to
-            $\varepsilon=1e^{-1}$.}
-          \label{fig:bz1}
-        \end{figure}
-
-        The introduction of outliers leads to a more interesting problem. Let
-        us now generate $900$ residuals according to
-        $e_i\sim\mathcal{N}(0,1e^{-3})$ and $100$ according to
-        $e_i\sim\mathcal{N}(\mathcal{U}(-100,100),1e^{-3})$. Fig.~\ref{fig:bz2}
-        shows the residuals and their weights. The outliers receive a weight
-        close to zero and therefore do not perturbate the cost function.
-
-        \begin{figure}[t]
-          \centering
-          \includegraphics[scale=0.3]{bz2.pdf}
-          \caption{Normally distributed residuals with outliers and their
-            weights with
-            different values of
-            $\varepsilon$. The red crosses corresponds to $\varepsilon=1e^{-6}$,
-            the blue to $\varepsilon=1e^{-3}$, and the green to
-            $\varepsilon=1e^{-1}$.}
-          \label{fig:bz2}
-        \end{figure}
-
-        From statistical theory, we know that approximately $99.7\%$ of the
-        samples of a zero-centered normal distribution lie within the interval
-        $[-3\sigma,3\sigma]$. Therefore, we would like to tailor $\varepsilon$
-        such that these samples receive a similar weight as with the standard
-        least-squares cost function. We can easily solve for $\varepsilon$ for
-        a given value of $e_i$ and $n=w(e_i)\sigma^2$
-
-        \begin{equation}\label{eqn:model1dwbz2}
-          \begin{aligned}
-            \varepsilon = \frac{1-n}{n\sqrt{2\pi\sigma^2}}
-              \exp(-\frac{e_i^2}{2\sigma^2})
-          \end{aligned}
-        \end{equation}
-
-  \section{Multivariate Case}
-
-    Let us now derive the general multivariate case, i.e.,
-    $\mathbf{Y}\in\mathbb{R}^k$. The maximum likelihood solution under normally
-    distributed residuals becomes
-
-    \begin{equation}\label{eqn:modelmdminllnorm}
-      \begin{aligned}
-        \mathbf{\hat{X}} &=
-          \argmin_{\mathbf{X}}\frac{n k}{2}\ln(2\pi)+
-            \frac{n}{2}\ln(|\boldsymbol{\Sigma}|)+\frac{1}{2}
-            \sum_{i=1}^n\mathbf{e}_i^T\boldsymbol{\Sigma}^{-1}\mathbf{e}_i
-            \\&=\argmin_{\mathbf{X}}
-            \sum_{i=1}^n\mathbf{e}_i^T\boldsymbol{\Sigma}^{-1}\mathbf{e}_i
-            \\&=\argmin_{\mathbf{X}}
-            \sum_{i=1}^n d_i^2,
-      \end{aligned}
-    \end{equation}
-
-    \noindent where $\boldsymbol{\Sigma}$ is the covariance matrix of the
-    residuals, $\mathbf{e}_i=\mathbf{y}_i-f(\mathbf{x}_i)$, and $d_i$ the
-    Mahalanobis distance for error term $\mathbf{e}_i$.
-
-    \subsection{Modified Blake-Zisserman M-Estimator}
-    The cost function for the modified Blake-Zisserman M-Estimator has the form
-
-    \begin{equation}\label{eqn:bzcmv}
-      \begin{aligned}
-        \rho(\mathbf{e}_i) = -\log(\exp(-d_i^2) + \varepsilon),
-      \end{aligned}
-    \end{equation}
-
-    \noindent the \emph{influence function}
-
-    \begin{equation}\label{eqn:bzimv}
-      \begin{aligned}
-        \psi(\mathbf{e}_i) = \frac{\partial \rho(\mathbf{e}_i)}
-        {\partial \mathbf{e}_i},
-      \end{aligned}
-    \end{equation}
-
-    \noindent the weight function
-
-    \begin{equation}\label{eqn:bzimv}
-      \begin{aligned}
-      w(\mathbf{e}_i) = \frac{\psi(\mathbf{e}_i)}{\mathbf{e}_i},
-      \end{aligned}
-    \end{equation}
-
-    \noindent and the optimization problem is turned into
-
-    \begin{equation}\label{eqn:bzmin}
-      \begin{aligned}
-        \mathbf{\hat{X}} &=
-          \argmin_{\mathbf{X}}\sum_{i=1}^n \rho(\mathbf{e}_i).
-      \end{aligned}
-    \end{equation}
+      \begin{figure}[t]
+        \centering
+        \includegraphics[scale = 0.3]{bz6d}
+        \caption{Normalized histogram of 6D squared Mahalanobis distances and
+          their corresponding weights with $p_t=0.999$ and $w_t=0.1$}
+        \label{fig:bz6d}
+      \end{figure}
 
 \end{document}
