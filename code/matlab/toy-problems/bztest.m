@@ -44,12 +44,18 @@ errorWeights = zeros(numErrors, cols(R));
 % generate errors following a normal distribution
 for i = 1:numErrors
   if mod(i, 1 / outliersRatio) == 0
-    errors(i, :) = mvnrnd(-100 + 200 .* rand(1, cols(R)), R); % outlier
+    errors(i, :) = mvnrnd(-0.1 + 0.1 .* rand(1, cols(R)), R); % outlier
   else
     errors(i, :) = mvnrnd(zeros(1, cols(R)), R); % inlier
   end
   mahalanobis2(i) = errors(i, :) * inv(R) * errors(i, :)';
   for j = 1:cols(R)
-    errorWeights(i, j) = wbz(mahalanobis2(i), (1 - 0.1) / 0.1 * exp(-22.46));
+    errorWeights(i, j) = wbz(mahalanobis2(i), cols(R), 0.1, 0.999);
   end
 end
+
+[binCount, binPos] = hist(mahalanobis2, 100);
+bar(binPos, binCount / trapz(binPos, binCount));
+hold on;
+x = 0:0.01:30;
+plot(x, wbz(x, cols(R), 0.1, 0.999),'g');

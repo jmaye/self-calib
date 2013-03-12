@@ -18,6 +18,7 @@
 
 % This function computes the weight function for Blake-Zisserman
 
-function w = wbz(mahalanobis2, epsilon)
+function w = wbz(mahalanobis2, dim, wcut, pcut)
 
+epsilon = (1 - wcut) / wcut * exp(-chi2inv(pcut, dim));
 w = exp(-mahalanobis2) ./ (exp(-mahalanobis2) + epsilon);
