@@ -22,12 +22,12 @@
 anglemod = @(x) atan2(sin(x), cos(x));
 
 % translation from odometry to IMU center
-t_io = [0.195761055; -0.692404866; -1.158081532]; % [m]
+t_io = [0.687484145; -0.255547822; -1.149330497]; % [m]
 
 % rotation from odometry to IMU center
-C_io_roll = deg2rad(-10.676511765); % [rad]
-C_io_pitch = deg2rad(-42.901313782); % [rad]
-C_io_yaw = deg2rad(-56.549423218); % [rad]
+C_io_roll = deg2rad(15.619976997); % [rad]
+C_io_pitch = deg2rad(-41.629974365); % [rad]
+C_io_yaw = deg2rad(-46.374362946); % [rad]
 cx = cos(C_io_roll);
 sx = sin(C_io_roll);
 cy = cos(C_io_pitch);
@@ -60,6 +60,7 @@ r_FR = 0.280002475; % [m]
 % front left wheel radius
 r_FL = 0.280002475; % [m]
 
+% odometry measurements and their predictions
 v_fl = zeros(rows(data), 1);
 v_fr = zeros(rows(data), 1);
 v_rl = zeros(rows(data), 1);
@@ -71,53 +72,21 @@ v_rl_pred = zeros(rows(data), 1);
 v_rr_pred = zeros(rows(data), 1);
 phi_pred = zeros(rows(data), 1);
 
+% Mahalanobis distances
 errors = zeros(rows(data), 1);
 
 % process data sequentially
 for i = 1:rows(data)
-  % translation from IMU body to world
-  t_wi_b = [data(i, 19) data(i, 20) data(i, 21)]';
+  % translational velocity of IMU center in its own reference frame
+  v_ii_c = [data(i, 8); data(i, 9); data(i, 10)];
 
-  % translational velocity of IMU body in world reference frame
-  v_iw_b = [data(i, 8); data(i, 9); data(i, 10)];
+  % rotational velocity of IMU center in its own reference frame
+  om_ii_c = [deg2rad(data(i, 11)); deg2rad(data(i, 12)); deg2rad(data(i, 13))];
 
-  % rotational velocity of IMU body in world reference frame
-  om_iw_b = [deg2rad(data(i, 11)); deg2rad(data(i, 12)); deg2rad(data(i, 13))];
-
-  % translation from IMU center to world
-  t_wi_c = [data(i, 2); data(i, 3); data(i, 4)];
-
-  % rotation from IMU center to world
-  C_wi_c_roll = deg2rad(data(i, 5));
-  C_wi_c_pitch = deg2rad(data(i, 6));
-  C_wi_c_yaw = deg2rad(data(i, 7));
-  cx = cos(C_wi_c_roll);
-  sx = sin(C_wi_c_roll);
-  cy = cos(C_wi_c_pitch);
-  sy = sin(C_wi_c_pitch);
-  cz = cos(C_wi_c_yaw);
-  sz = sin(C_wi_c_yaw);
-  C_wi_c_x = [1, 0, 0; 0, cx, -sx; 0, sx, cx];
-  C_wi_c_y = [cy, 0, sy; 0, 1, 0; -sy, 0, cy];
-  C_wi_c_z = [cz, -sz, 0; sz, cz, 0; 0, 0, 1];
-  C_wi_c = C_wi_c_z * C_wi_c_x * C_wi_c_y;
-
-  % translational velocity of IMU center in world reference frame
-  v_iw_c = v_iw_b + cross(om_iw_b, t_wi_c - t_wi_b);
-
-  % rotational velocity of IMU center in world reference frame
-  om_iw_c = om_iw_b;
-
-  % translational velocity in IMU center reference frame
-  v_ii_c = C_wi_c' * v_iw_c;
-
-  % rotational velocity in IMU center reference frame
-  om_ii_c = C_wi_c' * om_iw_c;
-
-  % translational velocity in odometry reference frame
+  % translational velocity of odometry center in its own reference frame
   v_oo = C_io' * (v_ii_c + cross(om_ii_c, t_io));
 
-  % rotational velocity in odometry reference frame
+  % rotational velocity of odometry center in its own reference frame
   om_oo = C_io' * om_ii_c;
 
   % translational speed measurable by odometry
@@ -179,16 +148,17 @@ for i = 1:rows(data)
   R(5, 5) = 1e-3;
 
   % prediction error
-  error(1) = anglemod(phi(i) - phi_pred(i));
-  error(2) = v_rl(i) - v_rl_pred(i);
-  error(3) = v_rr(i) - v_rr_pred(i);
-  error(4) = v_fl(i) - v_fl_pred(i);
-  error(5) = v_fr(i) - v_fr_pred(i);
+  error = zeros(5, 1);
+  error(1, 1) = anglemod(phi(i) - phi_pred(i));
+  error(2, 1) = v_rl(i) - v_rl_pred(i);
+  error(3, 1) = v_rr(i) - v_rr_pred(i);
+  error(4, 1) = v_fl(i) - v_fl_pred(i);
+  error(5, 1) = v_fr(i) - v_fr_pred(i);
 
-  error = error + mvnrnd(zeros(1, cols(R)), R);
+  error = error + mvnrnd(zeros(cols(R), 1), R)';
 
   % Mahalanobis distance
-  errors(i) = error * inv(R) * error';
+  errors(i) = error' * inv(R) * error;
 
 end
 
