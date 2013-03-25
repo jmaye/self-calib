@@ -20,12 +20,15 @@
 
 syms xdot ydot zdot cx sx cy sy cz sz;
 Rx = [1, 0, 0; 0, cx, -sx; 0, sx, cx];
+Cx = [1, 0, 0; 0, cx, sx; 0, -sx, cx];
 Rxt = [1, 0, 0; 0, cx, sx; 0, -sx, cx];
 Rxdot = [0, 0, 0; 0, -sx, -cx; 0, cx, -sx] * xdot;
 Ry = [cy, 0, sy; 0, 1, 0; -sy, 0, cy];
+Cy = [cy, 0, -sy; 0, 1, 0; sy, 0, cy];
 Ryt = [cy, 0, -sy; 0, 1, 0; sy, 0, cy];
 Rydot = [-sy, 0, cy; 0, 0, 0; -cy, 0, -sy] * ydot;
 Rz = [cz, -sz, 0; sz, cz, 0; 0, 0, 1];
+Cz = [cz, sz, 0; -sz, cz, 0; 0, 0, 1];
 Rzt = [cz, sz, 0; -sz, cz, 0; 0, 0, 1];
 Rzdot = [-sz, -cz, 0; cz, -sz, 0; 0, 0, 0] * zdot;
 
