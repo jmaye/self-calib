@@ -19,19 +19,22 @@
 % This function performs least squares SLAM and calibration for a robot with a
 % laser range finder.
 
-function [x_est l_est theta_est Sigma NS] =...
+function [x_est, l_est, theta_est, Sigma, SigmaP, CS, NS] =...
   calibBatch(x_hat, l_hat, theta_hat, u, r, b, t, W, N, maxIter, optTol, ...
-  rankTol)
+  epstol)
 
 % angle normalization between -pi and pi
 anglemod = @(x) atan2(sin(x), cos(x));
 
 % default values
 if nargin < 10
-  maxIter = 100;
+  maxIter = 30;
 end
 if nargin < 11
   optTol = 1e-6;
+end
+if nargin < 12
+  epstol = 1e-8;
 end
 
 % number of state variables
@@ -65,11 +68,9 @@ for s = 1:maxIter
   end
 
   % update estimate
-  if nargin < 12
-    update = G * spqr_solve(J * G, -e);
-  else
-    update = G * spqr_solve(J * G, -e, struct('tol', rankTol));
-  end
+  rankTol = 20 * (rows(J) + cols(J)) * epstol * sqrt(max(diag((J * G)' * ...
+    (J * G))));
+  update = G * spqr_solve(J * G, -e, struct('tol', rankTol));
   x_est = x_est + [update(1:3:ns * 3) update(2:3:ns * 3) update(3:3:ns * 3)];
   x_est(:, 3) = anglemod(x_est(:, 3));
   l_est = l_est + [update(ns * 3 + 1:2:end - 3)...
@@ -80,4 +81,4 @@ for s = 1:maxIter
 end
 
 % compute covariance
-[Sigma, NS] = solveMarginalScaled(J, cols(J) - 2);
+[Omega, Sigma, SigmaP, CS, NS, miSum] = solveMarginal(J, cols(J) - 2);
