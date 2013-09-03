@@ -18,7 +18,7 @@
 
 % This function computes the Jacobian and the error vector
 
-function [J, e] = computeJacobian(x, l, theta, t, u, r, b, W, N)
+function [J, e] = computeJacobian(x, l, theta, t, u, r, b, W, N, batchSize)
 
 % angle normalization between -pi and pi
 anglemod = @(x) atan2(sin(x), cos(x));
@@ -34,15 +34,34 @@ nl = rows(l);
 
 % number of state variables
 ns = rows(x);
+if nargin == 10
+  if mod(ns, batchSize) == 1
+    ns = ns - 1;
+  end
+end
 
 % number of variables to estimate
 numVar = ns * 3 + nl * 2 + length(theta);
 
 % number of lrf observations
-numObs = nnz(r(2:end, :) > 0) * 2;
+if nargin == 10
+  numObs = 0;
+  numBatches = 0;
+  for i = 1:batchSize:rows(r) - 1
+    if i + batchSize - 1 > rows(r)
+      numObs = numObs + nnz(r(i + 1:end, :) > 0) * 2;
+    else
+      numObs = numObs + nnz(r(i + 1:i + batchSize - 1, :) > 0) * 2;
+    end
+    numBatches = numBatches + 1;
+  end
+else
+  numObs = nnz(r(2:end, :) > 0) * 2;
+  numBatches = 1;
+end
 
 % number of non-zero entries in the Jacobian
-nzmax = (ns - 1) * 12 + numObs / 2 * 15;
+nzmax = (ns - numBatches) * 12 + numObs / 2 * 15;
 
 % Jacobian initialization
 ii = zeros(nzmax, 1);
@@ -50,7 +69,7 @@ jj = zeros(nzmax, 1);
 ss = zeros(nzmax, 1);
 
 % error term
-e = zeros((ns - 1) * 3 + numObs, 1);
+e = zeros((ns - numBatches) * 3 + numObs, 1);
 
 % row, column, and non-zeros counters
 row = 1;
@@ -69,7 +88,16 @@ Gl = zeros(2, 2);
 Gt = zeros(2, 3);
 
 % build Jacobian and error vector
-for i = 2:ns
+i = 2;
+while i <= ns
+  if nargin == 10 && mod(i - 1, batchSize) == 0
+    i = i + 1;
+    if i > ns
+      break;
+    end
+    col = col + 3;
+  end
+
   % some pre-computations
   stm1 = sin(x(i - 1, 3));
   ctm1 = cos(x(i - 1, 3));
@@ -268,7 +296,11 @@ for i = 2:ns
       row = row + 2;
     end
   end
+  i = i + 1;
 end
 
 % create sparse Jacobian matrix
-J = sparse(ii, jj, ss, (ns - 1) * 3 + numObs, numVar, nzmax);
+if nzmax ~= nzcount - 1 || (ns - numBatches) * 3 + numObs ~= row - 1
+  disp('warning: inconsistent data');
+end
+J = sparse(ii, jj, ss, rows(e), numVar, nzmax);
