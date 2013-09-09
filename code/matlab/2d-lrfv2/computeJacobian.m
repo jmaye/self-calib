@@ -18,7 +18,7 @@
 
 % This function computes the Jacobian and the error vector
 
-function [J, e] = computeJacobian(x, l, theta, t, u, r, b, W, N, batchSize)
+function [J, e, ns] = computeJacobian(x, l, theta, t, u, r, b, W, N, batchSize)
 
 % angle normalization between -pi and pi
 anglemod = @(x) atan2(sin(x), cos(x));
