@@ -110,7 +110,7 @@ while dataPointer < rows(x_hat)
   nRank = cols(CS);
 
   % information test
-  if isempty(previousMiSum) || miSum - previousMiSum > miTol || ...
+  if isempty(previousMiSum) || 0.5 * (miSum - previousMiSum) > miTol || ...
       nRank > previousNRank
     x_est = x_est_temp;
     l_est = l_est_temp;
